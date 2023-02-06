@@ -1,0 +1,14 @@
+fix library problem
+
+run install.sh files
+
+LD_LIBRARY_PATH=/usr/local/lib
+sudo ldconfig
+
+
+fix BT problem
+
+conectar BT na interface do rpi
+sudo rfcomm release all
+sudo rfcomm bind /dev/rfcomm0 $mac 1
+sudo chmod 777 /dev/rfcomm0
