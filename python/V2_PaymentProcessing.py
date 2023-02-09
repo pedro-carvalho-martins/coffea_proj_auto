@@ -21,7 +21,7 @@ def launchPaymentProcessing(price, paymentMethod):
     print(paymentMethodInput)
     
     payment_sh_command = [
-        "/home/pi/Desktop/sistema_pagamento/coffea_proj_auto/plugpag_integration/rpi_plugpag_dev/output/CommandPromptTest",
+        "/home/pi/Desktop/sistema_pagamento/coffea_proj_auto/plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
         "COM0",
         paymentMethodInput,
         "1",
@@ -36,8 +36,17 @@ def launchPaymentProcessing(price, paymentMethod):
     
     print("debugTest")
     
-    print(payment_output.stdout.decode("utf-8"))
-    print(payment_output.stderr.decode("utf-8"))
+    print("stdout PRINT DEBUG")
+    # print(payment_output.stdout.decode("utf-8"))
+    payment_stdout_str = payment_output.stdout.decode("utf-8")
+    list_payment_stdout_str = payment_stdout_str.split("\n")
+    print(list_payment_stdout_str)
+    
+    print("stderr PRINT DEBUG")
+    # print(payment_output.stderr.decode("utf-8"))
+    payment_stderr_str = payment_output.stderr.decode("utf-8")
+    list_payment_stderr_str = payment_stderr_str.split("\n")
+    print(list_payment_stderr_str)
     
 
 ##    # calculate factorial to simulate processing time

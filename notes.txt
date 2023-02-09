@@ -8,7 +8,16 @@ sudo ldconfig
 
 fix BT problem
 
-conectar BT na interface do rpi
-sudo rfcomm release all
-sudo rfcomm bind /dev/rfcomm0 $mac 1
-sudo chmod 777 /dev/rfcomm0
+1. conectar BT na interface do rpi
+2. sudo rfcomm release all
+3. sudo rfcomm bind /dev/rfcomm0 $mac 1
+4. sudo chmod 777 /dev/rfcomm0
+
+ao reiniciar rpi, para conectar à maquininha, basta rodar:
+
+1. sudo rfcomm release all
+2. sudo rfcomm bind /dev/rfcomm0 $mac 1
+3. sudo chmod 777 /dev/rfcomm0
+
+
+da doc pagseguro: "Para SO Linux utilizar sempre a string "COM0""

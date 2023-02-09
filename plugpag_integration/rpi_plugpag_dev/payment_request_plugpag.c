@@ -40,7 +40,7 @@ int main (int argc, char* argv [])
 	memset ((void*) amount, 0, sizeof (tyAmount));
 	memset ((void*) userReference, 0, sizeof (tyUserReference));
 
-
+	/*
 	printf ("***************************************************************\n");
 	printf ("***                      INICIANDO APP: %s\n", GetVersionLib ());
 	printf ("***************************************************************\n\n");
@@ -56,8 +56,9 @@ int main (int argc, char* argv [])
 	printf ("\n\nEx:\n");
 	printf ("%s COM7 1 1 1 12345 ABC123\n", argv [0]);
 	printf ("\n\n");
+	*/
 
-	strcpy(appName, "CommandPromptTest");
+	strcpy(appName, "Integracao_coffea_plugpag");
 	strcpy(version, "0.0.1");
 	SetVersionName(appName, version);
 

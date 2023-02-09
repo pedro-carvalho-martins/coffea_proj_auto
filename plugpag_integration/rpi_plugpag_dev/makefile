@@ -1,17 +1,17 @@
 INCS = -I./include 
 OUTDIR = ./output
-OBJS = $(OUTDIR)/CommandPromptTest.o 
+OBJS = $(OUTDIR)/payment_request_plugpag.o 
 LIBS = -lPPPagSeguro -lBTSerial -ldl
 
-all: $(OUTDIR)/CommandPromptTest
+all: $(OUTDIR)/payment_request_plugpag
 
 clean: 
-	rm -r $(OBJS) $(OUTDIR)/CommandPromptTest $(OUTDIR)
+	rm -r $(OBJS) $(OUTDIR)/payment_request_plugpag $(OUTDIR)
 
-$(OUTDIR)/CommandPromptTest: main
-	gcc  -o $(OUTDIR)/CommandPromptTest $(OBJS) $(LIBS)
+$(OUTDIR)/payment_request_plugpag: main
+	gcc  -o $(OUTDIR)/payment_request_plugpag $(OBJS) $(LIBS)
 	
 main:
 	mkdir -p $(OUTDIR)
-	gcc -D__linux__ $(INCS)  -g3 -Wall -c CommandPromptTest.c -o $(OUTDIR)/CommandPromptTest.o
+	gcc -D__linux__ $(INCS)  -g3 -Wall -c payment_request_plugpag.c -o $(OUTDIR)/payment_request_plugpag.o
 

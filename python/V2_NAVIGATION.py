@@ -58,7 +58,7 @@ def TaskTest(payprocessFrame, price_selected, payment_method_selected):
 
    V2_PaymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
 
-   ## simulate payment complete
+   ## simulate payment completion
    payprocessFrame.pack_forget()
    payprocessFrame.destroy()
    paycompleteFrame = V2_PAYPROCESSFRAME.createPayCompleteFrame()

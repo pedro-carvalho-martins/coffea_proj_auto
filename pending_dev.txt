@@ -1,0 +1,32 @@
+- comandos inicialização BT p/ sinc maquininha (sempre que liga o rpi?? a cada compra?? conferir o rfcomm??)
+- verificação de conexões
+- sinais GPIO (pulsos p/ máquina e disable quando fora de serviço)
+- evitar falha no pagamento por duplicata
+- definir código de venda? incremental?
+- ajeitar para interrupção de compra no app após 60s e cancelar na maquininha(é possível?)
+  -caso não seja possível, notificar pela telinha após 30? 60? segundos para o usuário cancelar a operação e recomeçar
+- fazer log de operações
+- tratar aprovação ou falha da operação -- dar feedback ao usuário
+- assegurar que haverá sincronia entre as telas do rpi e da maquininha, para evitar solicitação de compra em momento no qual maquininha estiver bloqueada
+  -tratar erro de maquininha "bloqueada" --> (em um menu,...) para aparecer na tela que não foi possível processar a compra
+- adicionar método de pagamento e valor aos prints do retorno da compra para adicionar ao log
+
+
+para prox dev, referencia da organização das listas de string de resultado de compra
+
+compra com sucesso OUTPUT:
+
+stdout PRINT DEBUG
+['VENDA', '', 'RETORNO: 0', '', 'Transaction Result', '\tmessage [Transacao realizada com sucesso]', '\ttransactionCode [D140851DB2E64832AEEE1CE3E302446C]', '\tdate [2023-02-06]', '\ttime [02:09:49]', '\thostNsu [020668725522]', '\tcardBrand [MASTERCARD]', '\tbin [545505]', '\tholder [6515]', '\tuser reference [ABC]', '']
+stderr PRINT DEBUG
+['']
+paymentCompleteOK
+
+
+compra cancelada na maquininha OUTPUT:
+
+stdout PRINT DEBUG
+['VENDA', '', 'RETORNO: -1004', '', 'Transaction Result', '\tmessage [Transacao nao realizada]', '\ttransactionCode []', '\tdate []', '\ttime []', '\thostNsu []', '\tcardBrand []', '\tbin []', '\tholder []', '\tuser reference []', '']
+stderr PRINT DEBUG
+['']
+paymentCompleteOK
