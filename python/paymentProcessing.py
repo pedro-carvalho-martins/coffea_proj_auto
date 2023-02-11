@@ -38,16 +38,22 @@ def launchPaymentProcessing(price, paymentMethod):
     
     print("stdout PRINT DEBUG")
     # print(payment_output.stdout.decode("utf-8"))
-    payment_stdout_str = payment_output.stdout.decode("utf-8")
+    payment_stdout_str = payment_output.stdout.decode("ISO-8859-1")#.decode("ascii")#.decode("utf-8")
     list_payment_stdout_str = payment_stdout_str.split("\n")
     print(list_payment_stdout_str)
     
     print("stderr PRINT DEBUG")
     # print(payment_output.stderr.decode("utf-8"))
-    payment_stderr_str = payment_output.stderr.decode("utf-8")
+    payment_stderr_str = payment_output.stderr.decode("ISO-8859-1")#.decode("utf-8")
     list_payment_stderr_str = payment_stderr_str.split("\n")
     print(list_payment_stderr_str)
     
+    payment_output = int(list_payment_stdout_str[2].split('RETORNO: ',1)[1])
+    print(payment_output)
+    
+    return payment_output
+    
+
 
 ##    # calculate factorial to simulate processing time
 ##    time.sleep(5)

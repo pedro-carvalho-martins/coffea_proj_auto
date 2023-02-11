@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import V2_NAVIGATION
+import navigation
 
 
 ## Ação de clique em botão
@@ -37,7 +37,7 @@ def createPayProcessFrame():
     return payProcessFrame
 
 
-def createPayCompleteFrame():
+def createPaySuccessFrame():
 
     payCompleteFrame = tk.Frame(height=480, width=320)
 
@@ -58,3 +58,27 @@ def createPayCompleteFrame():
     label.grid(column=0, row=0, ipadx=10, ipady=180)
 
     return payCompleteFrame
+
+
+
+def createPayFailureFrame():
+
+    payFailureFrame = tk.Frame(height=480, width=320)
+
+
+    ## Configurando o Grid
+
+    payFailureFrame.rowconfigure(0, weight=1)
+    payFailureFrame.columnconfigure(0, weight=1)
+
+
+    ## Adiciono o label
+
+    label = tk.Label(
+       payFailureFrame,
+       text="Erro no pagamento. Favor recomeçar a compra.",
+       font=('SegoeUI', 20),
+       wraplength=300)
+    label.grid(column=0, row=0, ipadx=10, ipady=180)
+
+    return payFailureFrame

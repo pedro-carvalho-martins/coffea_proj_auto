@@ -1,7 +1,9 @@
 import tkinter as tk
 
-import V2_HELLOFRAME
-import V2_PRICEFRAME
+#import tkinter_frames.tkHelloFrame as tkHelloFrame
+
+import navigation
+
 
 ## Configurando o container principal
 
@@ -12,9 +14,16 @@ mainContainer.geometry('320x480')
 mainContainer.resizable(False, False)
 mainContainer.attributes('-fullscreen', True)
 
+navigation.navigate_helloFrame()
 
-myFrame = V2_HELLOFRAME.createHelloFrame()
-myFrame.pack(side="top", fill="both", expand=True)
+
+# myFrame = tkHelloFrame.createHelloFrame()
+# myFrame.pack(side="top", fill="both", expand=True)
+
+print('debug2')
+
+mainContainer.mainloop()
+
 
 
 
@@ -31,4 +40,3 @@ def quit_win():
 
 
 
-mainContainer.mainloop()

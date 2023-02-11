@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import V2_NAVIGATION
+import navigation
 
 
 ## Ação de clique em botão
@@ -39,7 +39,7 @@ def createHelloFrame():
         text="Toque na tela para iniciar a compra por cartão ou PIX",
         font=('SegoeUI', 20),
         wraplength=300,
-        command= lambda: V2_NAVIGATION.navigate_priceFrame(helloFrame))
+        command= lambda: navigation.navigate_priceFrame(helloFrame))
 
     helloButton.grid(row=0, column=0, ipadx=10, ipady=180)
 

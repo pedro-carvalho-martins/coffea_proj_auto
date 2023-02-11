@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import V2_NAVIGATION
+import navigation
 
 
 ## Ação de clique em botão
@@ -9,7 +9,7 @@ def button_clicked(index_button, lista_precos, priceFrame):
    print('Button clicked')
    print(index_button)
    print(lista_precos[index_button])
-   V2_NAVIGATION.navigate_payment_method_Frame(lista_precos[index_button], priceFrame)
+   navigation.navigate_payment_method_Frame(lista_precos[index_button], priceFrame)
 
 
 ## Função de formatação dos textos dos botões de preço

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import V2_NAVIGATION
+import navigation
 
 
 ## Ação de clique em botão
@@ -9,7 +9,7 @@ def button_clicked(index_button, lista_metodos_pag, price_selected, pmethodFrame
    print('Button clicked')
    print(lista_metodos_pag[index_button])
    print(price_selected)
-   V2_NAVIGATION.navigate_payment_process(price_selected, lista_metodos_pag[index_button], pmethodFrame)
+   navigation.navigate_payment_process(price_selected, lista_metodos_pag[index_button], pmethodFrame)
 
 
 ## Função de criação do Frame de método de pagamento
