@@ -10,6 +10,9 @@
 - assegurar que haverá sincronia entre as telas do rpi e da maquininha, para evitar solicitação de compra em momento no qual maquininha estiver bloqueada
   -tratar erro de maquininha "bloqueada" --> (em um menu,...) para aparecer na tela que não foi possível processar a compra
 - adicionar método de pagamento e valor aos prints do retorno da compra para adicionar ao log
+- adicionar monitoramento de temperatura da placa? (teste para evitar qualquer possível problema)
+
+- ENTENDER E ARRUMAR THREADING!! (se necessário) (estamos lançando dois threads novos a cada execução???)
 
 
 para prox dev, referencia da organização das listas de string de resultado de compra

@@ -1,0 +1,6 @@
+run on terminal to get gpio schema
+gpio readall
+
+to compile the C file to use WiringBP (C file named blink):
+gcc -Wall -o blink blink.c -lwiringPi
+sudo ./blink

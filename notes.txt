@@ -21,3 +21,5 @@ ao reiniciar rpi, para conectar à maquininha, basta rodar:
 
 
 da doc pagseguro: "Para SO Linux utilizar sempre a string "COM0""
+
+MAC address da moderninha Plus usada no desenvolvimento: 08:E9:F6:96:47:DF

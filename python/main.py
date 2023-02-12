@@ -7,14 +7,19 @@ import navigation
 
 ## Configurando o container principal
 
-mainContainer = tk.Tk()
-mainContainer.title("sistema_pagamento_plugpag")
+##mainContainer = tk.Tk()
+##mainContainer.title("sistema_pagamento_plugpag")
+##
+##mainContainer.geometry('320x480')
+##mainContainer.resizable(False, False)
+##mainContainer.attributes('-fullscreen', True)
 
-mainContainer.geometry('320x480')
-mainContainer.resizable(False, False)
-mainContainer.attributes('-fullscreen', True)
 
-navigation.navigate_helloFrame()
+while True:
+    navigation.navigate_helloFrame()
+
+
+##navigation.navigate_helloFrame()
 
 
 # myFrame = tkHelloFrame.createHelloFrame()
@@ -22,7 +27,7 @@ navigation.navigate_helloFrame()
 
 print('debug2')
 
-mainContainer.mainloop()
+#mainContainer.mainloop()
 
 
 
