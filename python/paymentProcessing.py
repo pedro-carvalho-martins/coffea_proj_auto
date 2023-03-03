@@ -21,7 +21,7 @@ def launchPaymentProcessing(price, paymentMethod):
     print(paymentMethodInput)
     
     payment_sh_command = [
-        "/../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
+        "../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
         "COM0",
         paymentMethodInput,
         "1",
