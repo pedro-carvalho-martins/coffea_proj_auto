@@ -1,0 +1,24 @@
+ao instalar LCD35-show no RPI 4B, alguns elementos do tkinter
+não estavam aparecendo corretamente (só quando dava hover ou
+raramente apareciam)
+
+ao trocar para o RPI B rev1 e rodar novamente LCD35-show,
+no 1 B funcionou perfeitamente (render da tela de cima pra
+baixo, como um rolling shutter, talvez seja o motivo;;
+no 4B parecia que renderizava só as mudanças na tela??)
+
+pegando o SD com LCD35-show instalado no B rev1 e colocando
+no 4B, ficou com o render de aspecto "rolling shutter" (só
+que bem mais rápido), e parece que os FPS aumentaram. O app
+parece funcionar perfeitamente.
+
+qual é o problema? Refresh rate??
+
+LCD35-show instalado no 1B e colocado no 4B parece funcionar muito bem
+
+
+Sequência do que foi feito nesse SD específico:
+
+install do driver no 4B -> SD colocado no 1B e driver reinstalado
+para conseguir exibir imagem -> SD colocado no 4B e driver do 1B
+funcionou diretamente melhor que o esperado.
