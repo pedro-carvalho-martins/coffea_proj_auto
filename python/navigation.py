@@ -52,6 +52,7 @@ def navigate_priceFrame(currentFrame):
    currentFrame.pack_forget()
    currentFrame.destroy()
    priceFrame = tkPriceFrame.createPriceFrame()
+   priceFrame.configure(background='black')
    priceFrame.pack(side="top", fill="both", expand=True)
 
 def navigate_payment_method_Frame(price_selected, currentFrame):
