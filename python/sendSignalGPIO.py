@@ -1,6 +1,8 @@
-import subprocess
+import RPi.GPIO as GPIO
+import time
 
 def sendOutputSignal(price):
+    
     print("SCRIPT TO SEND SIGNAL CALL")
     print(price)
     
@@ -8,33 +10,24 @@ def sendOutputSignal(price):
     
     number_of_pulses = round(price/pulse_coin_value)
     
-    
-    payment_sh_command = [
-        "sudo",
-        "/home/pi/Desktop/sistema_pagamento/coffea_proj_auto/gpio_scripts/gpio_payment_output",
-        str(number_of_pulses)
-        ]
-
-    payment_output = subprocess.run(payment_sh_command,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
+    msPulse = 100
+    msBetweenPulses = 400
     
     
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(26, GPIO.OUT)
     
-    print("stdout PRINT DEBUG")
-    # print(payment_output.stdout.decode("utf-8"))
-    payment_stdout_str = payment_output.stdout.decode("ISO-8859-1")#.decode("ascii")#.decode("utf-8")
-    list_payment_stdout_str = payment_stdout_str.split("\n")
-    print(list_payment_stdout_str)
+    for i in range(number_of_pulses):
+        
+        GPIO.output(26, GPIO.HIGH)
+        time.sleep(msPulse/1000)
+        GPIO.output(26, GPIO.LOW)
+        time.sleep(msBetweenPulses/1000)
+        
+        print("pulsetest")
+        
+    GPIO.cleanup()
+        
+    print("End of GPIO pulse")
     
-    print("stderr PRINT DEBUG")
-    # print(payment_output.stderr.decode("utf-8"))
-    payment_stderr_str = payment_output.stderr.decode("ISO-8859-1")#.decode("utf-8")
-    list_payment_stderr_str = payment_stderr_str.split("\n")
-    print(list_payment_stderr_str)
     
-    print(payment_output.returncode)
-    
-    # WITH RETURNCODE CONFIRMATION, GO FROM SENDING SIGNAL FRAME TO CHOOSE DRINK
-    
-    #return payment_output
