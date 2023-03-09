@@ -1,0 +1,39 @@
+---- Ideia ----
+
+Preparando o cartão SD:
+
+1. Uso o balenaEtcher para colocar uma imagem de Raspberry Pi OS pré-pronta com
+LCD35-show instalado e na vertical, com tkinter e o coffea_proj_auto rodando
+2. Coloco em alguma pasta especifica um arquivo "mac_maquininha.txt" contendo
+apenas o endereço mac da maquininha a ser usada.
+(( alternativa: elimino esse segundo passo e obrigo um input do mac address
+na GUI, usando teclado virtual e a canetinha ))
+
+1ª Inicialização:
+
+1. Conecto a maquininha pela GUI do RPi ou utilizando bluetoothctl
+(https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/)
+bastaria fazer bluetoothctl connect <<MAC>>?? ou devo evitar a interface do bluetoothctl?
+Fazer TESTES.
+
+Para ler o endereço mac do arquivo "mac_maquininha.txt" posso me basear em:
+https://linuxhint.com/read_file_line_by_line_bash/
+esmiuçar o código e simplificar para ler apenas a primeira linha e passar
+como parâmetro do comando.
+
+rodo o script 
+ 1. sudo rfcomm release all
+ 2. sudo rfcomm bind /dev/rfcomm0 <<<$mac>>> 1  ((leitura do endereço MAC: mesmo esquema de antes))
+ 3. sudo chmod 777 /dev/rfcomm0
+
+abro o programa do coffea_proj_auto
+
+faço VERIFICAÇÃO no coffea_proj_auto?? na GUI ou no terminal??
+depois que tudo estiver OK, inicio a opção de venda.
+
+
+
+
+
+
+
