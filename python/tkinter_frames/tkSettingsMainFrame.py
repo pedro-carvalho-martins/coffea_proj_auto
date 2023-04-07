@@ -5,37 +5,36 @@ import navigation
 
 ## Ação de clique em botão
 
-def button_clicked(index_button, lista_metodos_pag, price_selected, pmethodFrame):
+def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
    print('Button clicked')
-   print(lista_metodos_pag[index_button])
-   print(price_selected)
-   navigation.navigate_payment_process(price_selected, lista_metodos_pag[index_button], pmethodFrame)
+   print(lista_tipos_config[index_button])
+   navigation.navigate_select_settings(lista_tipos_config[index_button], settingSelectionFrame)
 
 
 ## Função de criação do Frame de método de pagamento
 
-def createPaymentMethodFrame(price_selected):
+def createSettingSelectionFrame():
 
 
-    lista_metodos_pag = ["Crédito", "Débito", "Voucher", "QR Code (Pix)"]
+    lista_tipos_config = ["Preços", "Métodos pagamento", "Voltar"]
 
 
-    pmethodFrame = tk.Frame(height=480, width=320)
+    settingSelectionFrame = tk.Frame(height=480, width=320)
 
 
     ## Configurando o Grid
 
-    pmethodFrame.rowconfigure(0, weight=3)
-    pmethodFrame.rowconfigure(1, weight=6)
-    pmethodFrame.rowconfigure(2, weight=1)
-    pmethodFrame.columnconfigure(0, weight=1)
+    settingSelectionFrame.rowconfigure(0, weight=3)
+    settingSelectionFrame.rowconfigure(1, weight=6)
+    settingSelectionFrame.rowconfigure(2, weight=1)
+    settingSelectionFrame.columnconfigure(0, weight=1)
 
 
     ## Adiciono o label principal
 
     label = tk.Label(
-       pmethodFrame,
-       text="Selecione a forma de pagamento:",
+       settingSelectionFrame,
+       text="CONFIGURAÇÕES",
        font=('SegoeUI', 20),
        wraplength=250)
     label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
@@ -43,7 +42,7 @@ def createPaymentMethodFrame(price_selected):
 
     ## Crio o Frame dos botões
 
-    button_frame = tk.Frame(pmethodFrame)
+    button_frame = tk.Frame(settingSelectionFrame)
     button_frame.grid(column=0, row=1, pady=10, padx=20)
 
 
@@ -53,15 +52,15 @@ def createPaymentMethodFrame(price_selected):
 
     buttons_list=[]
 
-    for button_index in range(len(lista_metodos_pag)):
+    for button_index in range(len(lista_tipos_config)):
        buttons_list.append(
           tk.Button(button_frame,
-                    text=lista_metodos_pag[button_index],
+                    text=lista_tipos_config[button_index],
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
                     wraplength=150,
                     #command=button_clicked(button_index),
-                    command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame))
+                    command= lambda idx=button_index: button_clicked(idx, lista_tipos_config, settingSelectionFrame))
                     #height=1,
                     #width=1)
        )
@@ -72,8 +71,8 @@ def createPaymentMethodFrame(price_selected):
 
     ## Crio o Frame inferior
 
-    lower_frame = tk.Frame(pmethodFrame)
+    lower_frame = tk.Frame(settingSelectionFrame)
     lower_frame.grid(column=0, row=2, sticky=tk.NS, pady=1, padx=20)
 
-    return pmethodFrame
+    return settingSelectionFrame
 
