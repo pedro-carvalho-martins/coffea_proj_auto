@@ -1,7 +1,6 @@
 import tkinter as tk
 
 import navigation
-import rwPaymentMethodsList
 
 
 ## Ação de clique em botão
@@ -17,16 +16,8 @@ def button_clicked(index_button, lista_metodos_pag, price_selected, pmethodFrame
 
 def createPaymentMethodFrame(price_selected):
 
-    # Antiga lista de métodos de pagamento sem configuração no app
-    # lista_metodos_pag = ["Crédito", "Débito", "Voucher", "QR Code (Pix)"]
 
-
-    # START DEV 2023.04.07 - TESTAR NO RPI
-
-    # Nova lista de métodos de pagamento puxados de um txt
-    lista_metodos_pag = rwPaymentMethodsList.readListDisplay()
-
-    # END DEV 2023.04.07 - TESTAR NO RPI
+    lista_metodos_pag = ["Crédito", "Débito", "Voucher", "QR Code (Pix)"]
 
 
     pmethodFrame = tk.Frame(height=480, width=320)
