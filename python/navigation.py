@@ -4,6 +4,7 @@ import tkinter_frames.tkPaymentProcessFrame as tkPaymentProcessFrame
 import tkinter_frames.tkPMethodFrame as tkPMethodFrame
 import tkinter_frames.tkPriceFrame as tkPriceFrame
 import tkinter_frames.tkHelloFrame as tkHelloFrame
+import tkinter_frames.tkPriceSettingFrame as tkPriceSettingFrame
 
 
 ##tmp
@@ -116,6 +117,28 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
 
    ## TEST ENDS
    print('debug1')
+
+
+
+def navigate_selected_setting_menu(settingPageSelection, currentFrame):
+   print('nav_selected_setting_menu')
+   print(settingPageSelection)
+   currentFrame.pack_forget()
+   currentFrame.destroy()
+
+   if settingPageSelection == "Preços":
+      priceSettingFrame = tkPriceSettingFrame.createPriceSettingFrame()
+      priceSettingFrame.pack(side="top", fill="both", expand=True)
+
+   elif settingPageSelection == "Métodos pagamento":
+      pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame()
+      pMethodSettingFrame.pack(side="top", fill="both", expand=True)
+
+   else:
+      ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
+      mainContainer.destroy()
+
+
 
 def launchSendSignal(price,dummyVar):
     sendSignalGPIO.sendOutputSignal(price)

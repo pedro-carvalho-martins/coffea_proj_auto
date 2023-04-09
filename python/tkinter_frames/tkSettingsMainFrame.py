@@ -8,7 +8,7 @@ import navigation
 def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
    print('Button clicked')
    print(lista_tipos_config[index_button])
-   navigation.navigate_select_settings(lista_tipos_config[index_button], settingSelectionFrame)
+   navigation.navigate_selected_setting_menu(lista_tipos_config[index_button], settingSelectionFrame)
 
 
 ## Função de criação do Frame de método de pagamento

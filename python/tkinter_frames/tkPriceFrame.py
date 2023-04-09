@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import navigation
-
+import rwPricesList
 
 ## Ação de clique em botão
 
@@ -23,9 +23,21 @@ def display_button_text(input_price):
 def createPriceFrame():
 
 
+    ### OLD IMPLEMENTATION STARTS
+
     ## Fazer a lista de preços ser obtida de arquivo externo!
     # lista_precos = [2.50, 3, 3.50, 4.00]
-    lista_precos = [2.50, 3]
+    #lista_precos = [2.50, 3]
+
+    ### OLD IMPLEMENTATION ENDS
+
+
+
+    ## INÍCIO DA NOVA IMPLEMENTAÇÃO: PREÇOS LIDOS DE ARQUIVO .txt - TESTE PENDENTE
+
+    lista_precos = rwPricesList.readList()
+
+    ## FIM DA NOVA IMPLEMENTAÇÃO
 
 
     priceFrame = tk.Frame(height=480, width=320)
