@@ -67,12 +67,12 @@ def writeListSettings(pMethodsDict):
 
     pMethodsFile.close()
 
-#TESTES READ:
-
-#readListSettings()
-#readListDisplay()
-
-#TESTE WRITE:
-
-#pMethodsDict = {'Crédito': 'enabled', 'Débito': 'disabled', 'Voucher': 'enabled', 'QR Code (Pix)': 'disabled'}
-#writeListSettings(pMethodsDict)
+# #TESTES READ:
+#
+# readListSettings()
+# readListDisplay()
+#
+# #TESTE WRITE:
+#
+# pMethodsDict = {'Crédito': 'enabled', 'Débito': 'disabled', 'Voucher': 'enabled', 'QR Code (Pix)': 'disabled'}
+# writeListSettings(pMethodsDict)

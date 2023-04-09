@@ -1,7 +1,5 @@
 import tkinter as tk
 
-
-
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
 #import navigation
 #import rwPricesList
@@ -9,7 +7,7 @@ import tkinter as tk
 
 
 
-def modprice_button_clicked(index_button, sign_mod, priceSettingFrame):
+def modprice_button_clicked(index_button, sign_mod):
     print('Button clicked')
     print(index_button)
     print(sign_mod)
@@ -33,6 +31,74 @@ def modprice_button_clicked(index_button, sign_mod, priceSettingFrame):
     print(lista_precos)
 
 
+def appendPriceLabel(precoFloat):
+
+    priceLabelList.append(
+        tk.Label(
+            prices_frame,
+            text=str(precoFloat),
+            font=('Ubuntu',18)
+        )
+    )
+
+
+def appendMinusButton(priceLabel_index):
+
+    buttonMinusList.append(
+        tk.Button(prices_frame,
+                  text=" - ",
+                  # font=('SegoeUI', 20, 'bold'),
+                  font=('Ubuntu', 28),
+                  # command=button_clicked(button_index),
+                  command=lambda idx=priceLabel_index: modprice_button_clicked(idx, "minus"))
+        # height=1,
+        # width=1)
+    )
+
+
+def appendPlusButton(priceLabel_index):
+
+    buttonPlusList.append(
+        tk.Button(prices_frame,
+                  text=" + ",
+                  # font=('SegoeUI', 20, 'bold'),
+                  font=('Ubuntu', 28),
+                  # command=button_clicked(button_index),
+                  command= lambda idx=priceLabel_index: modprice_button_clicked(idx, "plus"))
+        # height=1,
+        # width=1)
+    )
+
+
+def addprice_button_clicked():
+
+    # Append price label
+    appendPriceLabel(0.25)
+
+    # Append minus button
+    appendMinusButton(len(lista_precos))
+
+    # Append plus button
+    appendPlusButton(len(lista_precos))
+
+    # Add items to the grid
+    priceLabelList[len(lista_precos)].grid(column=1, row=(len(lista_precos)) + 1, ipadx=20, ipady=0, padx=5,
+                                           sticky=tk.EW)
+    buttonMinusList[len(lista_precos)].grid(column=0, row=(len(lista_precos)) + 1, ipadx=0, ipady=0, padx=5,
+                                            sticky=tk.EW)
+    buttonPlusList[len(lista_precos)].grid(column=2, row=(len(lista_precos)) + 1, ipadx=0, ipady=0, padx=5,
+                                           sticky=tk.EW)
+
+    # Append price to price list
+    lista_precos.append(0.25)
+
+
+def saveQuit_button_clicked():
+
+    rwPricesList.writeListSettings(lista_precos)
+
+
+
 ## Função de criação do Frame de preços
 
 def createPriceSettingFrame():
@@ -40,6 +106,10 @@ def createPriceSettingFrame():
     ### VER SE ESSA DECLARAÇÃO VAI FUNCIONAR NA IMPLEMENTAÇÃO FINAL
     global lista_precos
     global priceLabelList
+    global prices_frame
+
+    global buttonMinusList
+    global buttonPlusList
 
 
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION. UNCOMMENT ASAP
@@ -81,40 +151,20 @@ def createPriceSettingFrame():
     buttonMinusList = []
     buttonPlusList = []
 
+    # add a set of 1) Label 2) Minus button 3) Plus button for each price on the price list
+
     for priceLabel_index in range(len(lista_precos)):
 
         # Append price label
-        priceLabelList.append(
-            tk.Label(
-                prices_frame,
-                text=str(lista_precos[priceLabel_index]),
-                font=('Ubuntu',18)
-            )
-        )
+        appendPriceLabel(lista_precos[priceLabel_index])
 
         # Append minus button
-        buttonMinusList.append(
-            tk.Button(prices_frame,
-                      text=" - ",
-                      # font=('SegoeUI', 20, 'bold'),
-                      font=('Ubuntu', 28),
-                      # command=button_clicked(button_index),
-                      command=lambda idx=priceLabel_index: modprice_button_clicked(idx, "minus", priceSettingFrame))
-            # height=1,
-            # width=1)
-        )
+        appendMinusButton(priceLabel_index)
 
         # Append plus button
-        buttonPlusList.append(
-            tk.Button(prices_frame,
-                      text=" + ",
-                      # font=('SegoeUI', 20, 'bold'),
-                      font=('Ubuntu', 28),
-                      # command=button_clicked(button_index),
-                      command= lambda idx=priceLabel_index: modprice_button_clicked(idx, "plus", prices_frame))
-            # height=1,
-            # width=1)
-        )
+        appendPlusButton(priceLabel_index)
+
+    # place items on the grid
 
     for priceLabel_index in range(len(priceLabelList)):
         priceLabelList[priceLabel_index].grid(column=1, row=priceLabel_index+1, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
@@ -126,9 +176,30 @@ def createPriceSettingFrame():
 
     ### ADD ADDPRICE BUTTON
 
+    addPriceButton = tk.Button(priceSettingFrame,
+              text=" ADDPRICE ",
+              # font=('SegoeUI', 20, 'bold'),
+              font=('Ubuntu', 16),
+              # command=button_clicked(button_index),
+              command= lambda: addprice_button_clicked())
+
+    addPriceButton.grid(column=0, row=2, sticky=tk.S, pady=0, padx=20)
+
+
+
+
     ### ADD REMOVEPRICE BUTTON
 
     ### ADD SAVEANDQUIT BUTTON
+
+    saveQuitButton = tk.Button(priceSettingFrame,
+              text=" Save and quit (just save atm) ",
+              # font=('SegoeUI', 20, 'bold'),
+              font=('Ubuntu', 16),
+              # command=button_clicked(button_index),
+              command= lambda: saveQuit_button_clicked())
+
+    saveQuitButton.grid(column=0, row=3, sticky=tk.S, pady=0, padx=20)
 
 
 

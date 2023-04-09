@@ -29,7 +29,7 @@ def writeListSettings(priceList):
 
     print(outString)
 
-    pMethodsFile = open('./settings_files/paymentMethods.txt', "w", encoding='utf-8')
+    pMethodsFile = open('./settings_files/listaPrecos.txt', "w", encoding='utf-8')
 
     pMethodsFile.write(outString)
 
@@ -37,5 +37,5 @@ def writeListSettings(priceList):
 
 
 
-readList()
+
 
