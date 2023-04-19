@@ -48,7 +48,7 @@ def appendMinusButton(priceLabel_index):
         tk.Button(prices_frame,
                   text=" - ",
                   # font=('SegoeUI', 20, 'bold'),
-                  font=('Ubuntu', 28),
+                  font=('Ubuntu', 24),
                   # command=button_clicked(button_index),
                   command=lambda idx=priceLabel_index: modprice_button_clicked(idx, "minus"))
         # height=1,
@@ -62,7 +62,7 @@ def appendPlusButton(priceLabel_index):
         tk.Button(prices_frame,
                   text=" + ",
                   # font=('SegoeUI', 20, 'bold'),
-                  font=('Ubuntu', 28),
+                  font=('Ubuntu', 24),
                   # command=button_clicked(button_index),
                   command= lambda idx=priceLabel_index: modprice_button_clicked(idx, "plus"))
         # height=1,
@@ -71,6 +71,11 @@ def appendPlusButton(priceLabel_index):
 
 
 def addprice_button_clicked():
+
+    ## TEMPORARY LIMIT ON NUMBER OF PRICES? REMOVE?
+    if len(lista_precos)>=5:
+        return
+    ##
 
     # Append price label
     appendPriceLabel(0.25)
@@ -91,6 +96,29 @@ def addprice_button_clicked():
 
     # Append price to price list
     lista_precos.append(0.25)
+
+
+
+def removeprice_button_clicked():
+
+    if len(lista_precos) <= 1:
+        return
+
+    # Remove price label
+    priceLabelList[-1].destroy()
+    del priceLabelList[-1]
+
+    # Remove minus button
+    buttonMinusList[-1].destroy()
+    del buttonMinusList[-1]
+
+    # Remove plus button
+    buttonPlusList[-1].destroy()
+    del buttonPlusList[-1]
+
+    # Remove price from price list
+    del lista_precos[-1]
+
 
 
 def saveQuit_button_clicked():
@@ -129,6 +157,8 @@ def createPriceSettingFrame():
     priceSettingFrame.rowconfigure(0, weight=3)
     priceSettingFrame.rowconfigure(1, weight=6)
     priceSettingFrame.rowconfigure(2, weight=1)
+    priceSettingFrame.rowconfigure(3, weight=1)
+    priceSettingFrame.rowconfigure(4, weight=1)
     priceSettingFrame.columnconfigure(0, weight=1)
 
 
@@ -190,6 +220,17 @@ def createPriceSettingFrame():
 
     ### ADD REMOVEPRICE BUTTON
 
+    removePriceButton = tk.Button(priceSettingFrame,
+                               text=" REMOVEPRICE ",
+                               # font=('SegoeUI', 20, 'bold'),
+                               font=('Ubuntu', 16),
+                               # command=button_clicked(button_index),
+                               command=lambda: removeprice_button_clicked())
+
+    removePriceButton.grid(column=0, row=3, sticky=tk.S, pady=0, padx=20)
+
+
+
     ### ADD SAVEANDQUIT BUTTON
 
     saveQuitButton = tk.Button(priceSettingFrame,
@@ -199,7 +240,7 @@ def createPriceSettingFrame():
               # command=button_clicked(button_index),
               command= lambda: saveQuit_button_clicked())
 
-    saveQuitButton.grid(column=0, row=3, sticky=tk.S, pady=0, padx=20)
+    saveQuitButton.grid(column=0, row=4, sticky=tk.S, pady=0, padx=20)
 
 
 
