@@ -8,24 +8,46 @@ import tkinter as tk
 
 
 
-def enable_button_clicked(index_button):
-    pass
+def statemod_button_clicked(index_button, pay_method_name, new_state):
 
-def disable_button_clicked(index_button):
-    pass
+    print("statemod button clicked")
+    print(index_button)
+    print(pay_method_name)
+    print(new_state)
+
+    print(payMethodsDict[pay_method_name])
+
+    payMethodsDict[pay_method_name]=new_state
+
+    print(payMethodsDict[pay_method_name])
+
+    if new_state == "enabled":
+        pMethodLabelList[index_button].config(bg="#26f680")
+        buttonEnableList[index_button].config(state="disabled")
+        buttonDisableList[index_button].config(state="normal")
+    else:
+        pMethodLabelList[index_button].config(bg="#cc0001")
+        buttonEnableList[index_button].config(state="normal")
+        buttonDisableList[index_button].config(state="disabled")
 
 
-def appendPMethodLabel(payMethodName):
+def appendPMethodLabel(payMethodName, payMethodStatus):
+
+    if payMethodStatus == "enabled":
+        background_color_label = "#26f680"
+    else:
+        background_color_label = "#cc0001"
 
     pMethodLabelList.append(
         tk.Label(
             pMethods_frame,
+            bg=background_color_label,
             text=payMethodName,
-            font=('Ubuntu',18)
+            font=('Ubuntu',14)
         )
     )
 
-def appendEnableButton(payMethodLabel_index, payMethodStatus):
+def appendEnableButton(payMethodLabel_index, payMethodName, payMethodStatus):
 
     if payMethodStatus == "enabled":
         enableButtonState = "disabled"
@@ -33,15 +55,16 @@ def appendEnableButton(payMethodLabel_index, payMethodStatus):
         enableButtonState = "normal"
 
     currentButton = tk.Button(pMethods_frame,
-                              text="Habilitar",
-                              font=('Ubuntu', 18),
-                              command = lambda idx=payMethodLabel_index: enable_button_clicked(idx)
+                              #text="Habilitar",
+                              text="ON",
+                              font=('Ubuntu', 14),
+                              command = lambda idx=payMethodLabel_index: statemod_button_clicked(idx, payMethodName, "enabled")
                               )
     currentButton["state"]=enableButtonState
 
     buttonEnableList.append(currentButton)
 
-def appendDisableButton(payMethodLabel_index, payMethodStatus):
+def appendDisableButton(payMethodLabel_index, payMethodName, payMethodStatus):
 
     if payMethodStatus == "disabled":
         disableButtonState = "disabled"
@@ -49,9 +72,10 @@ def appendDisableButton(payMethodLabel_index, payMethodStatus):
         disableButtonState = "normal"
 
     currentButton = tk.Button(pMethods_frame,
-                              text="Desabilitar",
-                              font=('Ubuntu', 18),
-                              command = lambda idx=payMethodLabel_index: disable_button_clicked(idx)
+                              #text="Desabilitar",
+                              text="OFF",
+                              font=('Ubuntu', 14),
+                              command = lambda idx=payMethodLabel_index: statemod_button_clicked(idx, payMethodName, "disabled")
                               )
     currentButton["state"]=disableButtonState
 
@@ -60,15 +84,19 @@ def appendDisableButton(payMethodLabel_index, payMethodStatus):
 
 def saveQuit_button_clicked():
 
+    # Não fazer nada se todos os métodos de pagamento estiverem disabled.
+
     rwPaymentMethodsList.writeListSettings(payMethodsDict)
 
-
+def onlyQuit_button_clicked():
+    pass
 
 ## Função de criação do Frame de preços
 
 def createPMethodSettingFrame():
 
     ### VER SE ESSA DECLARAÇÃO VAI FUNCIONAR NA IMPLEMENTAÇÃO FINAL
+    global payMethodsDict
     global payMethods
     global pMethodLabelList
     global buttonEnableList
@@ -104,8 +132,8 @@ def createPMethodSettingFrame():
 
     titleLabel = tk.Label(
        pMethodSettingFrame,
-       text="CONFIG MÉTODOS PAGAMENTO",
-       font=('SegoeUI', 18))
+       text="CONFIG \nMÉTODOS PAGAMENTO",
+       font=('SegoeUI', 16))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
 
@@ -125,28 +153,37 @@ def createPMethodSettingFrame():
 
     for payMethodItem in payMethods:
 
-        # Append payment method label - send method label to function
-        appendPMethodLabel(payMethods[pMethodIndex][0])
+        # Append payment method label - send method label to function and whether the method is enabled or disabled
+        appendPMethodLabel(payMethodItem[0], payMethodItem[1])
 
         # Append enable button - send to function whether the method is enabled or disabled
-        appendEnableButton(pMethodIndex, payMethods[pMethodIndex][1])
+        appendEnableButton(pMethodIndex, payMethodItem[0], payMethodItem[1])
 
         # Append disable button - send to function whether the method is enabled or disabled
-        appendDisableButton(pMethodIndex, payMethods[pMethodIndex][1])
+        appendDisableButton(pMethodIndex, payMethodItem[0], payMethodItem[1])
 
         pMethodIndex = pMethodIndex + 1
 
     # place items on the grid
 
     for pMethodLabel_index in range(len(pMethodLabelList)):
-        pMethodLabelList[pMethodLabel_index].grid(column=0, row=pMethodLabel_index+1, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
-        buttonEnableList[pMethodLabel_index].grid(column=1, row=pMethodLabel_index+1, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
-        buttonDisableList[pMethodLabel_index].grid(column=2, row=pMethodLabel_index+1, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
+        pMethodLabelList[pMethodLabel_index].grid(column=0, row=pMethodLabel_index+1, ipadx=0, ipady=10, padx=5, sticky=tk.EW)
+        buttonEnableList[pMethodLabel_index].grid(column=1, row=pMethodLabel_index+1, ipadx=10, ipady=10, padx=5, sticky=tk.EW)
+        buttonDisableList[pMethodLabel_index].grid(column=2, row=pMethodLabel_index+1, ipadx=0, ipady=10, padx=5, sticky=tk.EW)
 
     print("last pMethodLabel_index")
     print(pMethodLabel_index)
 
+    ### ADD ONLYQUIT BUTTON
 
+    onlyQuitButton = tk.Button(pMethodSettingFrame,
+              text=" Sair sem salvar ",
+              # font=('SegoeUI', 20, 'bold'),
+              font=('Ubuntu', 16),
+              # command=button_clicked(button_index),
+              command= lambda: onlyQuit_button_clicked())
+
+    onlyQuitButton.grid(column=0, row=2, sticky=tk.S, pady=0, padx=20)
 
     ### ADD SAVEANDQUIT BUTTON
 
@@ -157,7 +194,7 @@ def createPMethodSettingFrame():
               # command=button_clicked(button_index),
               command= lambda: saveQuit_button_clicked())
 
-    saveQuitButton.grid(column=0, row=4, sticky=tk.S, pady=0, padx=20)
+    saveQuitButton.grid(column=0, row=3, sticky=tk.S, pady=0, padx=20)
 
 
 
