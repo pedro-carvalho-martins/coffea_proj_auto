@@ -40,7 +40,7 @@ def navigate_helloFrame():
     
     
    helloFrame = tkHelloFrame.createHelloFrame()
-   helloFrame.pack(side="top", fill="both", expand=True)
+   helloFrame.pack(mainContainer, side="top", fill="both", expand=True)
 
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
    threadListener = Thread(target=signalListener, args=(0, 0))
@@ -61,7 +61,7 @@ def navigate_priceFrame(currentFrame):
    currentFrame.destroy()
    priceFrame = tkPriceFrame.createPriceFrame()
    #priceFrame.configure(background='black')
-   priceFrame.pack(side="top", fill="both", expand=True)
+   priceFrame.pack(mainContainer, side="top", fill="both", expand=True)
 
 def navigate_payment_method_Frame(price_selected, currentFrame):
    print('navpMethod')
@@ -69,7 +69,7 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
    currentFrame.pack_forget()
    currentFrame.destroy()
    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(price_selected)
-   pmethodFrame.pack(side="top", fill="both", expand=True)
+   pmethodFrame.pack(mainContainer, side="top", fill="both", expand=True)
 
 def navigate_payment_process(price_selected, payment_method_selected, currentFrame):
    print('navPayProcess')
@@ -78,7 +78,7 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    currentFrame.pack_forget()
    currentFrame.destroy()
    payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame()
-   payprocessFrame.pack(side="top", fill="both", expand=True)
+   payprocessFrame.pack(mainContainer, side="top", fill="both", expand=True)
    print('launch payment processing function')
    
    
@@ -112,7 +112,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    else:
        paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame()
        
-   paycompleteFrame.pack(side="top", fill="both", expand=True)
+   paycompleteFrame.pack(mainContainer, side="top", fill="both", expand=True)
 
    print('paymentCompleteOK')
    print('process ends')
@@ -137,16 +137,30 @@ def signalListener(dummyVar1,dummyVar2):
       print('not defined')
 
 
+#########################################################################
+### PENDING FIX! ###
+# PERHAPS ONLY LISTENS ON HELLO SCREEN THEN STOPS??
+# PERHAPS PASS HELLOSCREENFRAME AS PARAMETER AND IF THERE IS NO LISTENER
+#OUTCOME FINISHES THE THREAD AND GOES ON WITH THE CODE??
+## RIGHT NOW IT KIND OF WORKS BUT THE GUI BECOMES COMPLETELY BROKEN.
 
 #def navigate_SettingsMainFrame(currentFrame):
 def navigate_SettingsMainFrame():
    print('navSettingsMenu')
+
+   global settingsContainer
+
+   settingsContainer = tk.Toplevel()
+   settingsContainer.title("settings_container")
+
+   settingsContainer.geometry('320x480')
+
    #currentFrame.pack_forget()
    #currentFrame.destroy()
    settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame()
    #priceFrame.configure(background='black')
-   settingsFrame.pack(side="top", fill="both", expand=True)
-
+   settingsFrame.pack(settingsContainer, side="top", fill="both", expand=True)
+#########################################################################
 
 def navigate_selected_setting_menu(settingPageSelection, currentFrame):
    print('nav_selected_setting_menu')
@@ -156,11 +170,11 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 
    if settingPageSelection == "Preços":
       priceSettingFrame = tkPriceSettingFrame.createPriceSettingFrame()
-      priceSettingFrame.pack(side="top", fill="both", expand=True)
+      priceSettingFrame.pack(settingsContainer, side="top", fill="both", expand=True)
 
    elif settingPageSelection == "Métodos pagamento":
       pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame()
-      pMethodSettingFrame.pack(side="top", fill="both", expand=True)
+      pMethodSettingFrame.pack(settingsContainer, side="top", fill="both", expand=True)
 
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
