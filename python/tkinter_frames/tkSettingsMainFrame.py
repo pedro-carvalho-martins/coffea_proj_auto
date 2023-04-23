@@ -13,13 +13,13 @@ def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
 
 ## Função de criação do Frame de método de pagamento
 
-def createSettingSelectionFrame():
+def createSettingSelectionFrame(settingsContainer):
 
 
     lista_tipos_config = ["Preços", "Métodos pagamento", "Voltar"]
 
 
-    settingSelectionFrame = tk.Frame(height=480, width=320)
+    settingSelectionFrame = tk.Frame(settingsContainer, height=480, width=320)
 
 
     ## Configurando o Grid

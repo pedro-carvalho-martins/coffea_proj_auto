@@ -59,7 +59,7 @@ def navigate_priceFrame(currentFrame):
    print('navPrice')
    currentFrame.pack_forget()
    currentFrame.destroy()
-   priceFrame = tkPriceFrame.createPriceFrame()
+   priceFrame = tkPriceFrame.createPriceFrame(mainContainer)
    #priceFrame.configure(background='black')
    priceFrame.pack(side="top", fill="both", expand=True)
 
@@ -68,7 +68,7 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
    print('price selected was:'+str(price_selected))
    currentFrame.pack_forget()
    currentFrame.destroy()
-   pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(price_selected)
+   pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(mainContainer, price_selected)
    pmethodFrame.pack(side="top", fill="both", expand=True)
 
 def navigate_payment_process(price_selected, payment_method_selected, currentFrame):
@@ -77,7 +77,7 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    print(payment_method_selected)
    currentFrame.pack_forget()
    currentFrame.destroy()
-   payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame()
+   payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame(mainContainer)
    payprocessFrame.pack(side="top", fill="both", expand=True)
    print('launch payment processing function')
    
@@ -106,11 +106,11 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    payprocessFrame.destroy()
    
    if pay_output_code == 0:
-       paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame()
+       paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
        threadSignal = Thread(target=launchSendSignal, args=(price_selected,0))
        threadSignal.start()
    else:
-       paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame()
+       paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
        
    paycompleteFrame.pack(side="top", fill="both", expand=True)
 
@@ -157,7 +157,7 @@ def navigate_SettingsMainFrame():
 
    #currentFrame.pack_forget()
    #currentFrame.destroy()
-   settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame()
+   settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame(settingsContainer)
    #priceFrame.configure(background='black')
    settingsFrame.pack(side="top", fill="both", expand=True)
 #########################################################################
@@ -169,11 +169,11 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
    currentFrame.destroy()
 
    if settingPageSelection == "Preços":
-      priceSettingFrame = tkPriceSettingFrame.createPriceSettingFrame()
+      priceSettingFrame = tkPriceSettingFrame.createPriceSettingFrame(settingsContainer)
       priceSettingFrame.pack(side="top", fill="both", expand=True)
 
    elif settingPageSelection == "Métodos pagamento":
-      pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame()
+      pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame(settingsContainer)
       pMethodSettingFrame.pack(side="top", fill="both", expand=True)
 
    else:

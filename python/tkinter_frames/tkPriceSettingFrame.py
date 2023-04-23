@@ -129,7 +129,7 @@ def saveQuit_button_clicked():
 
 ## Função de criação do Frame de preços
 
-def createPriceSettingFrame():
+def createPriceSettingFrame(settingsContainer):
 
     ### VER SE ESSA DECLARAÇÃO VAI FUNCIONAR NA IMPLEMENTAÇÃO FINAL
     global lista_precos
@@ -150,7 +150,7 @@ def createPriceSettingFrame():
     #### TEMPORARY ENDS. DELETE ASAP
 
 
-    priceSettingFrame = tk.Frame(height=480, width=320)
+    priceSettingFrame = tk.Frame(settingsContainer, height=480, width=320)
 
     ## Configurando o Grid
 

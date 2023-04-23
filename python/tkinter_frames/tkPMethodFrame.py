@@ -15,7 +15,7 @@ def button_clicked(index_button, lista_metodos_pag, price_selected, pmethodFrame
 
 ## Função de criação do Frame de método de pagamento
 
-def createPaymentMethodFrame(price_selected):
+def createPaymentMethodFrame(mainContainer, price_selected):
 
     # Antiga lista de métodos de pagamento sem configuração no app
     # lista_metodos_pag = ["Crédito", "Débito", "Voucher", "QR Code (Pix)"]
@@ -29,7 +29,7 @@ def createPaymentMethodFrame(price_selected):
     # END DEV 2023.04.07 - TESTAR NO RPI
 
 
-    pmethodFrame = tk.Frame(height=480, width=320)
+    pmethodFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid

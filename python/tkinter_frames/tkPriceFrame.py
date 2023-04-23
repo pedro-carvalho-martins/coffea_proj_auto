@@ -20,7 +20,7 @@ def display_button_text(input_price):
 
 ## Função de criação do Frame de preços
 
-def createPriceFrame():
+def createPriceFrame(mainContainer):
 
 
     ### OLD IMPLEMENTATION STARTS
@@ -40,7 +40,7 @@ def createPriceFrame():
     ## FIM DA NOVA IMPLEMENTAÇÃO
 
 
-    priceFrame = tk.Frame(height=480, width=320)
+    priceFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid

@@ -12,10 +12,10 @@ def button_clicked(index_button):
 
 ## Função de criação do Frame de início
 
-def createPayProcessFrame():
+def createPayProcessFrame(mainContainer):
 
 
-    payProcessFrame = tk.Frame(height=480, width=320)
+    payProcessFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid
@@ -37,9 +37,9 @@ def createPayProcessFrame():
     return payProcessFrame
 
 
-def createPaySuccessFrame():
+def createPaySuccessFrame(mainContainer):
 
-    payCompleteFrame = tk.Frame(height=480, width=320)
+    payCompleteFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid
@@ -61,9 +61,9 @@ def createPaySuccessFrame():
 
 
 
-def createPayFailureFrame():
+def createPayFailureFrame(mainContainer):
 
-    payFailureFrame = tk.Frame(height=480, width=320)
+    payFailureFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid

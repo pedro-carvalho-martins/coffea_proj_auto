@@ -95,7 +95,7 @@ def onlyQuit_button_clicked():
 
 ## Função de criação do Frame de preços
 
-def createPMethodSettingFrame():
+def createPMethodSettingFrame(settingsContainer):
 
     ### VER SE ESSA DECLARAÇÃO VAI FUNCIONAR NA IMPLEMENTAÇÃO FINAL
     global payMethodsDict
@@ -118,7 +118,7 @@ def createPMethodSettingFrame():
     payMethods = payMethodsDict.items()
 
 
-    pMethodSettingFrame = tk.Frame(height=480, width=320)
+    pMethodSettingFrame = tk.Frame(settingsContainer, height=480, width=320)
 
     ## Configurando o Grid
 
