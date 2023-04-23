@@ -11,7 +11,7 @@ def listenGPIO():
     GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
     # SETTINGS SIGNAL INPUT
-    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO_PUD.DOWN)
+    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
     # VOLTAGE SOURCE FOR SETTINGS SIGNAL INPUT
     GPIO.setup(21, GPIO.OUT)
