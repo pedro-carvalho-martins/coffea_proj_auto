@@ -88,6 +88,8 @@ def saveQuit_button_clicked():
 
     rwPaymentMethodsList.writeListSettings(payMethodsDict)
 
+
+
 def onlyQuit_button_clicked():
     pass
 

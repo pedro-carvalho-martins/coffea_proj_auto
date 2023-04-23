@@ -5,7 +5,8 @@ import tkinter_frames.tkPMethodFrame as tkPMethodFrame
 import tkinter_frames.tkPriceFrame as tkPriceFrame
 import tkinter_frames.tkHelloFrame as tkHelloFrame
 import tkinter_frames.tkPriceSettingFrame as tkPriceSettingFrame
-
+import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
+import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 
 ##tmp
 import time
@@ -118,6 +119,24 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    ## TEST ENDS
    print('debug1')
 
+
+# Will be able to detect if settings button is pressed or if the inhibit signal is on
+def signalListener():
+
+   while True:
+
+      time.sleep(1)
+      print('waiting for signal')
+
+
+
+def navigate_SettingsMainFrame(currentFrame):
+   print('navSettingsMenu')
+   currentFrame.pack_forget()
+   currentFrame.destroy()
+   settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame()
+   #priceFrame.configure(background='black')
+   settingsFrame.pack(side="top", fill="both", expand=True)
 
 
 def navigate_selected_setting_menu(settingPageSelection, currentFrame):

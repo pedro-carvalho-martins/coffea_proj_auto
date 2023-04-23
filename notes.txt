@@ -23,3 +23,12 @@ ao reiniciar rpi, para conectar à maquininha, basta rodar:
 da doc pagseguro: "Para SO Linux utilizar sempre a string "COM0""
 
 MAC address da moderninha Plus usada no desenvolvimento: 08:E9:F6:96:47:DF
+
+startup automático do script executar.sh:
+https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/all
+utilizado método 2 do site: Autostart
+arquivo start_coffea_pag_script.desktop no diretório /home/pi/.config/autostart com o código:
+[Desktop Entry]
+Type=Application
+Name=coffea_pag
+Exec=/usr/bin/sh /home/pi/executar.sh
