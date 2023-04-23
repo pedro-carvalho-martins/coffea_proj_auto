@@ -16,6 +16,7 @@ from threading import Thread
 
 import paymentProcessing
 import sendSignalGPIO
+import signalListenerGPIO
 
 ##
 
@@ -40,6 +41,10 @@ def navigate_helloFrame():
     
    helloFrame = tkHelloFrame.createHelloFrame()
    helloFrame.pack(side="top", fill="both", expand=True)
+
+   # Listen GPIO input ports for INHIBIT or SETTINGS signals
+   threadListener = Thread(target=signalListener, args=(0, 0))
+   threadListener.start()
    
    mainContainer.mainloop()
    
@@ -122,19 +127,22 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
 
 
 # Will be able to detect if settings button is pressed or if the inhibit signal is on
-def signalListener():
+def signalListener(dummyVar1,dummyVar2):
+   listener_outcome = signalListenerGPIO.listenGPIO()
 
-   while True:
+   if listener_outcome == "settings":
+      print('navigate to settings main frame')
+      navigate_SettingsMainFrame()
+   else:
+      print('not defined')
 
-      time.sleep(1)
-      print('waiting for signal')
 
 
-
-def navigate_SettingsMainFrame(currentFrame):
+#def navigate_SettingsMainFrame(currentFrame):
+def navigate_SettingsMainFrame():
    print('navSettingsMenu')
-   currentFrame.pack_forget()
-   currentFrame.destroy()
+   #currentFrame.pack_forget()
+   #currentFrame.destroy()
    settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame()
    #priceFrame.configure(background='black')
    settingsFrame.pack(side="top", fill="both", expand=True)
