@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-#import navigation
-#import rwPricesList
+import navigation
+import rwPricesList
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -141,12 +141,12 @@ def createPriceSettingFrame():
 
 
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION. UNCOMMENT ASAP
-    #lista_precos = rwPricesList.readList()
+    lista_precos = rwPricesList.readList()
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION ENDS.
 
 
     #### TEMPORARY TO TEST IMPLEMENTATION: DELETE ASAP
-    lista_precos = [2.5,3.0]
+    # lista_precos = [2.5,3.0]
     #### TEMPORARY ENDS. DELETE ASAP
 
 
@@ -255,17 +255,17 @@ def createPriceSettingFrame():
 
 ##### TEMPORARY SCRIPT JUST TO TEST EXECUTION OF FRAME ######
 
-mainContainer = tk.Tk()
-mainContainer.title("teste")
-
-mainContainer.geometry('320x480')
-mainContainer.resizable(False, False)
-mainContainer.attributes('-fullscreen', False)
-
-helloFrame = createPriceSettingFrame()
-helloFrame.pack(side="top", fill="both", expand=True)
-
-mainContainer.mainloop()
+# mainContainer = tk.Tk()
+# mainContainer.title("teste")
+#
+# mainContainer.geometry('320x480')
+# mainContainer.resizable(False, False)
+# mainContainer.attributes('-fullscreen', False)
+#
+# helloFrame = createPriceSettingFrame()
+# helloFrame.pack(side="top", fill="both", expand=True)
+#
+# mainContainer.mainloop()
 
 ####### TEMPORARY SCRIPT ENDS. DELETE ASAP.
 #################################################

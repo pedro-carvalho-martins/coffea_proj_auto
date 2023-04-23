@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-#import navigation
-#import rwPaymentMethodsList
+import navigation
+import rwPaymentMethodsList
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -106,12 +106,12 @@ def createPMethodSettingFrame():
     global pMethods_frame
 
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION. UNCOMMENT ASAP
-    #pMethodsDict = rwPaymentMethodsList.readListSettings()
+    payMethodsDict = rwPaymentMethodsList.readListSettings()
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION ENDS.
 
 
     #### TEMPORARY TO TEST IMPLEMENTATION: DELETE ASAP
-    payMethodsDict = {'Crédito': 'enabled', 'Débito': 'disabled', 'Voucher': 'enabled', 'QR Code (Pix)': 'disabled'}
+    # payMethodsDict = {'Crédito': 'enabled', 'Débito': 'disabled', 'Voucher': 'enabled', 'QR Code (Pix)': 'disabled'}
     #### TEMPORARY ENDS. DELETE ASAP
 
     # Get items from pMethodsDict:
@@ -211,17 +211,17 @@ def createPMethodSettingFrame():
 
 ##### TEMPORARY SCRIPT JUST TO TEST EXECUTION OF FRAME ######
 
-mainContainer = tk.Tk()
-mainContainer.title("teste")
-
-mainContainer.geometry('320x480')
-mainContainer.resizable(False, False)
-mainContainer.attributes('-fullscreen', False)
-
-helloFrame = createPMethodSettingFrame()
-helloFrame.pack(side="top", fill="both", expand=True)
-
-mainContainer.mainloop()
+# mainContainer = tk.Tk()
+# mainContainer.title("teste")
+#
+# mainContainer.geometry('320x480')
+# mainContainer.resizable(False, False)
+# mainContainer.attributes('-fullscreen', False)
+#
+# helloFrame = createPMethodSettingFrame()
+# helloFrame.pack(side="top", fill="both", expand=True)
+#
+# mainContainer.mainloop()
 
 ####### TEMPORARY SCRIPT ENDS. DELETE ASAP.
 #################################################
