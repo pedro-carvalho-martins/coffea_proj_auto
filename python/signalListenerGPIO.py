@@ -8,10 +8,10 @@ def listenGPIO():
     GPIO.setmode(GPIO.BCM)
 
     # INHIBIT SIGNAL INPUT
-    GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD.DOWN)
+    GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
     # SETTINGS SIGNAL INPUT
-    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO.PUD.DOWN)
+    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO_PUD.DOWN)
 
     # VOLTAGE SOURCE FOR SETTINGS SIGNAL INPUT
     GPIO.setup(21, GPIO.OUT)
