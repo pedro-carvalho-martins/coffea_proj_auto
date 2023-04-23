@@ -26,7 +26,7 @@ def navigation(frame):
    # PACK to
    
    
-def navigate_helloFrame():
+def navigate_helloFrame(session_number):
 
    global mainContainer
 
@@ -42,9 +42,16 @@ def navigate_helloFrame():
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
    helloFrame.pack(side="top", fill="both", expand=True)
 
+   ############# WARNING! ###############
+   # The SESSION NUMBER IMPLEMENTATION might work for SETTINGS, but
+   #MIGHT NOT FOR INHIBIT! PAY ATTENTION TO THIS AND THINK OF ANOTHER
+   #IMPLEMENTATION! 
+   ######################################
+
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
-   threadListener = Thread(target=signalListener, args=(0, 0))
-   threadListener.start()
+   if session_number == 0:
+      threadListener = Thread(target=signalListener, args=(0, 0))
+      threadListener.start()
    
    mainContainer.mainloop()
    

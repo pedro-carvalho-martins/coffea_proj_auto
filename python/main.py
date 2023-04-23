@@ -14,9 +14,12 @@ import navigation
 ##mainContainer.resizable(False, False)
 ##mainContainer.attributes('-fullscreen', True)
 
+# Determines a session number to check how many times the loop has been executed
+session_number = 0
 
 while True:
-    navigation.navigate_helloFrame()
+    session_number = session_number + 1
+    navigation.navigate_helloFrame(session_number)
 
 
 ##navigation.navigate_helloFrame()
