@@ -40,7 +40,7 @@ def navigate_helloFrame():
     
     
    helloFrame = tkHelloFrame.createHelloFrame()
-   helloFrame.pack(mainContainer, side="top", fill="both", expand=True)
+   helloFrame.pack(master=mainContainer, side="top", fill="both", expand=True)
 
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
    threadListener = Thread(target=signalListener, args=(0, 0))
