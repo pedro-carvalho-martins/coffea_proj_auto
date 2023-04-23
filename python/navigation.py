@@ -45,11 +45,11 @@ def navigate_helloFrame(session_number):
    ############# WARNING! ###############
    # The SESSION NUMBER IMPLEMENTATION might work for SETTINGS, but
    #MIGHT NOT FOR INHIBIT! PAY ATTENTION TO THIS AND THINK OF ANOTHER
-   #IMPLEMENTATION! 
+   #IMPLEMENTATION!
    ######################################
 
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
-   if session_number == 0:
+   if session_number == 1:
       threadListener = Thread(target=signalListener, args=(0, 0))
       threadListener.start()
    
