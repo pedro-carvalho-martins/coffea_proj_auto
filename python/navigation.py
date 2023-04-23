@@ -39,8 +39,8 @@ def navigate_helloFrame():
    # mainContainer.attributes('-fullscreen', True)
     
     
-   helloFrame = tkHelloFrame.createHelloFrame()
-   helloFrame.pack(master=mainContainer, side="top", fill="both", expand=True)
+   helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
+   helloFrame.pack(side="top", fill="both", expand=True)
 
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
    threadListener = Thread(target=signalListener, args=(0, 0))
@@ -61,7 +61,7 @@ def navigate_priceFrame(currentFrame):
    currentFrame.destroy()
    priceFrame = tkPriceFrame.createPriceFrame()
    #priceFrame.configure(background='black')
-   priceFrame.pack(mainContainer, side="top", fill="both", expand=True)
+   priceFrame.pack(side="top", fill="both", expand=True)
 
 def navigate_payment_method_Frame(price_selected, currentFrame):
    print('navpMethod')
@@ -69,7 +69,7 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
    currentFrame.pack_forget()
    currentFrame.destroy()
    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(price_selected)
-   pmethodFrame.pack(mainContainer, side="top", fill="both", expand=True)
+   pmethodFrame.pack(side="top", fill="both", expand=True)
 
 def navigate_payment_process(price_selected, payment_method_selected, currentFrame):
    print('navPayProcess')
@@ -78,7 +78,7 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    currentFrame.pack_forget()
    currentFrame.destroy()
    payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame()
-   payprocessFrame.pack(mainContainer, side="top", fill="both", expand=True)
+   payprocessFrame.pack(side="top", fill="both", expand=True)
    print('launch payment processing function')
    
    
@@ -112,7 +112,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    else:
        paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame()
        
-   paycompleteFrame.pack(mainContainer, side="top", fill="both", expand=True)
+   paycompleteFrame.pack(side="top", fill="both", expand=True)
 
    print('paymentCompleteOK')
    print('process ends')
@@ -159,7 +159,7 @@ def navigate_SettingsMainFrame():
    #currentFrame.destroy()
    settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame()
    #priceFrame.configure(background='black')
-   settingsFrame.pack(settingsContainer, side="top", fill="both", expand=True)
+   settingsFrame.pack(side="top", fill="both", expand=True)
 #########################################################################
 
 def navigate_selected_setting_menu(settingPageSelection, currentFrame):
@@ -170,11 +170,11 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 
    if settingPageSelection == "Preços":
       priceSettingFrame = tkPriceSettingFrame.createPriceSettingFrame()
-      priceSettingFrame.pack(settingsContainer, side="top", fill="both", expand=True)
+      priceSettingFrame.pack(side="top", fill="both", expand=True)
 
    elif settingPageSelection == "Métodos pagamento":
       pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame()
-      pMethodSettingFrame.pack(settingsContainer, side="top", fill="both", expand=True)
+      pMethodSettingFrame.pack(side="top", fill="both", expand=True)
 
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE

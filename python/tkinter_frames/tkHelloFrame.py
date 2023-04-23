@@ -12,10 +12,10 @@ def button_clicked(index_button):
 
 ## Função de criação do Frame de início
 
-def createHelloFrame():
+def createHelloFrame(mainContainer):
 
 
-    helloFrame = tk.Frame(height=480, width=320)
+    helloFrame = tk.Frame(mainContainer, height=480, width=320)
 
 
     ## Configurando o Grid
