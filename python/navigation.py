@@ -6,6 +6,7 @@ import tkinter_frames.tkPriceFrame as tkPriceFrame
 import tkinter_frames.tkHelloFrame as tkHelloFrame
 import tkinter_frames.tkPriceSettingFrame as tkPriceSettingFrame
 import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
+import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 
 ##tmp
@@ -182,6 +183,10 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
    elif settingPageSelection == "Métodos pagamento":
       pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame(settingsContainer)
       pMethodSettingFrame.pack(side="top", fill="both", expand=True)
+
+   elif settingPageSelection == "Endereço MAC Moderninha":
+      MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)
+      MACSettingFrame.pack(side="top", fill="both", expand=True)
 
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
