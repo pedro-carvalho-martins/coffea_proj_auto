@@ -125,7 +125,7 @@ def saveQuit_button_clicked():
 
     rwPricesList.writeListSettings(lista_precos)
 
-    navigation.
+    navigation.quitProgramAfterSettings()
 
 
 ## Função de criação do Frame de preços
