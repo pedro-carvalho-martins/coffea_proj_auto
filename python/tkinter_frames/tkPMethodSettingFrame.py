@@ -85,14 +85,24 @@ def appendDisableButton(payMethodLabel_index, payMethodName, payMethodStatus):
 def saveQuit_button_clicked():
 
     # Não fazer nada se todos os métodos de pagamento estiverem disabled.
+    pMethodsList = payMethodsDict.items()
+
+    flag_all_disabled = True
+
+    for item in pMethodsList:
+        if item[1] == "enabled":
+            flag_all_disabled = False
+            break
+
+    if flag_all_disabled:
+        return
 
     rwPaymentMethodsList.writeListSettings(payMethodsDict)
-
     navigation.quitProgramAfterSettings()
 
 
 def onlyQuit_button_clicked():
-    pass
+    navigation.quitProgramAfterSettings()
 
 ## Função de criação do Frame de preços
 
@@ -191,7 +201,7 @@ def createPMethodSettingFrame(settingsContainer):
     ### ADD SAVEANDQUIT BUTTON
 
     saveQuitButton = tk.Button(pMethodSettingFrame,
-              text=" Save and quit (just save atm) ",
+              text=" Salvar e sair ",
               # font=('SegoeUI', 20, 'bold'),
               font=('Ubuntu', 16),
               # command=button_clicked(button_index),
