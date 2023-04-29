@@ -56,6 +56,7 @@ def inhibitEndListenGPIO():
             print('inhibit ends')
             inhibit_end_listener_outcome = "inhibit ends"
             break
+        time.sleep(1)
 
     GPIO.cleanup()
 
