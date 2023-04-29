@@ -125,6 +125,10 @@ def saveQuit_button_clicked():
 
     rwPricesList.writeListSettings(lista_precos)
 
+    # TEST
+    settingsContainer.destroy()
+    mainContainer.destroy()
+    # TEST ENDS
 
 
 ## Função de criação do Frame de preços
