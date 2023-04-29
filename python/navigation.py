@@ -43,6 +43,10 @@ def navigate_helloFrame(session_number):
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
    helloFrame.pack(side="top", fill="both", expand=True)
 
+
+
+
+
    ############# WARNING! ###############
    # The SESSION NUMBER IMPLEMENTATION might work for SETTINGS, but
    #MIGHT NOT FOR INHIBIT! PAY ATTENTION TO THIS AND THINK OF ANOTHER
@@ -54,6 +58,13 @@ def navigate_helloFrame(session_number):
       threadListener = Thread(target=signalListener, args=(0, 0))
       threadListener.daemon = True # Dies when main thread exits.
       threadListener.start()
+
+
+
+   ### temporary modification to skip helloFrame
+   navigate_priceFrame(helloFrame)
+
+
    
    mainContainer.mainloop()
    
