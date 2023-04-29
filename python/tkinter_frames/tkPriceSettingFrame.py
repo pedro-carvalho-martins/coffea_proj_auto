@@ -208,7 +208,7 @@ def createPriceSettingFrame(settingsContainer):
     ### ADD ADDPRICE BUTTON
 
     addPriceButton = tk.Button(priceSettingFrame,
-              text=" ADDPRICE ",
+              text=" Adicionar preço ",
               # font=('SegoeUI', 20, 'bold'),
               font=('Ubuntu', 16),
               # command=button_clicked(button_index),
@@ -222,7 +222,7 @@ def createPriceSettingFrame(settingsContainer):
     ### ADD REMOVEPRICE BUTTON
 
     removePriceButton = tk.Button(priceSettingFrame,
-                               text=" REMOVEPRICE ",
+                               text=" Remover preço ",
                                # font=('SegoeUI', 20, 'bold'),
                                font=('Ubuntu', 16),
                                # command=button_clicked(button_index),
@@ -235,7 +235,7 @@ def createPriceSettingFrame(settingsContainer):
     ### ADD SAVEANDQUIT BUTTON
 
     saveQuitButton = tk.Button(priceSettingFrame,
-              text=" Save and quit (just save atm) ",
+              text=" Salvar e sair ",
               # font=('SegoeUI', 20, 'bold'),
               font=('Ubuntu', 16),
               # command=button_clicked(button_index),
