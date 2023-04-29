@@ -20,6 +20,7 @@ def listenGPIO():
     listener_outcome = "no"
 
     while True:
+
         if(GPIO.input(20)==1):
             print('settings pressionado')
             listener_outcome = "settings"
