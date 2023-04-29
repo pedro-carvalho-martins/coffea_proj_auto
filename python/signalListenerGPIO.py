@@ -52,9 +52,10 @@ def inhibitEndListenGPIO():
     inhibit_end_listener_outcome = "no"
 
     while True:
-        time.sleep(5)
-        if (GPIO.input(16) == 0):
-            print('inhibit ends')
+        time.sleep(3)
+        if (GPIO.input(16) == 1):
+            print('continue inhibit')
+        else:
             inhibit_end_listener_outcome = "inhibit ends"
             break
 

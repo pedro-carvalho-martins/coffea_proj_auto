@@ -165,10 +165,12 @@ def signalListener(dummyVar1,dummyVar2):
          if listener_outcome == "settings":
             print('navigate to settings main frame')
             navigate_SettingsMainFrame()
+            break
 
          elif listener_outcome == "inhibit":
             print('launch inhibit')
             navigate_InhibitFrame()
+            break
 
 
          else:
