@@ -16,7 +16,7 @@ def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
 def createSettingSelectionFrame(settingsContainer):
 
 
-    lista_tipos_config = ["Preços", "Métodos pagamento", "Voltar"]
+    lista_tipos_config = ["Preços", "Métodos pagamento", "Endereço MAC Moderninha", "Voltar"]
 
 
     settingSelectionFrame = tk.Frame(settingsContainer, height=480, width=320)

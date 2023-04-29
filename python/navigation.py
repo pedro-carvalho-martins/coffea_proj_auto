@@ -52,6 +52,7 @@ def navigate_helloFrame(session_number):
    # Listen GPIO input ports for INHIBIT or SETTINGS signals
    if session_number == 1:
       threadListener = Thread(target=signalListener, args=(0, 0))
+      threadListener.daemon = True # Dies when main thread exits.
       threadListener.start()
    
    mainContainer.mainloop()

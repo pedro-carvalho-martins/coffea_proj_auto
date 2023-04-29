@@ -45,7 +45,7 @@ def readListSettings():
 
     print("readList ENDS")
 
-    return pMethods
+    return pMethodsDict
 
 def writeListSettings(pMethodsDict):
 

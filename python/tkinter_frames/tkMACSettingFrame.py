@@ -2,7 +2,7 @@ import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
 import navigation
-import rwMACAddress
+#import rwMACAddress
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
