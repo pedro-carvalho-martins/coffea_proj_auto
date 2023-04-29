@@ -197,3 +197,8 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 
 def launchSendSignal(price,dummyVar):
     sendSignalGPIO.sendOutputSignal(price)
+
+
+def quitProgramAfterSettings():
+   mainContainer.destroy()
+   settingsContainer.destroy()

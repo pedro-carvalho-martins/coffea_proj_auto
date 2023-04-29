@@ -88,6 +88,7 @@ def saveQuit_button_clicked():
 
     rwPaymentMethodsList.writeListSettings(payMethodsDict)
 
+    navigation.quitProgramAfterSettings()
 
 
 def onlyQuit_button_clicked():
