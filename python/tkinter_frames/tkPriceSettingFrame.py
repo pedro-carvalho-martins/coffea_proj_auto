@@ -126,6 +126,9 @@ def saveQuit_button_clicked():
     rwPricesList.writeListSettings(lista_precos)
 
     # TEST
+    global settingsContainer
+    global mainContainer
+
     settingsContainer.destroy()
     mainContainer.destroy()
     # TEST ENDS
