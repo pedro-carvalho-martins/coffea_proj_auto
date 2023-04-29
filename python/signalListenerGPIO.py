@@ -39,5 +39,27 @@ def listenGPIO():
     print("End of listener")
     print(listener_outcome)
     return listener_outcome
-    
-    
+
+
+def inhibitEndListenGPIO():
+    print("SCRIPT TO DETECT WHEN INHIBIT SIGNAL IS OVER")
+
+    GPIO.setmode(GPIO.BCM)
+
+    # INHIBIT SIGNAL INPUT
+    GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+    inhibit_end_listener_outcome = "no"
+
+    while True:
+        if (GPIO.input(16) == 0):
+            print('inhibit ends')
+            inhibit_end_listener_outcome = "inhibit ends"
+            break
+
+    GPIO.cleanup()
+
+    print("End of listener")
+    print(inhibit_end_listener_outcome)
+    return inhibit_end_listener_outcome
+

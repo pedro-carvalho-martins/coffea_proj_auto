@@ -8,6 +8,7 @@ import tkinter_frames.tkPriceSettingFrame as tkPriceSettingFrame
 import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
 import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
+import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 
 ##tmp
 import time
@@ -31,6 +32,10 @@ def navigate_helloFrame(session_number):
 
    global mainContainer
 
+   # If value of disableInterrupt is 1, the program cannot be interrupted by an inhibit or settings button press
+   global disableInterrupt
+   disableInterrupt = 0
+
    mainContainer = tk.Tk()
    mainContainer.title("sistema_pagamento_plugpag")
 
@@ -42,9 +47,6 @@ def navigate_helloFrame(session_number):
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
    helloFrame.pack(side="top", fill="both", expand=True)
-
-
-
 
 
    ############# WARNING! ###############
@@ -118,6 +120,9 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    print('starting process')
    #time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
 
+   global disableInterrupt
+   disableInterrupt = 1
+
    pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
    #pay_output_code == 0 => Success ; else: Failure
 
@@ -148,13 +153,26 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
 
 # Will be able to detect if settings button is pressed or if the inhibit signal is on
 def signalListener(dummyVar1,dummyVar2):
-   listener_outcome = signalListenerGPIO.listenGPIO()
 
-   if listener_outcome == "settings":
-      print('navigate to settings main frame')
-      navigate_SettingsMainFrame()
-   else:
-      print('not defined')
+   global disableInterrupt
+
+   while True:
+
+      listener_outcome = signalListenerGPIO.listenGPIO()
+
+      if disableInterrupt == 0:
+
+         if listener_outcome == "settings":
+            print('navigate to settings main frame')
+            navigate_SettingsMainFrame()
+
+         elif listener_outcome == "inhibit":
+            print('launch inhibit')
+            navigate_InhibitFrame()
+
+
+         else:
+            print('not defined')
 
 
 #########################################################################
@@ -203,7 +221,32 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
       mainContainer.destroy()
+      settingsContainer.destroy()
 
+
+def navigate_InhibitFrame():
+
+   global inhibitContainer
+
+   inhibitContainer = tk.Toplevel()
+   inhibitContainer.title("inhibit_container")
+
+   inhibitContainer.geometry('320x480')
+
+   inhibitFrame = tkInhibitFrame.createInhibitFrame(inhibitContainer)
+   inhibitFrame.pack(side="top", fill="both", expand=True)
+
+   threadInhibitEndListener = Thread(target=inhibitEndListener, args=(0, 0))
+   threadInhibitEndListener.daemon = True  # Dies when main thread exits.
+   threadInhibitEndListener.start()
+
+
+def inhibitEndListener(dummyVar1,dummyVar2):
+
+   inhibit_end_listener_outcome = signalListenerGPIO.inhibitEndListenGPIO()
+
+   mainContainer.destroy()
+   settingsContainer.destroy()
 
 
 def launchSendSignal(price,dummyVar):
