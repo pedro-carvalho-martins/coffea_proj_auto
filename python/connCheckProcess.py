@@ -28,7 +28,7 @@ def launchConnCheckProcess():
     list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
     print(list_connCheck_stderr_str)
     
-    connCheck_output = int(list_connCheck_stderr_str[2].split('RETORNO: ',1)[1])
+    connCheck_output = int(list_connCheck_stdout_str[2].split('RETORNO: ',1)[1])
     print(connCheck_output)
     
     return connCheck_output
