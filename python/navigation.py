@@ -9,6 +9,8 @@ import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
 import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
+import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
+
 
 ##tmp
 import time
@@ -19,6 +21,7 @@ from threading import Thread
 import paymentProcessing
 import sendSignalGPIO
 import signalListenerGPIO
+import connCheckProcess
 
 ##
 
@@ -63,9 +66,11 @@ def navigate_helloFrame(session_number):
 
 
 
-   ### temporary modification to skip helloFrame
-   navigate_priceFrame(helloFrame)
+   ### temporary modification to skip helloFrame (working as of 2023.05.06. Commented to implement connection check to BT)
+   #navigate_priceFrame(helloFrame)
 
+   ## DEV: navigate to connection check frame
+   navigate_connCheckFrame(helloFrame)
 
    
    mainContainer.mainloop()
@@ -76,6 +81,45 @@ def navigate_helloFrame(session_number):
 ##   currentFrame.destroy()
 ##   navigate_helloFrame()
    
+
+def navigate_connCheckFrame(currentFrame):
+
+   print('navConnCheck')
+   currentFrame.pack_forget()
+   currentFrame.destroy()
+   connCheckFrame = tkConnCheckFrame.createConnCheckFrame(mainContainer)
+   #priceFrame.configure(background='black')
+   connCheckFrame.pack(side="top", fill="both", expand=True)
+
+   print('launch connection check function')
+
+   print("NUMBER OF ACTIVE THREADS")
+   print(threading.active_count())
+   print("ENDS PRINT ACTIVE THREADS")
+
+   ## launch other thread
+   threadConnCheck = Thread(target=launchConnCheck, args=(connCheckFrame, 0))
+   threadConnCheck.start()
+
+
+def launchConnCheck(connCheckFrame, dummyVariable):
+   print('starting conn check process')
+   # time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
+
+   conn_check_output_code = connCheckProcess.launchConnCheckProcess()
+   # pay_output_code == 0 => Success ; else: Failure
+
+   ## connection check completion
+   connCheckFrame.pack_forget()
+   connCheckFrame.destroy()
+
+   if conn_check_output_code == 0:
+      navigate_priceFrame(connCheckFrame)
+   else:
+      navigate_connCheckFrame(connCheckFrame)
+
+
+
 
 def navigate_priceFrame(currentFrame):
    print('navPrice')
