@@ -21,18 +21,8 @@ def createConnCheckFrame(mainContainer):
     # Configuro o GIF
 
     imgFrameCount = 12
-    imgFrames = [tk.PhotoImage(file='loading.gif', format='gif -index %i' % (i)) for i in range(imgFrameCount)]
+    imgFrames = [tk.PhotoImage(file='./tkinter_frames/img/loading.gif', format='gif -index %i' % (i)) for i in range(imgFrameCount)]
 
-    def update(ind):
-        imgFrame = imgFrames[ind]
-        ind += 1
-        if ind == imgFrameCount:
-            ind = 0
-        gifLabel.configure(image=imgFrame)
-        connCheckFrame.after(100, update, ind)
-
-    imgFrameCount = 12
-    imgFrames = [tk.PhotoImage(file='loading.gif', format='gif -index %i' % (i)) for i in range(imgFrameCount)]
 
     def update(ind):
 
