@@ -44,8 +44,8 @@ def navigate_helloFrame(session_number):
 
    mainContainer.geometry('320x480')
    # COMMENTED ONLY FOR TESTING. UNCOMMENT LATER!
-   mainContainer.resizable(False, False)
-   mainContainer.attributes('-fullscreen', True)
+   #mainContainer.resizable(False, False)
+   #mainContainer.attributes('-fullscreen', True)
     
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
@@ -239,8 +239,9 @@ def navigate_SettingsMainFrame():
 
    settingsContainer.geometry('320x480')
 
-   settingsContainer.resizable(False, False)
-   settingsContainer.attributes('-fullscreen', True)
+   # commented for testing
+   #settingsContainer.resizable(False, False)
+   #settingsContainer.attributes('-fullscreen', True)
 
    #currentFrame.pack_forget()
    #currentFrame.destroy()
