@@ -107,9 +107,9 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    print('starting conn check process')
    # time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
 
-   threadConnectBT = Thread(target=launchConnectBT, args=(0, 0))
-   threadConnectBT.daemon = True
-   threadConnectBT.start()
+   #threadConnectBT = Thread(target=launchConnectBT, args=(0, 0))
+   #threadConnectBT.daemon = True
+   #threadConnectBT.start()
 
    conn_check_output_code = connCheckProcess.launchConnCheckProcess()
    # pay_output_code == 0 => Success ; else: Failure
