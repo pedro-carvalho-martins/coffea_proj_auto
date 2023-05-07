@@ -20,7 +20,7 @@ def add_char(char):
             break
 
 
-def remove_char():
+def backspace():
     """Remove the last character from the MAC address."""
     for entry in reversed(mac_address):
         if len(entry.get()) > 0:
@@ -102,7 +102,7 @@ def createMACSettingFrame(settingsContainer):
 
     # Create backspace button
     backspace_button = tk.Button(MACSettingFrame, text="Backspace", font=("Arial", 16),
-                                 command=lambda mac=mac_address: remove_char(mac))
+                                 command=backspace)
     backspace_button.pack(pady=5)
 
     # Create save and quit button
