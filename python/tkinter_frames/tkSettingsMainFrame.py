@@ -66,7 +66,7 @@ def createSettingSelectionFrame(settingsContainer):
        )
 
     for button_index in range(len(buttons_list)):
-       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=70, ipady=10, pady=5, sticky=tk.EW)
+       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=10, ipady=10, pady=5, sticky=tk.EW)
 
 
     ## Crio o Frame inferior

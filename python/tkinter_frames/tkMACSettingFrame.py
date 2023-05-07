@@ -82,7 +82,7 @@ def createMACSettingFrame(settingsContainer):
         button_row = tk.Frame(letter_frame)
         button_row.pack()
         for char in row:
-            button = tk.Button(button_row, text=char, width=3, height=2, font=("Arial", 16),
+            button = tk.Button(button_row, text=char, width=2, height=2, font=("Arial", 16),
                                command=lambda c=char: add_char(c))
             button.pack(side=tk.LEFT, padx=4, pady=1)
 
@@ -93,12 +93,12 @@ def createMACSettingFrame(settingsContainer):
         button_row.pack()
         for char in row:
             if char == "":
-                spacer = tk.Label(button_row, width=3, height=2, font=("Arial", 16))
-                spacer.pack(side=tk.LEFT, padx=4, pady=1)
+                spacer = tk.Label(button_row, width=2, height=2, font=("Arial", 16))
+                spacer.pack(side=tk.LEFT, padx=2, pady=1)
             else:
-                button = tk.Button(button_row, text=char, width=3, height=2, font=("Arial", 16),
+                button = tk.Button(button_row, text=char, width=2, height=2, font=("Arial", 16),
                                    command=lambda c=char: add_char(c))
-                button.pack(side=tk.LEFT, padx=4, pady=1)
+                button.pack(side=tk.LEFT, padx=2, pady=1)
 
     # Create backspace button
     backspace_button = tk.Button(MACSettingFrame, text="Backspace", font=("Arial", 16),
