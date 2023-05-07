@@ -21,8 +21,6 @@ session_number = 0
 #while True:
 session_number = session_number + 1
 
-connCheckProcess.launchConnectBTProcess()
-
 navigation.navigate_helloFrame(session_number)
 
 
