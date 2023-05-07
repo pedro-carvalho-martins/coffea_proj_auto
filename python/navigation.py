@@ -99,12 +99,17 @@ def navigate_connCheckFrame(currentFrame):
 
    ## launch other thread
    threadConnCheck = Thread(target=launchConnCheck, args=(connCheckFrame, 0))
+   threadConnCheck.daemon = True
    threadConnCheck.start()
 
 
 def launchConnCheck(connCheckFrame, dummyVariable):
    print('starting conn check process')
    # time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
+
+   threadConnectBT = Thread(target=launchConnectBT, args=(0, 0))
+   threadConnectBT.daemon = True
+   threadConnectBT.start()
 
    conn_check_output_code = connCheckProcess.launchConnCheckProcess()
    # pay_output_code == 0 => Success ; else: Failure
@@ -118,6 +123,10 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    else:
       navigate_connCheckFrame(connCheckFrame)
 
+
+def launchConnectBT(dummyVar1, dummyVar2):
+
+   connCheckProcess.launchConnectBTProcess()
 
 
 

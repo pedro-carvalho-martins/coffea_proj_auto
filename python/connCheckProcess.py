@@ -1,17 +1,20 @@
 import subprocess
+import time
+import rwMACAddress
+
 
 def launchConnCheckProcess():
 #TEST
 
     print('debugConnCheck')
 
-    payment_sh_command = [
+    connCheck_sh_command = [
         "../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
         "COM0",
         "STATUS"
         ]
 
-    connCheck_output = subprocess.run(payment_sh_command,
+    connCheck_output = subprocess.run(connCheck_sh_command,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
     
@@ -35,14 +38,46 @@ def launchConnCheckProcess():
     
 
 
-##    # calculate factorial to simulate processing time
-##    time.sleep(5)
-##    print(factorial(50))
-##
-##import time
-##def factorial(n):
-##    print(n)
-##    if n != 1:
-##        return n * factorial(n-1)
-##    else:
-##        return 1
+def launchConnectBTProcess():
+
+    # Obtenho endereço MAC da moderninha
+    mac_address = rwMACAddress.readMACAddress()
+
+    # Construo e executo scripts para conexão BT com a moderninha
+
+    BT_conn_shell_comm_1 = [
+        "sudo",
+        "rfcomm",
+        "release",
+        "all"
+        ]
+
+    BT_conn_shell_comm_2 = [
+        "sudo",
+        "rfcomm",
+        "bind",
+        "/dev/rfcomm0",
+        mac_address,
+        "1"
+        ]
+
+    BT_conn_shell_comm_3 = [
+        "sudo",
+        "chmod",
+        "777",
+        "/dev/rfcomm0"
+        ]
+
+    BT_conn_output_1 = subprocess.run(BT_conn_shell_comm_1,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+
+    BT_conn_output_2 = subprocess.run(BT_conn_shell_comm_2,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+
+    BT_conn_output_3 = subprocess.run(BT_conn_shell_comm_3,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+
+    time.sleep(5)
