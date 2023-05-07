@@ -3,6 +3,7 @@ import tkinter as tk
 #import tkinter_frames.tkHelloFrame as tkHelloFrame
 
 import navigation
+import connCheckProcess
 
 
 ## Configurando o container principal
@@ -19,6 +20,9 @@ session_number = 0
 
 #while True:
 session_number = session_number + 1
+
+connCheckProcess.launchConnectBTProcess()
+
 navigation.navigate_helloFrame(session_number)
 
 

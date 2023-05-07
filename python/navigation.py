@@ -97,10 +97,6 @@ def navigate_connCheckFrame(currentFrame):
    print(threading.active_count())
    print("ENDS PRINT ACTIVE THREADS")
 
-   threadConnectBT = Thread(target=launchConnectBT, args=(0, 0))
-   threadConnectBT.daemon = True
-   threadConnectBT.start()
-   threadConnectBT.join()
 
    ## launch other thread
    threadConnCheck = Thread(target=launchConnCheck, args=(connCheckFrame, 0))
@@ -126,10 +122,6 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    else:
       navigate_connCheckFrame(connCheckFrame)
 
-
-def launchConnectBT(dummyVar1, dummyVar2):
-
-   connCheckProcess.launchConnectBTProcess()
 
 
 
