@@ -58,7 +58,7 @@ def createSettingSelectionFrame(settingsContainer):
                     text=lista_tipos_config[button_index],
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
-                    wraplength=150,
+                    wraplength=250,
                     #command=button_clicked(button_index),
                     command= lambda idx=button_index: button_clicked(idx, lista_tipos_config, settingSelectionFrame))
                     #height=1,
