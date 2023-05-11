@@ -11,7 +11,10 @@ def readMACAddress():
 
 def writeMACAddress(MAC_address):
 
-    pass
+    MACFile = open('./settings_files/enderecoMAC.txt', "w", encoding='utf-8')
 
+    MACFile.write(MAC_address)
+
+    MACFile.close()
 
 
