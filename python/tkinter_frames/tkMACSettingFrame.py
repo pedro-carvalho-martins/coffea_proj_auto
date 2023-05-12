@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-#import navigation
-#import rwMACAddress
+import navigation
+import rwMACAddress
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -42,17 +42,16 @@ def save_and_quit():
 
     if len(mac_string) == 17:
         #call WRITE FUNCTION AND QUIT
-        #rwMACAddress.writeMACAddress(mac_string)
-        #navigation.quitProgramAfterSettings()
+        rwMACAddress.writeMACAddress(mac_string)
+        navigation.quitProgramAfterSettings()
         print('ok')
     else:
         # MAC address is not complete. Notify on-screen?
         print('MAC not complete')
 
 def quit_no_save():
-    #uncomment!
-    #navigation.quitProgramAfterSettings()
-    pass
+    navigation.quitProgramAfterSettings()
+    #pass
 
 
 def createMACSettingFrame(settingsContainer):
@@ -62,8 +61,8 @@ def createMACSettingFrame(settingsContainer):
 
     # Create label for the current MAC address
     current_mac = "MAC atual: "
-    #current_mac = current_mac + rwMACAddress.readMACAddress()
-    current_mac = current_mac + "AB:CD:EF:12:34:56"
+    current_mac = current_mac + rwMACAddress.readMACAddress()
+    #current_mac = current_mac + "AB:CD:EF:12:34:56"
     current_mac_label = tk.Label(MACSettingFrame, text=current_mac, font=("Arial", 12))
     current_mac_label.pack()
 
