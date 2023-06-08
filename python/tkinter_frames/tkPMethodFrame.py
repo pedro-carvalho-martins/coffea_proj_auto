@@ -47,7 +47,7 @@ def createPaymentMethodFrame(mainContainer, price_selected):
     label = tk.Label(
        pmethodFrame,
        text="Preço selecionado: " + preco_selecionado_str + "\nSelecione a forma de pagamento:",
-       font=('SegoeUI', 20),
+       font=('SegoeUI', 16),
        wraplength=250)
     label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
@@ -89,10 +89,10 @@ def createPaymentMethodFrame(mainContainer, price_selected):
     cancelar_compra_button = tk.Button(lower_frame,
               text="Cancelar compra",
               # font=('SegoeUI', 20, 'bold'),
-              font=('Ubuntu', 20),
+              font=('Ubuntu', 14),
               wraplength=150,
               # command=button_clicked(button_index),
-              command=mainContainer.destroy() )
+              command=mainContainer.destroy )
 
     cancelar_compra_button.grid(column=0, row=0, ipadx=70, ipady=10, pady=5, sticky=tk.EW)
 

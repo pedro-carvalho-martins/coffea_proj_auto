@@ -1,4 +1,4 @@
 Crédito
-#Débito
-Voucher
+Débito
+#Voucher
 #QR Code (Pix)

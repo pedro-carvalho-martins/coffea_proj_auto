@@ -44,8 +44,8 @@ def navigate_helloFrame(session_number):
 
    mainContainer.geometry('320x480')
    # COMMENTED ONLY FOR TESTING. UNCOMMENT LATER!
-   mainContainer.resizable(False, False)
-   mainContainer.attributes('-fullscreen', True)
+  # mainContainer.resizable(False, False)
+  # mainContainer.attributes('-fullscreen', True)
     
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
@@ -140,7 +140,7 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
    currentFrame.destroy()
 
    ##### TESTE: pausa de 1 segundo entre telas:
-   time.sleep(1)
+   time.sleep(0.5)
    ##### FIM DO TESTE
 
    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(mainContainer, price_selected)
