@@ -70,7 +70,7 @@ def createPaymentMethodFrame(mainContainer, price_selected):
                     text=lista_metodos_pag[button_index],
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
-                    wraplength=150,
+                    wraplength=200,
                     #command=button_clicked(button_index),
                     command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame))
                     #height=1,
