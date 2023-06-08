@@ -55,7 +55,7 @@ def createPriceFrame(mainContainer):
 
     label = tk.Label(
        priceFrame,
-       text="Inserir crédito:",
+       text="Selecionar valor\nda bebida:",
        font=('SegoeUI', 26))
     label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 

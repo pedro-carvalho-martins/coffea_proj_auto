@@ -152,17 +152,17 @@ def createMACSettingFrame(settingsContainer):
 
 ##### TEMPORARY SCRIPT JUST TO TEST EXECUTION OF FRAME ######
 
-mainContainer = tk.Tk()
-mainContainer.title("teste")
-
-mainContainer.geometry('320x480')
-mainContainer.resizable(False, False)
-mainContainer.attributes('-fullscreen', False)
-
-helloFrame = createMACSettingFrame(mainContainer)
-helloFrame.pack(side="top", fill="both", expand=True)
-
-mainContainer.mainloop()
+# mainContainer = tk.Tk()
+# mainContainer.title("teste")
+#
+# mainContainer.geometry('320x480')
+# mainContainer.resizable(False, False)
+# mainContainer.attributes('-fullscreen', False)
+#
+# helloFrame = createMACSettingFrame(mainContainer)
+# helloFrame.pack(side="top", fill="both", expand=True)
+#
+# mainContainer.mainloop()
 
 ####### TEMPORARY SCRIPT ENDS. DELETE ASAP.
 #################################################

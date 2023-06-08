@@ -41,6 +41,7 @@ def createPaySuccessFrame(mainContainer):
 
     payCompleteFrame = tk.Frame(mainContainer, height=480, width=320)
 
+    payCompleteFrame.configure(bg='#138713')
 
     ## Configurando o Grid
 
@@ -54,6 +55,8 @@ def createPaySuccessFrame(mainContainer):
        payCompleteFrame,
        text="Pagamento concluído. Favor escolher a sua bebida.",
        font=('SegoeUI', 20),
+       fg='white',
+       bg='#138713',
        wraplength=300)
     label.grid(column=0, row=0, ipadx=10, ipady=180)
 
@@ -64,7 +67,7 @@ def createPaySuccessFrame(mainContainer):
 def createPayFailureFrame(mainContainer):
 
     payFailureFrame = tk.Frame(mainContainer, height=480, width=320)
-
+    payFailureFrame.configure(bg='#871313')
 
     ## Configurando o Grid
 
@@ -78,6 +81,8 @@ def createPayFailureFrame(mainContainer):
        payFailureFrame,
        text="Erro no pagamento. Favor recomeçar a compra.",
        font=('SegoeUI', 20),
+       fg='white',
+       bg='#871313',
        wraplength=300)
     label.grid(column=0, row=0, ipadx=10, ipady=180)
 

@@ -138,6 +138,11 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
    print('price selected was:'+str(price_selected))
    currentFrame.pack_forget()
    currentFrame.destroy()
+
+   ##### TESTE: pausa de 1 segundo entre telas:
+   time.sleep(1)
+   ##### FIM DO TESTE
+
    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(mainContainer, price_selected)
    pmethodFrame.pack(side="top", fill="both", expand=True)
 
@@ -147,6 +152,7 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    print(payment_method_selected)
    currentFrame.pack_forget()
    currentFrame.destroy()
+
    payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame(mainContainer)
    payprocessFrame.pack(side="top", fill="both", expand=True)
    print('launch payment processing function')
@@ -193,7 +199,12 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    ## TEST
    #paycompleteFrame.after(5000, print('ok'))#nav_restart(paycompleteFrame) )
    #paycompleteFrame.after(5000, paycompleteFrame.destroy() )
-   paycompleteFrame.after(5000, lambda: mainContainer.destroy() )
+
+   time_buffer = 5000
+   if pay_output_code == 0:
+      time_buffer = 20000
+
+   paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy() )
 
    ## TEST ENDS
    print('debug1')
@@ -219,7 +230,6 @@ def signalListener(dummyVar1,dummyVar2):
             print('launch inhibit')
             navigate_InhibitFrame()
             break
-
 
          else:
             print('not defined')
