@@ -70,7 +70,8 @@ def createPaymentMethodFrame(mainContainer, price_selected):
                     text=lista_metodos_pag[button_index],
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
-                    wraplength=200,
+                    wraplength=180,
+                    width=12,
                     #command=button_clicked(button_index),
                     command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame))
                     #height=1,
@@ -78,7 +79,7 @@ def createPaymentMethodFrame(mainContainer, price_selected):
        )
 
     for button_index in range(len(buttons_list)):
-       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=70, ipady=10, pady=5, sticky=tk.EW)
+       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=30, ipady=10, pady=5, sticky=tk.EW)
 
 
     ## Crio o Frame inferior
