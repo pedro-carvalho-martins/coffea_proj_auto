@@ -8,7 +8,7 @@ root.attributes('-fullscreen', True)
 # Create a label widget
 label = tk.Label(
     root,
-    text="Background_test.",
+    text="Inicialização",
     font=('SegoeUI', 20),
     wraplength=300)
 
