@@ -41,9 +41,10 @@ def launchConnCheckProcess():
 def launchConnectBTProcess():
 
     # Obtenho endereço MAC da moderninha
-    mac_address = rwMACAddress.readMACAddress()
+    mac_address = rwMACAddress.readMACAddress()[0:17]
 
     # Construo e executo scripts para conexão BT com a moderninha
+
 
     BT_conn_shell_comm_1 = [
         "sudo",
@@ -71,13 +72,19 @@ def launchConnectBTProcess():
     BT_conn_output_1 = subprocess.run(BT_conn_shell_comm_1,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
+    
+    print(BT_conn_shell_comm_1)
 
     BT_conn_output_2 = subprocess.run(BT_conn_shell_comm_2,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
 
+    print(BT_conn_shell_comm_2)
+
     BT_conn_output_3 = subprocess.run(BT_conn_shell_comm_3,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
+
+    print(BT_conn_shell_comm_3)
 
     time.sleep(5)

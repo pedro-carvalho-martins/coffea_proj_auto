@@ -44,8 +44,8 @@ def navigate_helloFrame(session_number):
 
    mainContainer.geometry('320x480')
    # COMMENTED ONLY FOR TESTING. UNCOMMENT LATER!
-  # mainContainer.resizable(False, False)
-  # mainContainer.attributes('-fullscreen', True)
+   mainContainer.resizable(False, False)
+   mainContainer.attributes('-fullscreen', True)
     
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
