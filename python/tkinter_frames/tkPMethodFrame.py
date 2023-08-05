@@ -73,7 +73,11 @@ def createPaymentMethodFrame(mainContainer, price_selected):
                     wraplength=200,
                     width=11,
                     #command=button_clicked(button_index),
-                    command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame))
+                    command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame),
+                    # change behaviour on hover
+                    activebackground=button_frame.cget(
+                        "background")  # Set the active background color to the regular background color
+                    )
                     #height=1,
                     #width=1)
        )
@@ -95,7 +99,14 @@ def createPaymentMethodFrame(mainContainer, price_selected):
               bg='#871313',
               fg='white',
               # command=button_clicked(button_index),
-              command=mainContainer.destroy )
+              command=mainContainer.destroy,
+
+              # change behaviour on hover
+              activebackground=button_frame.cget(
+                   "background")
+              # Set the active background color to the regular background color
+
+    )
 
     cancelar_compra_button.grid(column=0, row=0, ipadx=70, ipady=10, pady=5, sticky=tk.EW)
 

@@ -84,9 +84,8 @@ def createPriceFrame(mainContainer):
                     ,
                     activebackground = button_frame.cget(
                         "background")  # Set the active background color to the regular background color
-                    #activeforeground = button_frame.cget(
-                    #    "foreground")  # Set the active foreground color to the regular foreground color
                     #### fim do teste de remoção da mudança de visual com hover
+                    # Modificação OK. aplicar nos outros Frames
                     )
                     #height=1,
                     #width=1)
