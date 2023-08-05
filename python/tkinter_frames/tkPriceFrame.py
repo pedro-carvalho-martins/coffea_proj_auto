@@ -79,7 +79,15 @@ def createPriceFrame(mainContainer):
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
                     #command=button_clicked(button_index),
-                    command= lambda idx=button_index: button_clicked(idx, lista_precos, priceFrame))
+                    command= lambda idx=button_index: button_clicked(idx, lista_precos, priceFrame)
+                    #### inicio do teste de remoção da mudança de visual com hover
+                    ,
+                    activebackground = button_frame.cget(
+                        "background"),  # Set the active background color to the regular background color
+                    activeforeground = button_frame.cget(
+                        "foreground"),  # Set the active foreground color to the regular foreground color
+                    #### fim do teste de remoção da mudança de visual com hover
+                    )
                     #height=1,
                     #width=1)
        )
