@@ -23,6 +23,8 @@ import sendSignalGPIO
 import signalListenerGPIO
 import connCheckProcess
 
+import rwUltimoPag
+
 ##
 
 
@@ -120,6 +122,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    if conn_check_output_code == 0:
       navigate_priceFrame(connCheckFrame)
    else:
+      time.sleep(1)
       navigate_connCheckFrame(connCheckFrame)
 
 
@@ -161,7 +164,14 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    print("NUMBER OF ACTIVE THREADS")
    print(threading.active_count())
    print("ENDS PRINT ACTIVE THREADS")
-   
+
+   # Verifico se o preço selecionado corresponde ao valor da última compra realizada. Se sim, desconto um centavo.
+
+   valorUltimaCompra = rwUltimoPag.readValue()
+   # Se os valores forem iguais e o valor da ultima compra não for quebrado
+   if (valorUltimaCompra % .25 < 0.001) and (price_selected - valorUltimaCompra < 0.001 ):
+      price_selected = price_selected - 0.01
+   #
 
    ## launch other thread
    threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected))
