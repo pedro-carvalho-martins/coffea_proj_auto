@@ -24,15 +24,30 @@ def createPayProcessFrame(mainContainer):
     payProcessFrame.columnconfigure(0, weight=1)
 
 
-    ## Adiciono o label
+    ## Adiciono os labels
 
-    label = tk.Label(
-       payProcessFrame,
-   text="Aproxime ou insira seu cartão na máquina abaixo\n\nPara cancelar, aperte no botão CANCELA na máquina abaixo",
-       font=('SegoeUI', 20),
-       wraplength=300)
-    label.grid(column=0, row=0, ipadx=10, ipady=180)
+    label0 = tk.Label(
+        payProcessFrame,
+        text="\n ",
+        font=('SegoeUI', 20),
+        wraplength=300)
+    label0.grid(column=0, row=1, ipadx=10, ipady=10)
 
+    label1 = tk.Label(
+        payProcessFrame,
+        text="Aproxime ou insira seu cartão na máquina abaixo",
+        font=('SegoeUI', 20),
+        wraplength=300)
+    label1.grid(column=0, row=3, ipadx=10, ipady=100)
+
+    # label0.grid(column=0, row=4, ipadx=10, ipady=50)
+
+    label3 = tk.Label(
+        payProcessFrame,
+        text="Para cancelar, aperte no botão CANCELA na máquina abaixo",
+        font=('SegoeUI', 14),
+        wraplength=300)
+    label3.grid(column=0, row=6, ipadx=0, ipady=25)
 
     return payProcessFrame
 
