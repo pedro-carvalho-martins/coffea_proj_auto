@@ -196,6 +196,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected):
    
    if pay_output_code == 0:
        paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
+       rwUltimoPag.writeValue(price_selected)
        threadSignal = Thread(target=launchSendSignal, args=(price_selected,0))
        threadSignal.start()
    else:
