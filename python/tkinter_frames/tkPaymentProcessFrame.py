@@ -28,7 +28,7 @@ def createPayProcessFrame(mainContainer):
 
     label = tk.Label(
        payProcessFrame,
-       text="Proceda ao pagamento na máquina de cartão",
+   text="Aproxime ou insira seu cartão na máquina abaixo\n\nPara cancelar, aperte no botão CANCELA na máquina abaixo",
        font=('SegoeUI', 20),
        wraplength=300)
     label.grid(column=0, row=0, ipadx=10, ipady=180)
