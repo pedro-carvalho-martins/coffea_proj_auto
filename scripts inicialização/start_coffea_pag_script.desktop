@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=coffea_pag
-Exec=/usr/bin/sh /home/pi/executar2.sh
-Name[en_US]=start_coffea_pag_script.desktop
