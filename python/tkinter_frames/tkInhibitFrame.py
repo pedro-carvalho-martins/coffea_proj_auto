@@ -7,8 +7,6 @@ import navigation
 def createInhibitFrame(inhibitContainer):
 
 
-    lista_tipos_config = ["Preços", "Métodos pagamento", "Endereço MAC Moderninha", "Voltar"]
-
 
     inhibitFrame = tk.Frame(inhibitContainer, height=480, width=320)
 
@@ -25,7 +23,7 @@ def createInhibitFrame(inhibitContainer):
 
     label = tk.Label(
         inhibitFrame,
-        text="Máquina de café\nfora de serviço",
+        text="Máquina\nem espera",
         font=('SegoeUI', 20),
         wraplength=250,
         justify=tk.CENTER)
