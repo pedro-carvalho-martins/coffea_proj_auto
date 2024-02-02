@@ -57,7 +57,7 @@ def createSettingSelectionFrame(settingsContainer):
           tk.Button(button_frame,
                     text=lista_tipos_config[button_index],
                     #font=('SegoeUI', 20, 'bold'),
-                    font=('Ubuntu', 20),
+                    font=('Ubuntu', 12),
                     wraplength=250,
                     #command=button_clicked(button_index),
                     command= lambda idx=button_index: button_clicked(idx, lista_tipos_config, settingSelectionFrame))

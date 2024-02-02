@@ -113,9 +113,9 @@ def createMACSettingFrame(settingsContainer):
         button_row = tk.Frame(letter_frame)
         button_row.pack()
         for char in row:
-            button = tk.Button(button_row, text=char, width=2, height=1, font=("Arial", 16),
+            button = tk.Button(button_row, text=char, width=1, height=1, font=("Arial", 16),
                                command=lambda c=char: add_char(c))
-            button.pack(side=tk.LEFT, ipadx=5, ipady=6, padx=4, pady=1)
+            button.pack(side=tk.LEFT, ipadx=2, ipady=6, padx=2, pady=1)
 
     number_frame = tk.Frame(keyboard_frame)
     number_frame.pack(side=tk.LEFT)
@@ -124,12 +124,12 @@ def createMACSettingFrame(settingsContainer):
         button_row.pack()
         for char in row:
             if char == "":
-                spacer = tk.Label(button_row, width=2, height=1, font=("Arial", 16))
+                spacer = tk.Label(button_row, width=1, height=1, font=("Arial", 16))
                 spacer.pack(side=tk.LEFT, padx=2, pady=1)
             else:
                 button = tk.Button(button_row, text=char, width=2, height=1, font=("Arial", 16),
                                    command=lambda c=char: add_char(c))
-                button.pack(side=tk.LEFT, ipadx=6, ipady=2, padx=2, pady=1)
+                button.pack(side=tk.LEFT, ipadx=2, ipady=2, padx=2, pady=1) # ERA 6
 
     # Create backspace button
     backspace_button = tk.Button(MACSettingFrame, text="Apagar dígito", font=("Arial", 14),
@@ -142,7 +142,7 @@ def createMACSettingFrame(settingsContainer):
 
     # Create quit without saving button
 
-    quit_no_save_button = tk.Button(MACSettingFrame, text="Salvar sem sair", font=("Arial", 14), command=quit_no_save)
+    quit_no_save_button = tk.Button(MACSettingFrame, text="Sair sem salvar", font=("Arial", 14), command=quit_no_save)
     quit_no_save_button.pack(pady=2)
 
 
