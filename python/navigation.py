@@ -292,6 +292,16 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
    elif settingPageSelection == "Endereço MAC Moderninha":
       MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)
       MACSettingFrame.pack(side="top", fill="both", expand=True)
+      
+    elif settingPageSelection == "Pareamento BT - Minimizar app":
+      settingsContainer.geometry('3x4')
+      settingsContainer.resizable(False, False)
+      settingsContainer.attributes('-fullscreen', False)
+
+      mainContainer.geometry('3x4')
+      mainContainer.resizable(False, False)
+      mainContainer.attributes('-fullscreen', False)
+   # new dev ends
 
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
