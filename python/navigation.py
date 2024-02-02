@@ -293,7 +293,7 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
       MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)
       MACSettingFrame.pack(side="top", fill="both", expand=True)
       
-    elif settingPageSelection == "Pareamento BT - Minimizar app":
+   elif settingPageSelection == "Pareamento BT - Minimizar app":
       settingsContainer.geometry('3x4')
       settingsContainer.resizable(False, False)
       settingsContainer.attributes('-fullscreen', False)
