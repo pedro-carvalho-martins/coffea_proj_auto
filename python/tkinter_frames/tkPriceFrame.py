@@ -55,7 +55,7 @@ def createPriceFrame(mainContainer):
 
     label = tk.Label(
        priceFrame,
-       text="Selecionar valor\nda bebida:",
+       text="Selecionar valor\ndo produto:",
        font=('SegoeUI', 22))
     label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
@@ -63,7 +63,7 @@ def createPriceFrame(mainContainer):
     ## Crio o Frame dos botões
 
     button_frame = tk.Frame(priceFrame)
-    button_frame.grid(column=0, row=1, pady=10, padx=20)
+    button_frame.grid(column=0, row=1, pady=5, padx=0)
 
 
     ## Adiciono os botões
@@ -86,13 +86,46 @@ def createPriceFrame(mainContainer):
                         "background")  # Set the active background color to the regular background color
                     #### fim do teste de remoção da mudança de visual com hover
                     # Modificação OK. aplicar nos outros Frames
-                    )
+                    #)
                     #height=1,
-                    #width=1)
+                    #tmp test 2024.02.15
+                    ,
+                    width=8)
+                    #tmp test 2024.02.15
        )
 
+
+    #teste: oito preços, dois por coluna, duas colunas.
+
+
+
+    ipady_buttons = 10
+
+    # If there are five rows, shorten the height of the buttons
+    if len(buttons_list) % 5 == 0:
+        ipady_buttons = 5
+
+
+
     for button_index in range(len(buttons_list)):
-       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=80, ipady=10, pady=5, sticky=tk.EW)
+
+
+
+        # implementação pendente: visual de "clique para pagar" com apenas um preço
+        #if len(buttons_list) == 1:
+        #    buttons_list[button_index].grid(column=0, row=0, ipadx=80, ipady=1000, pady=500, sticky=tk.EW)
+
+        if len(buttons_list) > 5:
+            # Set a two-column structure
+            column_input = button_index % 2
+            row_input = button_index // 2
+            buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=ipady_buttons, padx=5, pady=5, sticky=tk.EW)
+            #buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=10, padx=5, pady=5, sticky=tk.EW)
+
+        else:
+            # Set a single-column structure
+            buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=80, ipady=ipady_buttons, pady=5, sticky=tk.EW)
+            #buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=80, ipady=10, pady=5, sticky=tk.EW)
 
 
     ## Crio o Frame inferior

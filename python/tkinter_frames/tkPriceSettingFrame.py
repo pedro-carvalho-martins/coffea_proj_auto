@@ -46,9 +46,9 @@ def appendMinusButton(priceLabel_index):
 
     buttonMinusList.append(
         tk.Button(prices_frame,
-                  text=" - ",
+                  text=" – ",
                   # font=('SegoeUI', 20, 'bold'),
-                  font=('Ubuntu', 24),
+                  font=('Ubuntu', 12, 'bold'),
                   # command=button_clicked(button_index),
                   command=lambda idx=priceLabel_index: modprice_button_clicked(idx, "minus"))
         # height=1,
@@ -62,7 +62,7 @@ def appendPlusButton(priceLabel_index):
         tk.Button(prices_frame,
                   text=" + ",
                   # font=('SegoeUI', 20, 'bold'),
-                  font=('Ubuntu', 24),
+                  font=('Ubuntu', 12, 'bold'),
                   # command=button_clicked(button_index),
                   command= lambda idx=priceLabel_index: modprice_button_clicked(idx, "plus"))
         # height=1,
@@ -73,7 +73,8 @@ def appendPlusButton(priceLabel_index):
 def addprice_button_clicked():
 
     ## TEMPORARY LIMIT ON NUMBER OF PRICES? REMOVE?
-    if len(lista_precos)>=5:
+    #if len(lista_precos)>=5:
+    if len(lista_precos) >= 10:
         return
     ##
 
@@ -167,15 +168,15 @@ def createPriceSettingFrame(settingsContainer):
 
     titleLabel = tk.Label(
        priceSettingFrame,
-       text="CONFIG PREÇOS",
-       font=('SegoeUI', 18))
+       text="Configurar preços",
+       font=('SegoeUI', 14))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
 
     ## Crio o Frame dos preços e botões
 
     prices_frame = tk.Frame(priceSettingFrame)
-    prices_frame.grid(column=0, row=1, pady=10, padx=20)
+    prices_frame.grid(column=0, row=1, pady=0, padx=20)
 
 
     priceLabelList = []
