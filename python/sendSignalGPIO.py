@@ -10,8 +10,8 @@ def sendOutputSignal(price):
     
     number_of_pulses = round(price/pulse_coin_value)
     
-    msPulse = 100
-    msBetweenPulses = 400
+    msPulse = 50
+    msBetweenPulses = 200
     
     
     GPIO.setmode(GPIO.BCM)
