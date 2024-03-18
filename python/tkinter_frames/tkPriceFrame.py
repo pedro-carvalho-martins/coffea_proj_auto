@@ -90,7 +90,7 @@ def createPriceFrame(mainContainer):
                     #height=1,
                     #tmp test 2024.02.15
                     ,
-                    width=8)
+                    width=7)
                     #tmp test 2024.02.15
        )
 
@@ -103,7 +103,7 @@ def createPriceFrame(mainContainer):
 
     # If there are five rows, shorten the height of the buttons
     if len(buttons_list) % 5 == 0:
-        ipady_buttons = 5
+        ipady_buttons = 7
 
 
 
@@ -119,12 +119,12 @@ def createPriceFrame(mainContainer):
             # Set a two-column structure
             column_input = button_index % 2
             row_input = button_index // 2
-            buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=ipady_buttons, padx=5, pady=5, sticky=tk.EW)
+            buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=ipady_buttons, padx=4, pady=5, sticky=tk.EW)
             #buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=10, padx=5, pady=5, sticky=tk.EW)
 
         else:
             # Set a single-column structure
-            buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=80, ipady=ipady_buttons, pady=5, sticky=tk.EW)
+            buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=40, ipady=ipady_buttons, pady=5, sticky=tk.EW)
             #buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=80, ipady=10, pady=5, sticky=tk.EW)
 
 
