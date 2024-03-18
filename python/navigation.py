@@ -10,7 +10,7 @@ import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
-from python.tkinter_frames import tkHelloSettingFrame
+import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
 
 
 ##tmp
