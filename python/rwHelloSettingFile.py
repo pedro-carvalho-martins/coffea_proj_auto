@@ -16,7 +16,7 @@ def readListCheckHello():
 
 
 
-def readListSettings():
+def readHelloSetting():
 
     print("readList BEGINS")
 
