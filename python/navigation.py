@@ -10,6 +10,7 @@ import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
+from python.tkinter_frames import tkHelloSettingFrame
 
 
 ##tmp
@@ -24,6 +25,10 @@ import signalListenerGPIO
 import connCheckProcess
 
 import rwUltimoPag
+import rwHelloSettingFile
+
+
+
 
 ##
 
@@ -129,7 +134,8 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
 def check_helloScreen(currentFrame):
 
-   helloScreenOn=1
+   #helloScreenOn=1
+   helloScreenOn = rwHelloSettingFile.readListCheckHello()
 
    if helloScreenOn == 1:
       navigate_helloFrame(currentFrame)
@@ -322,6 +328,11 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
       mainContainer.resizable(False, False)
       mainContainer.attributes('-fullscreen', False)
    # new dev ends
+
+
+   elif settingPageSelection == "Config. tela inicial":
+      HelloSettingFrame = tkHelloSettingFrame.createHelloSettingFrame(settingsContainer)
+      HelloSettingFrame.pack(side="top", fill="both", expand=True)
 
    else:
       ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE

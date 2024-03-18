@@ -36,7 +36,7 @@ def createHelloFrame(mainContainer):
 
     helloButton = tk.Button(
         helloFrame,
-        text="Toque na tela para iniciar a compra por cartão ou PIX",
+        text="Toque na tela para iniciar a compra",
         font=('SegoeUI', 20),
         wraplength=300,
         command= lambda: navigation.navigate_priceFrame(helloFrame))
