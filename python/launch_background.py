@@ -1,7 +1,7 @@
 import tkinter as tk
 
 root = tk.Tk()
-root.geometry('320x480')
+root.geometry('320x440')
 root.resizable(False, False)
 root.attributes('-fullscreen', True)
 
