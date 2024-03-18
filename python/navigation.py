@@ -33,7 +33,7 @@ def navigation(frame):
    # PACK to
    
    
-def navigate_helloFrame(session_number):
+def navigate_startupFrame(session_number):
 
    global mainContainer
 
@@ -124,6 +124,26 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    else:
       time.sleep(1)
       navigate_connCheckFrame(connCheckFrame)
+
+
+
+def check_helloScreen(currentFrame):
+
+   helloScreenOn=1
+
+   if helloScreenOn == 1:
+      navigate_helloFrame(currentFrame)
+   else:
+      navigate_priceFrame(currentFrame)
+
+
+def navigate_helloFrame(currentFrame):
+
+   currentFrame.pack_forget()
+   currentFrame.destroy()
+
+   helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
+   helloFrame.pack(side="top", fill="both", expand=True)
 
 
 
