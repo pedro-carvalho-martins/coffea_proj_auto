@@ -120,7 +120,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    connCheckFrame.destroy()
 
    if conn_check_output_code == 0:
-      navigate_priceFrame(connCheckFrame)
+      check_helloScreen(connCheckFrame)
    else:
       time.sleep(1)
       navigate_connCheckFrame(connCheckFrame)
