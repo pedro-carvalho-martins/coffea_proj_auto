@@ -156,7 +156,7 @@ def createHelloSettingFrame(settingsContainer):
     options_frame.grid(column=0, row=1, pady=10, padx=20)
 
 
-    optionsLabelList = []
+    helloSettingLabelList = []
     buttonEnableList = []
     buttonDisableList = []
 
@@ -229,7 +229,7 @@ def createHelloSettingFrame(settingsContainer):
 # mainContainer.resizable(False, False)
 # mainContainer.attributes('-fullscreen', False)
 #
-# helloFrame = createPMethodSettingFrame()
+# helloFrame = createHelloSettingFrame()
 # helloFrame.pack(side="top", fill="both", expand=True)
 #
 # mainContainer.mainloop()
