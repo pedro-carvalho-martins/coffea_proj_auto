@@ -84,19 +84,6 @@ def appendDisableButton(settingLabel_index, settingName, settingStatus):
 
 def saveQuit_button_clicked():
 
-    # Não fazer nada se todos os métodos de pagamento estiverem disabled.
-    helloSettingList = helloSettingDict.items()
-
-    flag_all_disabled = True
-
-    for item in helloSettingList:
-        if item[1] == "enabled":
-            flag_all_disabled = False
-            break
-
-    if flag_all_disabled:
-        return
-
     rwHelloSettingFile.writeListSettings(helloSettingDict)
     navigation.quitProgramAfterSettings()
 
