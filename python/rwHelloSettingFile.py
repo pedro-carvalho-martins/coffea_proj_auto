@@ -9,7 +9,6 @@ def readListCheckHello():
         # Removes \n
         helloSetting[lineIndex] = helloSetting[lineIndex].split("\n")[0]
 
-        # Removes items starting with '#'
         if helloSetting[lineIndex][0] == '#':
             return 0
         else:

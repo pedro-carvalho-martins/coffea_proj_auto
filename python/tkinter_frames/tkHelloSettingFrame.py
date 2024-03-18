@@ -117,12 +117,12 @@ def createHelloSettingFrame(settingsContainer):
     global options_frame
 
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION. UNCOMMENT ASAP
-    helloSettingDict = rwHelloSettingFile.readHelloSetting()
+    #helloSettingDict = rwHelloSettingFile.readHelloSetting()
     ### TEMPORARY COMMENT TO TEST IMPLEMENTATION ENDS.
 
 
     #### TEMPORARY TO TEST IMPLEMENTATION: DELETE ASAP
-    # helloSettingDict = {'Tela bem-vindo': 'enabled'}
+    helloSettingDict = {'Tela bem-vindo': 'enabled'}
     #### TEMPORARY ENDS. DELETE ASAP
 
     # Get items from pMethodsDict:
@@ -229,7 +229,7 @@ def createHelloSettingFrame(settingsContainer):
 # mainContainer.resizable(False, False)
 # mainContainer.attributes('-fullscreen', False)
 #
-# helloFrame = createHelloSettingFrame()
+# helloFrame = createHelloSettingFrame(mainContainer)
 # helloFrame.pack(side="top", fill="both", expand=True)
 #
 # mainContainer.mainloop()
