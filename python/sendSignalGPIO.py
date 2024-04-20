@@ -12,10 +12,10 @@ def sendOutputSignal(price):
 
     # msPulse = 50 and msBetweenPulses = 200 ocasionally fails -> do not use
     # msPulse = 100 and msBetweenPulses = 400 works perfectly but is a bit too slow
-    # testing with msPulse = 80 and msBetweenPulses = 300:
+    # test with msPulse = 80 and msBetweenPulses = 300?
 
-    msPulse = 80
-    msBetweenPulses = 300
+    msPulse = 100
+    msBetweenPulses = 400
     
     
     GPIO.setmode(GPIO.BCM)
