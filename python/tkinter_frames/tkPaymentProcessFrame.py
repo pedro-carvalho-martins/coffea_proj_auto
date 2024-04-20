@@ -68,7 +68,7 @@ def createPaySuccessFrame(mainContainer):
 
     label = tk.Label(
        payCompleteFrame,
-       text="Pagamento concluído. Favor escolher a sua bebida.",
+       text="Pagamento concluído. Favor escolher o seu produto.",
        font=('SegoeUI', 20),
        fg='white',
        bg='#138713',
