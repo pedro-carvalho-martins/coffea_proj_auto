@@ -20,6 +20,7 @@ import threading
 from threading import Thread
 
 import paymentProcessing
+import paymentProcessing_Pix
 import sendSignalGPIO
 import signalListenerGPIO
 import connCheckProcess
@@ -182,41 +183,110 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
    currentFrame.pack_forget()
    currentFrame.destroy()
 
-   payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame(mainContainer)
-   payprocessFrame.pack(side="top", fill="both", expand=True)
-   print('launch payment processing function')
-   
-   
-   print("NUMBER OF ACTIVE THREADS")
-   print(threading.active_count())
-   print("ENDS PRINT ACTIVE THREADS")
+   if payment_method_selected == "QR Code (Pix)":
+      payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame_Pix(mainContainer)
+      payprocessFrame.pack(side="top", fill="both", expand=True)
+      print('launch payment processing function')
 
-   # Verifico se o preço selecionado corresponde ao valor da última compra realizada. Se sim, desconto um centavo.
+      ## launch other thread
+      threadPixRequest = Thread(target=launchPixRequest, args=(payprocessFrame, price_selected, payment_method_selected))
+      threadPixRequest.start()
+      # thread.join()
 
-   valorUltimaCompra = rwUltimoPag.readValue()
-   # Se os valores forem iguais e o valor da ultima compra não for quebrado
-   if (valorUltimaCompra % .25 < 0.001) and (price_selected - valorUltimaCompra < 0.001 ):
-      price_selected = price_selected - 0.01
-   #
 
-   ## launch other thread
-   threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected))
-   threadPay.start()
-   #thread.join()
+   # Se o pagamento for através da moderninha, por cartão:
+
+   else:
+
+
+      payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame(mainContainer)
+      payprocessFrame.pack(side="top", fill="both", expand=True)
+      print('launch payment processing function')
+
+
+      print("NUMBER OF ACTIVE THREADS")
+      print(threading.active_count())
+      print("ENDS PRINT ACTIVE THREADS")
+
+      # Verifico se o preço selecionado corresponde ao valor da última compra realizada. Se sim, desconto um centavo.
+
+      valorUltimaCompra = rwUltimoPag.readValue()
+      # Se os valores forem iguais e o valor da ultima compra não for quebrado
+      if (valorUltimaCompra % .25 < 0.001) and (price_selected - valorUltimaCompra < 0.001 ):
+         price_selected = price_selected - 0.01
+      #
+
+      ## launch other thread
+      # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+      threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected, 0))
+      threadPay.start()
+      #thread.join()
    
     
+    
+def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
-def launchPayment(payprocessFrame, price_selected, payment_method_selected):
+   # function must:
+   #  - get auth token
+   #  - get QR Code text from server
+   #  - convert QR Code text to image
+   #  - display image on screen
+   #  - call thread to verify payment (launchPayment function)
+
+   print('start pix request')
+
+   pix_copiaecola, pix_txid = paymentProcessing_Pix.PixRequest(price_selected)
+
+   directory_filename_qrcode_pix_img = paymentProcessing_Pix.generate_img_QR_Code_Pix(pix_copiaecola)
+
+   payprocessFrame.pack_forget()
+   payprocessFrame.destroy()
+
+   pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(mainContainer, price_selected, directory_filename_qrcode_pix_img)
+   pixDisplayFrame.pack(side="top", fill="both", expand=True)
+
+   # CONTINUE CODE TO VERIFY IF PAYMENT HAS BEEN DONE (launchPayment function)
+   launchPayment(pixDisplayFrame, price_selected, payment_method_selected, pix_txid)
+        
+    
+    
+    
+    
+
+def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_txid):
    print('starting process')
-   #time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
+
 
    global disableInterrupt
    disableInterrupt = 1
 
-   pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
+
    #pay_output_code == 0 => Success ; else: Failure
 
-   ## simulate payment completion
+
+   if payment_method_selected == "QR Code (Pix)":
+
+      pay_output_code = paymentProcessing_Pix.verify_payment_pix(pix_txid)
+
+      # launch payment processing pix -> return qr code text
+      # pass qr code text to tk function -> display QR Code on screen
+      # launch a thread to check for payment completion ((maybe start THIS on this function for Pix, and have a previous func to return qr code and call the tk to display it
+      # this func to check for payment completion should last max 3 minutes? then expire. if anything fails or timeout, pay_output_code!=1; if all is good, pay_output_code = 1
+      # integrate code from comm_inter_teste_pycharm_project from the folder \Integração API Inter\comm_inter_teste...
+
+      #temporary test
+      #pay_output_code = paymentProcessing_Pix.launchPaymentProcessing_Pix_TEST_DONOTCALL(price_selected, payprocessFrame)
+
+      # Chamar função para conexão com API do Inter e gerar QR Code (enquanto isso, tela de loading que já está carregada (mas botar um loading com imagem!!)
+      # Assim que gerar o QR Code, passar para a tela que mostra o QR Code e aguardar o pagamento
+      # Assim que o pagamento for confirmado, dar pay_output_code = 0
+
+
+
+
+   else:
+      pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
+
    payprocessFrame.pack_forget()
    payprocessFrame.destroy()
    
