@@ -246,11 +246,21 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
    pixDisplayFrame.pack(side="top", fill="both", expand=True)
 
    # CONTINUE CODE TO VERIFY IF PAYMENT HAS BEEN DONE (launchPayment function)
-   launchPayment(pixDisplayFrame, price_selected, payment_method_selected, pix_txid)
-        
-    
-    
-    
+
+   # 20240525 modification begins #
+
+   # old code
+
+   #launchPayment(pixDisplayFrame, price_selected, payment_method_selected, pix_txid)
+
+   # new code
+
+   ## launch new thread
+   # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+   threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid))
+   threadPay.start()
+
+   # 20240525 modification ends #
     
 
 def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_txid):
@@ -266,6 +276,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
    if payment_method_selected == "QR Code (Pix)":
 
+      # Verifica status do pagamento
       pay_output_code = paymentProcessing_Pix.verify_payment_pix(pix_txid)
 
       # launch payment processing pix -> return qr code text
