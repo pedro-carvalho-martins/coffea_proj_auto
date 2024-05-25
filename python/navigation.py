@@ -257,7 +257,7 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
    ## launch new thread
    # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-   threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid))
+   threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
    threadPay.start()
 
    # 20240525 modification ends #
