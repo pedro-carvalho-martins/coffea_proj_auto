@@ -9,7 +9,7 @@ def kill_pid_executar():
     processes = result.stdout.splitlines()
 
     for process in processes:
-        if 'executar.sh' in process:
+        if 'executar2.sh' in process:
             # Extract the PID (second column)
             pid = int(process.split()[1])
             try:
@@ -22,3 +22,9 @@ def kill_pid_executar():
                 print(f"Permission denied to kill process {pid}")
             except Exception as e:
                 print(f"Failed to terminate process {pid}: {e}")
+
+def kill_python():
+    try:
+        subprocess.run(['bash', 'kill_python.sh'], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred: {e}")

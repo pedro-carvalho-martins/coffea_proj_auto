@@ -405,6 +405,7 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
       kill_shell_loop.kill_pid_executar()
       mainContainer.destroy()
       settingsContainer.destroy()
+      kill_shell_loop.kill_python()
       # settingsContainer.geometry('3x4')
       # settingsContainer.resizable(False, False)
       # settingsContainer.attributes('-fullscreen', False)
