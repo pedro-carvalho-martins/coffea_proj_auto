@@ -24,6 +24,7 @@ import paymentProcessing_Pix
 import sendSignalGPIO
 import signalListenerGPIO
 import connCheckProcess
+import kill_shell_loop
 
 import rwUltimoPag
 import rwHelloSettingFile
@@ -400,14 +401,17 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
       MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)
       MACSettingFrame.pack(side="top", fill="both", expand=True)
       
-   elif settingPageSelection == "Pareamento BT - Minimizar app":
-      settingsContainer.geometry('3x4')
-      settingsContainer.resizable(False, False)
-      settingsContainer.attributes('-fullscreen', False)
-
-      mainContainer.geometry('3x4')
-      mainContainer.resizable(False, False)
-      mainContainer.attributes('-fullscreen', False)
+   elif settingPageSelection == "Config. de rede - Encerrar app":
+      kill_shell_loop.kill_pid_executar()
+      mainContainer.destroy()
+      settingsContainer.destroy()
+      # settingsContainer.geometry('3x4')
+      # settingsContainer.resizable(False, False)
+      # settingsContainer.attributes('-fullscreen', False)
+      #
+      # mainContainer.geometry('3x4')
+      # mainContainer.resizable(False, False)
+      # mainContainer.attributes('-fullscreen', False)
    # new dev ends
 
 
