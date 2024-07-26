@@ -403,9 +403,9 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
       
    elif settingPageSelection == "Config. de rede - Encerrar app":
       kill_shell_loop.kill_pid_executar()
+      kill_shell_loop.kill_python()
       mainContainer.destroy()
       settingsContainer.destroy()
-      kill_shell_loop.kill_python()
       # settingsContainer.geometry('3x4')
       # settingsContainer.resizable(False, False)
       # settingsContainer.attributes('-fullscreen', False)
