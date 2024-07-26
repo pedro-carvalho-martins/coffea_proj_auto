@@ -25,6 +25,6 @@ def kill_pid_executar():
 
 def kill_python():
     try:
-        subprocess.run(['bash', 'kill_python.sh'], check=True)
+        subprocess.run(['pkill', 'python'], check=True)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred: {e}")
