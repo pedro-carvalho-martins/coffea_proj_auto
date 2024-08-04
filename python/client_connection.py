@@ -14,7 +14,7 @@ def send_request(request):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Connect to the server
-    server_ip = '127.0.0.1'  # Replace with the server's IP address
+    server_ip = '15.228.47.156'  # Replace with the server's IP address
     server_port = 8080  # Replace with the server's port number
     client_socket.connect((server_ip, server_port))
 

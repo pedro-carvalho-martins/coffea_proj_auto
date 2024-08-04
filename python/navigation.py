@@ -21,15 +21,17 @@ from threading import Thread
 
 import paymentProcessing
 import paymentProcessing_Pix
+
+## Comment block for Windows testing
 import sendSignalGPIO
 import signalListenerGPIO
+## End of comment block for Windows testing
+
 import connCheckProcess
 import kill_shell_loop
 
 import rwUltimoPag
 import rwHelloSettingFile
-
-
 
 
 ##
@@ -54,8 +56,11 @@ def navigate_startupFrame(session_number):
    mainContainer.geometry('320x480')
    # COMMENTED ONLY FOR TESTING. UNCOMMENT LATER!
    mainContainer.resizable(False, False)
+
+   ## Comment block for Windows testing
    mainContainer.attributes('-fullscreen', True)
-    
+   #mainContainer.attributes('-fullscreen', False)
+   ## End of block for Windows testing
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
    helloFrame.pack(side="top", fill="both", expand=True)
@@ -93,10 +98,11 @@ def navigate_startupFrame(session_number):
 
 def navigate_connCheckFrame(currentFrame):
 
+
    print('navConnCheck')
    currentFrame.pack_forget()
    currentFrame.destroy()
-   connCheckFrame = tkConnCheckFrame.createConnCheckFrame(mainContainer)
+   connCheckFrame = tkConnCheckFrame.createNewConnCheckFrame(mainContainer)
    #priceFrame.configure(background='black')
    connCheckFrame.pack(side="top", fill="both", expand=True)
 
@@ -117,26 +123,45 @@ def launchConnCheck(connCheckFrame, dummyVariable):
    print('starting conn check process')
    # time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
 
-
-
-   conn_check_output_code = connCheckProcess.launchConnCheckProcess()
+   #conn_check_output_code = connCheckProcess.launchConnCheckProcess()
+   conn_check_output_code = connCheckProcess.launchStartupConnCheckProcess()
    # pay_output_code == 0 => Success ; else: Failure
 
    ## connection check completion
-   connCheckFrame.pack_forget()
-   connCheckFrame.destroy()
-
-   if conn_check_output_code == 0:
+   # connCheckFrame.pack_forget()
+   # connCheckFrame.destroy()
+   #
+   if conn_check_output_code == 0: # Sucesso no teste de conexão: mostra checks por 3s e segue a execução do programa
+      time.sleep(3)
+      connCheckFrame.pack_forget()
+      connCheckFrame.destroy()
       check_helloScreen(connCheckFrame)
-   else:
-      time.sleep(1)
-      navigate_connCheckFrame(connCheckFrame)
+
+   else: # Falha completa ou parcial no teste de conexão: mostra falhas e botões de reconectar ou continuar
+      while True:
+         if tkConnCheckFrame.flag_reconectar == "sim":
+            tkConnCheckFrame.flag_reconectar = "none"
+            connCheckFrame.pack_forget()
+            connCheckFrame.destroy()
+            navigate_connCheckFrame(connCheckFrame)
+            break
+         if tkConnCheckFrame.flag_continuar == "sim":
+            tkConnCheckFrame.flag_continuar = "none"
+            connCheckFrame.pack_forget()
+            connCheckFrame.destroy()
+            check_helloScreen(connCheckFrame)
 
 
 
 def check_helloScreen(currentFrame):
 
+   # Lanço verificação periódica de conexão
+   threadBackgoundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
+   threadBackgoundConnCheck.daemon = True
+   threadBackgoundConnCheck.start()
+
    #helloScreenOn=1
+   # Verifica se a tela de "toque aqui para iniciar" está habilitada ou não
    helloScreenOn = rwHelloSettingFile.readListCheckHello()
 
    if helloScreenOn == 1:
@@ -336,7 +361,15 @@ def signalListener(dummyVar1,dummyVar2):
 
    while True:
 
+      ## Comment block for Windows testing
       listener_outcome = signalListenerGPIO.listenGPIO()
+      ## End of comment block for Windows testing
+
+      ## Additional code block for Windows testing
+      #listener_outcome = "no"
+      #disableInterrupt = 1
+      time.sleep(2) # Run loop every two seconds. This might be interesting for the production version (otherwise this is continuously in a loop without a time break)
+      ## End of additional code block for Windows testing
 
       if disableInterrupt == 0:
 
