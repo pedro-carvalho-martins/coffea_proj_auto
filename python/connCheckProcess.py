@@ -107,46 +107,46 @@ def checkConnModerninha(dict_paymentMethods_settings):
 
     # Função provisória para teste
 
-    randint1 = random.randint(1, 2)
-    time.sleep(random.randint(1, 2))  # tempo randomizado simula tempo de processamento dos testes
-
-    print("randint1: "+str(randint1))
-
-    if randint1 == 1:
-        status_conn_moderninha = "check"
-    else:
-        status_conn_moderninha = "erro"
-
-    # connCheck_moderninha_sh_command = [
-    #     "../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
-    #     "COM0",
-    #     "STATUS"
-    # ]
+    # randint1 = random.randint(1, 2)
+    # time.sleep(random.randint(1, 2))  # tempo randomizado simula tempo de processamento dos testes
     #
-    # connCheck_moderninha_output = subprocess.run(connCheck_moderninha_sh_command,
-    #                                   stdout=subprocess.PIPE,
-    #                                   stderr=subprocess.PIPE)
+    # print("randint1: "+str(randint1))
     #
-    # print("debugTest")
-    #
-    # print("stdout PRINT DEBUG")
-    # connCheck_stdout_str = connCheck_moderninha_output.stdout.decode("ISO-8859-1")  # .decode("ascii")#.decode("utf-8")
-    # list_connCheck_stdout_str = connCheck_stdout_str.split("\n")
-    # print(list_connCheck_stdout_str)
-    #
-    # print("stderr PRINT DEBUG")
-    # # print(payment_output.stderr.decode("utf-8"))
-    # connCheck_stderr_str = connCheck_moderninha_output.stderr.decode("ISO-8859-1")  # .decode("utf-8")
-    # list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
-    # print(list_connCheck_stderr_str)
-    #
-    # connCheck_moderninha_output = int(list_connCheck_stdout_str[2].split('RETORNO: ', 1)[1])
-    # print(connCheck_moderninha_output)
-    #
-    # if connCheck_moderninha_output == 0:
+    # if randint1 == 1:
     #     status_conn_moderninha = "check"
     # else:
-    #     status_conn_moderninha = "error"
+    #     status_conn_moderninha = "erro"
+
+    connCheck_moderninha_sh_command = [
+        "../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag",
+        "COM0",
+        "STATUS"
+    ]
+
+    connCheck_moderninha_output = subprocess.run(connCheck_moderninha_sh_command,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE)
+
+    print("debugTest")
+
+    print("stdout PRINT DEBUG")
+    connCheck_stdout_str = connCheck_moderninha_output.stdout.decode("ISO-8859-1")  # .decode("ascii")#.decode("utf-8")
+    list_connCheck_stdout_str = connCheck_stdout_str.split("\n")
+    print(list_connCheck_stdout_str)
+
+    print("stderr PRINT DEBUG")
+    # print(payment_output.stderr.decode("utf-8"))
+    connCheck_stderr_str = connCheck_moderninha_output.stderr.decode("ISO-8859-1")  # .decode("utf-8")
+    list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
+    print(list_connCheck_stderr_str)
+
+    connCheck_moderninha_output = int(list_connCheck_stdout_str[2].split('RETORNO: ', 1)[1])
+    print(connCheck_moderninha_output)
+
+    if connCheck_moderninha_output == 0:
+        status_conn_moderninha = "check"
+    else:
+        status_conn_moderninha = "error"
 
     print("status conn moderninha: "+status_conn_moderninha)
 
