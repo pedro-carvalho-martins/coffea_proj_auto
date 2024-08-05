@@ -17,8 +17,8 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
     client_socket.settimeout(timeout)
 
     # Connect to the server
-    server_ip = '15.229.86.6'  # Replace with the server's IP address
-    server_port = 8080  # Replace with the server's port number
+    server_ip = '18.230.15.249'  # Server's Elastic IP address (AWS)
+    server_port = 8080  # Server's port number
 
     attempt = 0
     while attempt < max_retries:
