@@ -261,80 +261,82 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
    print('start pix request')
 
-   pix_copiaecola, pix_txid = paymentProcessing_Pix.PixRequest(price_selected)
+   try:
+      pix_copiaecola, pix_txid = paymentProcessing_Pix.PixRequest(price_selected)
 
-   directory_filename_qrcode_pix_img = paymentProcessing_Pix.generate_img_QR_Code_Pix(pix_copiaecola)
+      directory_filename_qrcode_pix_img = paymentProcessing_Pix.generate_img_QR_Code_Pix(pix_copiaecola)
 
-   payprocessFrame.pack_forget()
-   payprocessFrame.destroy()
+      payprocessFrame.pack_forget()
+      payprocessFrame.destroy()
 
-   pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(mainContainer, price_selected, directory_filename_qrcode_pix_img)
-   pixDisplayFrame.pack(side="top", fill="both", expand=True)
+      pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(mainContainer, price_selected, directory_filename_qrcode_pix_img)
+      pixDisplayFrame.pack(side="top", fill="both", expand=True)
 
-   # CONTINUE CODE TO VERIFY IF PAYMENT HAS BEEN DONE (launchPayment function)
+      ## launch new thread
+      # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+      threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
+      threadPay.start()
 
-   # 20240525 modification begins #
+   except:
+      payprocessFrame.pack_forget()
+      payprocessFrame.destroy()
 
-   # old code
+      paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
+      paycompleteFrame.pack(side="top", fill="both", expand=True)
 
-   #launchPayment(pixDisplayFrame, price_selected, payment_method_selected, pix_txid)
+      time_buffer = 5000
 
-   # new code
-
-   ## launch new thread
-   # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-   threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
-   threadPay.start()
-
-   # 20240525 modification ends #
-    
+      paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy())
 
 def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_txid):
    print('starting process')
 
-
    global disableInterrupt
    disableInterrupt = 1
 
+   try:
+      #pay_output_code == 0 => Success ; else: Failure
 
-   #pay_output_code == 0 => Success ; else: Failure
+      if payment_method_selected == "QR Code (Pix)":
 
+         # Verifica status do pagamento
+         pay_output_code = paymentProcessing_Pix.verify_payment_pix(pix_txid)
 
-   if payment_method_selected == "QR Code (Pix)":
+         # launch payment processing pix -> return qr code text
+         # pass qr code text to tk function -> display QR Code on screen
+         # launch a thread to check for payment completion ((maybe start THIS on this function for Pix, and have a previous func to return qr code and call the tk to display it
+         # this func to check for payment completion should last max 3 minutes? then expire. if anything fails or timeout, pay_output_code!=1; if all is good, pay_output_code = 1
+         # integrate code from comm_inter_teste_pycharm_project from the folder \Integração API Inter\comm_inter_teste...
 
-      # Verifica status do pagamento
-      pay_output_code = paymentProcessing_Pix.verify_payment_pix(pix_txid)
+         #temporary test
+         #pay_output_code = paymentProcessing_Pix.launchPaymentProcessing_Pix_TEST_DONOTCALL(price_selected, payprocessFrame)
 
-      # launch payment processing pix -> return qr code text
-      # pass qr code text to tk function -> display QR Code on screen
-      # launch a thread to check for payment completion ((maybe start THIS on this function for Pix, and have a previous func to return qr code and call the tk to display it
-      # this func to check for payment completion should last max 3 minutes? then expire. if anything fails or timeout, pay_output_code!=1; if all is good, pay_output_code = 1
-      # integrate code from comm_inter_teste_pycharm_project from the folder \Integração API Inter\comm_inter_teste...
-
-      #temporary test
-      #pay_output_code = paymentProcessing_Pix.launchPaymentProcessing_Pix_TEST_DONOTCALL(price_selected, payprocessFrame)
-
-      # Chamar função para conexão com API do Inter e gerar QR Code (enquanto isso, tela de loading que já está carregada (mas botar um loading com imagem!!)
-      # Assim que gerar o QR Code, passar para a tela que mostra o QR Code e aguardar o pagamento
-      # Assim que o pagamento for confirmado, dar pay_output_code = 0
-
+         # Chamar função para conexão com API do Inter e gerar QR Code (enquanto isso, tela de loading que já está carregada (mas botar um loading com imagem!!)
+         # Assim que gerar o QR Code, passar para a tela que mostra o QR Code e aguardar o pagamento
+         # Assim que o pagamento for confirmado, dar pay_output_code = 0
 
 
 
-   else:
-      pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
 
-   payprocessFrame.pack_forget()
-   payprocessFrame.destroy()
-   
-   if pay_output_code == 0:
-       paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
-       rwUltimoPag.writeValue(price_selected)
-       threadSignal = Thread(target=launchSendSignal, args=(price_selected,0))
-       threadSignal.start()
-   else:
-       paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
-       
+      else:
+         pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
+
+      payprocessFrame.pack_forget()
+      payprocessFrame.destroy()
+
+      if pay_output_code == 0:
+          paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
+          rwUltimoPag.writeValue(price_selected)
+          threadSignal = Thread(target=launchSendSignal, args=(price_selected,0))
+          threadSignal.start()
+      else:
+          paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
+
+   except:
+      payprocessFrame.pack_forget()
+      payprocessFrame.destroy()
+      paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
+
    paycompleteFrame.pack(side="top", fill="both", expand=True)
 
    print('paymentCompleteOK')

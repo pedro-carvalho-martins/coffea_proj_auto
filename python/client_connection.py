@@ -9,26 +9,45 @@ import time
 
 
 # Function to send requests to the server
-def send_request(request):
+def send_request(request, max_retries=3, delay=2, timeout=5):
     # Create a socket object
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    # Set a timeout for the socket operations (in seconds)
+    client_socket.settimeout(timeout)
+
     # Connect to the server
-    server_ip = '15.228.47.156'  # Replace with the server's IP address
+    server_ip = '15.229.86.6'  # Replace with the server's IP address
     server_port = 8080  # Replace with the server's port number
-    client_socket.connect((server_ip, server_port))
 
-    try:
-        # Send request to the server
-        client_socket.send(json.dumps(request).encode())
+    attempt = 0
+    while attempt < max_retries:
 
-        # Receive response from the server
-        response = client_socket.recv(1024).decode()
-        response = json.loads(response)
-        print("Response from server:", response)
-    finally:
-        # Close the socket
-        client_socket.close()
+        try:
+            client_socket.connect((server_ip, server_port))
+
+            try:
+                # Send request to the server
+                client_socket.send(json.dumps(request).encode())
+
+                # Receive response from the server
+                response = client_socket.recv(1024).decode()
+                response = json.loads(response)
+                print("Response from server:", response)
+                break # If it succeeds, exits the loop (break executes 'finally' before exiting)
+
+            except:
+                print("Exception raised")
+
+            finally:
+                # Close the socket
+                client_socket.close()
+
+        except:
+            print("Exception raised")
+
+        attempt += 1
+        time.sleep(delay)
 
     return response
 

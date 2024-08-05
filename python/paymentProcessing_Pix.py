@@ -35,7 +35,7 @@ def generate_img_QR_Code_Pix(pixCopiaECola):
 def get_status_cobranca(txid):
 
     request_cob_read = {"type": "cob_read", "param1": 1, "param2": txid}
-    response_StatusCob = servConn.send_request(request_cob_read)
+    response_StatusCob = servConn.send_request(request_cob_read, max_retries=5, delay=0)
 
     return response_StatusCob
 

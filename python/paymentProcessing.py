@@ -1,4 +1,5 @@
 import subprocess
+import time
 
 def launchPaymentProcessing(price, paymentMethod):
 #TEST
@@ -30,26 +31,41 @@ def launchPaymentProcessing(price, paymentMethod):
         "ABC"
         ]
 
-    payment_output = subprocess.run(payment_sh_command,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
-    
-    print("debugTest")
-    
-    print("stdout PRINT DEBUG")
-    # print(payment_output.stdout.decode("utf-8"))
-    payment_stdout_str = payment_output.stdout.decode("ISO-8859-1")#.decode("ascii")#.decode("utf-8")
-    list_payment_stdout_str = payment_stdout_str.split("\n")
-    print(list_payment_stdout_str)
-    
-    print("stderr PRINT DEBUG")
-    # print(payment_output.stderr.decode("utf-8"))
-    payment_stderr_str = payment_output.stderr.decode("ISO-8859-1")#.decode("utf-8")
-    list_payment_stderr_str = payment_stderr_str.split("\n")
-    print(list_payment_stderr_str)
-    
-    payment_output = int(list_payment_stdout_str[2].split('RETORNO: ',1)[1])
-    print(payment_output)
+
+    attempt = 0
+    retries = 2
+
+    while attempt < retries:
+
+        try:
+
+            payment_output = subprocess.run(payment_sh_command,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE)
+
+            print("debugTest")
+
+            print("stdout PRINT DEBUG")
+            # print(payment_output.stdout.decode("utf-8"))
+            payment_stdout_str = payment_output.stdout.decode("ISO-8859-1")#.decode("ascii")#.decode("utf-8")
+            list_payment_stdout_str = payment_stdout_str.split("\n")
+            print(list_payment_stdout_str)
+
+            print("stderr PRINT DEBUG")
+            # print(payment_output.stderr.decode("utf-8"))
+            payment_stderr_str = payment_output.stderr.decode("ISO-8859-1")#.decode("utf-8")
+            list_payment_stderr_str = payment_stderr_str.split("\n")
+            print(list_payment_stderr_str)
+
+            payment_output = int(list_payment_stdout_str[2].split('RETORNO: ',1)[1])
+            print(payment_output)
+            break  # If it succeeds, exit the while loop
+
+        except:
+            print("except payment processing")
+            payment_output = -1
+
+        attempt += 1
     
     return payment_output
     

@@ -123,30 +123,50 @@ def checkConnModerninha(dict_paymentMethods_settings):
         "STATUS"
     ]
 
-    connCheck_moderninha_output = subprocess.run(connCheck_moderninha_sh_command,
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE)
+    attempt = 0
+    retries = 3
 
-    print("debugTest")
+    while attempt < retries:
 
-    print("stdout PRINT DEBUG")
-    connCheck_stdout_str = connCheck_moderninha_output.stdout.decode("ISO-8859-1")  # .decode("ascii")#.decode("utf-8")
-    list_connCheck_stdout_str = connCheck_stdout_str.split("\n")
-    print(list_connCheck_stdout_str)
+        try:
+            connCheck_moderninha_output = subprocess.run(
+                connCheck_moderninha_sh_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=5  # Set the timeout in seconds
+            )
 
-    print("stderr PRINT DEBUG")
-    # print(payment_output.stderr.decode("utf-8"))
-    connCheck_stderr_str = connCheck_moderninha_output.stderr.decode("ISO-8859-1")  # .decode("utf-8")
-    list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
-    print(list_connCheck_stderr_str)
+            print("debugTest")
 
-    connCheck_moderninha_output = int(list_connCheck_stdout_str[2].split('RETORNO: ', 1)[1])
-    print(connCheck_moderninha_output)
+            print("stdout PRINT DEBUG")
+            connCheck_stdout_str = connCheck_moderninha_output.stdout.decode("ISO-8859-1")
+            list_connCheck_stdout_str = connCheck_stdout_str.split("\n")
+            print(list_connCheck_stdout_str)
 
-    if connCheck_moderninha_output == 0:
-        status_conn_moderninha = "check"
-    else:
-        status_conn_moderninha = "error"
+            print("stderr PRINT DEBUG")
+            connCheck_stderr_str = connCheck_moderninha_output.stderr.decode("ISO-8859-1")
+            list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
+            print(list_connCheck_stderr_str)
+
+            connCheck_moderninha_output = int(list_connCheck_stdout_str[2].split('RETORNO: ', 1)[1])
+            print(connCheck_moderninha_output)
+
+            if connCheck_moderninha_output == 0:
+                status_conn_moderninha = "check"
+                break # If the connection test passes, exit the while loop
+            else:
+                status_conn_moderninha = "error"
+
+        except subprocess.TimeoutExpired:
+            print("Subprocess timed out.")
+            status_conn_moderninha = "error"
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            status_conn_moderninha = "error"
+
+        attempt += 1
+        time.sleep(2)
 
     print("status conn moderninha: "+status_conn_moderninha)
 
@@ -172,8 +192,12 @@ def checkConnPixServer(dict_paymentMethods_settings):
     # else:
     #     status_conn_servidor_pix = "erro"
 
-    request_ping = {"type": "ping", "param1": 0, "param2": 0}
-    response_request_ping = servConn.send_request(request_ping)
+    try:
+        request_ping = {"type": "ping", "param1": 0, "param2": 0}
+        response_request_ping = servConn.send_request(request_ping)
+    except:
+        print("Ping failure")
+        response_request_ping = {'ping': "erro"}
 
     if response_request_ping['ping'] == "OK":
         status_conn_servidor_pix = "check"
