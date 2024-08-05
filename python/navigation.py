@@ -347,8 +347,11 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
    #paycompleteFrame.after(5000, paycompleteFrame.destroy() )
 
    time_buffer = 5000
-   if pay_output_code == 0:
-      time_buffer = 20000
+   try:
+      if pay_output_code == 0:
+         time_buffer = 20000
+   except:
+      pass
 
    paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy() )
 
