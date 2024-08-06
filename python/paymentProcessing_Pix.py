@@ -5,6 +5,8 @@ import ssl
 import qrcode
 import time
 
+import rwSystemID
+
 from PIL import Image
 
 import client_connection as servConn
@@ -14,7 +16,10 @@ import client_connection as servConn
 
 def PixRequest(price_selected):
 
-    request_create_pix = {"type": "create_pix", "param1": 1, "param2": price_selected}
+    # Get system ID to be sent in request
+    systemID = rwSystemID.readSystemID()
+
+    request_create_pix = {"type": "create_pix", "param1": systemID, "param2": price_selected}
     response_PixRequest = servConn.send_request(request_create_pix)
 
     return response_PixRequest['pix_qrcode_copiaecola'], response_PixRequest['pix_txid']
@@ -34,7 +39,10 @@ def generate_img_QR_Code_Pix(pixCopiaECola):
 
 def get_status_cobranca(txid):
 
-    request_cob_read = {"type": "cob_read", "param1": 1, "param2": txid}
+    # Get system ID to be sent in request
+    systemID = rwSystemID.readSystemID()
+
+    request_cob_read = {"type": "cob_read", "param1": systemID, "param2": txid}
     response_StatusCob = servConn.send_request(request_cob_read, max_retries=5, delay=0)
 
     return response_StatusCob

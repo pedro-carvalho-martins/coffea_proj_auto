@@ -4,6 +4,7 @@ import time
 import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
+import rwSystemID
 
 import client_connection as servConn
 
@@ -192,8 +193,11 @@ def checkConnPixServer(dict_paymentMethods_settings):
     # else:
     #     status_conn_servidor_pix = "erro"
 
+    # Get system ID to be sent in request
+    systemID = rwSystemID.readSystemID()
+
     try:
-        request_ping = {"type": "ping", "param1": 0, "param2": 0}
+        request_ping = {"type": "ping", "param1": systemID, "param2": 0}
         response_request_ping = servConn.send_request(request_ping)
     except:
         print("Ping failure")
