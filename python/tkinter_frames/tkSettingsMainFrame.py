@@ -16,7 +16,7 @@ def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
 def createSettingSelectionFrame(settingsContainer):
 
 
-    lista_tipos_config = ["Preços", "Métodos pagamento", "Endereço MAC Moderninha", "Config. de rede - Encerrar app", "Config. tela inicial", "Voltar"]
+    lista_tipos_config = ["Preços", "Métodos pagamento", "Identificador sistema", "Endereço MAC Moderninha", "Config. de rede - Encerrar app", "Config. tela inicial", "Voltar"]
 
 
     settingSelectionFrame = tk.Frame(settingsContainer, height=480, width=320)
@@ -24,7 +24,7 @@ def createSettingSelectionFrame(settingsContainer):
 
     ## Configurando o Grid
 
-    settingSelectionFrame.rowconfigure(0, weight=3)
+    settingSelectionFrame.rowconfigure(0, weight=2)
     settingSelectionFrame.rowconfigure(1, weight=6)
     settingSelectionFrame.rowconfigure(2, weight=1)
     settingSelectionFrame.columnconfigure(0, weight=1)
@@ -34,16 +34,16 @@ def createSettingSelectionFrame(settingsContainer):
 
     label = tk.Label(
        settingSelectionFrame,
-       text="CONFIGURAÇÕES",
-       font=('SegoeUI', 20),
+       text="Configurações",
+       font=('SegoeUI', 14),
        wraplength=250)
-    label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
+    label.grid(column=0, row=0, sticky=tk.S, pady=10, padx=20)
 
 
     ## Crio o Frame dos botões
 
     button_frame = tk.Frame(settingSelectionFrame)
-    button_frame.grid(column=0, row=1, pady=10, padx=20)
+    button_frame.grid(column=0, row=1, pady=0, padx=20)
 
 
     ## Adiciono os botões
