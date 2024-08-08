@@ -7,7 +7,7 @@ import socket
 import json
 import time
 
-from python import rwLogCSV
+import rwLogCSV
 
 
 # Function to send requests to the server
