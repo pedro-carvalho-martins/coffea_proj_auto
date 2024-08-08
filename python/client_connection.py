@@ -7,6 +7,8 @@ import socket
 import json
 import time
 
+from python import rwLogCSV
+
 
 # Function to send requests to the server
 def send_request(request, max_retries=3, delay=2, timeout=5):
@@ -36,18 +38,28 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
                 print("Response from server:", response)
                 break # If it succeeds, exits the loop (break executes 'finally' before exiting)
 
-            except:
+
+            except Exception as e:
+
+                rwLogCSV.writeCSV("erro_outros", "", "", "send_request", str(e.__class__), str(e))
+
                 print("Exception raised")
 
             finally:
                 # Close the socket
                 client_socket.close()
 
-        except:
+        except Exception as e:
+
+            rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(e.__class__), str(e))
+
             print("Exception raised")
 
         attempt += 1
         time.sleep(delay)
+
+    if (attempt == max_retries):
+        rwLogCSV.writeCSV("erro_outros", "", "", "send_request", "", "maximum number of attempts to connect to server exceeded")
 
     return response
 

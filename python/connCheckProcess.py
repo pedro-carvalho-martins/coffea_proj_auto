@@ -5,6 +5,7 @@ import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
 import rwSystemID
+import rwLogCSV
 
 import client_connection as servConn
 
@@ -159,15 +160,22 @@ def checkConnModerninha(dict_paymentMethods_settings):
                 status_conn_moderninha = "error"
 
         except subprocess.TimeoutExpired:
+
             print("Subprocess timed out.")
+            rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "TimeoutExpired", "Subprocess timed out")
             status_conn_moderninha = "error"
 
         except Exception as e:
             print(f"An error occurred: {e}")
+            rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", str(e.__class__), str(e))
             status_conn_moderninha = "error"
 
         attempt += 1
         time.sleep(2)
+
+    if attempt == retries:
+        rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "",
+                          "maximum number of attempts to connect to Moderninha exceeded")
 
     print("status conn moderninha: "+status_conn_moderninha)
 
@@ -199,8 +207,9 @@ def checkConnPixServer(dict_paymentMethods_settings):
     try:
         request_ping = {"type": "ping", "param1": systemID, "param2": 0}
         response_request_ping = servConn.send_request(request_ping)
-    except:
+    except Exception as e:
         print("Ping failure")
+        rwLogCSV.writeCSV("erro_outros", "", "", "request_ping", str(e.__class__), str(e))
         response_request_ping = {'ping': "erro"}
 
     if response_request_ping['ping'] == "OK":
@@ -261,7 +270,7 @@ def launchStartupConnCheckProcess():
 def launchBackgroundConnCheckProcess(arg1, arg2):
 
     while True:
-        time.sleep(10)
+        time.sleep(300)
         print("background connCheck starts")
 
         # Gets dictionary of payment method settings to check what is enabled and disabled

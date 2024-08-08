@@ -1,6 +1,8 @@
 import subprocess
 import time
 
+import rwLogCSV
+
 def launchPaymentProcessing(price, paymentMethod):
 #TEST
     
@@ -15,8 +17,6 @@ def launchPaymentProcessing(price, paymentMethod):
         print("ErrorPaymentMethod "+paymentMethod)
         
     priceInput = str(int(price*100))
-        
-    
     
     print(priceInput)
     print(paymentMethodInput)
@@ -30,7 +30,6 @@ def launchPaymentProcessing(price, paymentMethod):
         priceInput,
         "ABC"
         ]
-
 
     attempt = 0
     retries = 2
@@ -61,11 +60,18 @@ def launchPaymentProcessing(price, paymentMethod):
             print(payment_output)
             break  # If it succeeds, exit the while loop
 
-        except:
+        except Exception as e:
             print("except payment processing")
+
+            rwLogCSV.writeCSV("venda_erro", str(price), "Moderninha", "launchPaymentProcessing_Moderninha", str(e.__class__), str(e))
+
             payment_output = -1
 
         attempt += 1
+
+    if attempt == retries:
+        rwLogCSV.writeCSV("venda_erro", str(price), "Moderninha", "launchPaymentProcessing_Moderninha", "",
+                      "maximum number of attempts to connect to Moderninha exceeded")
     
     return payment_output
     

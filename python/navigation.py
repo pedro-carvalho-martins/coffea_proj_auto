@@ -33,6 +33,7 @@ import kill_shell_loop
 
 import rwUltimoPag
 import rwHelloSettingFile
+import rwLogCSV
 
 
 ##
@@ -278,7 +279,10 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
       threadPay = Thread(target=launchPayment, args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
       threadPay.start()
 
-   except:
+   except Exception as e:
+
+      rwLogCSV.writeCSV("venda_erro", str(price_selected), "Pix", "launchPixRequest", str(e.__class__), str(e))
+
       payprocessFrame.pack_forget()
       payprocessFrame.destroy()
 
@@ -333,7 +337,10 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
       else:
           paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
 
-   except:
+   except Exception as e:
+
+      rwLogCSV.writeCSV("venda_erro", str(price_selected), "Undefined", "launchPayment", str(e.__class__), str(e))
+
       payprocessFrame.pack_forget()
       payprocessFrame.destroy()
       paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
@@ -349,7 +356,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
    time_buffer = 5000
    try:
-      if pay_output_code == 0:
+      if pay_output_code == 0: # If payment is successful, display successful payment screen for 20s
          time_buffer = 20000
    except:
       pass
@@ -498,9 +505,12 @@ def inhibitEndListener(dummyVar1,dummyVar2):
 
 
 def launchSendSignal(price,dummyVar):
-    sendSignalGPIO.sendOutputSignal(price)
 
+   try:
+      sendSignalGPIO.sendOutputSignal(price)
+   except Exception as e:
+      rwLogCSV.writeCSV("erro_outros", str(price), "Undefined", "launchSendSignal_sendSignalGPIO", str(e.__class__), str(e))
 
 def quitProgramAfterSettings():
-   mainContainer.destroy()
-   settingsContainer.destroy()
+    mainContainer.destroy()
+    settingsContainer.destroy()
