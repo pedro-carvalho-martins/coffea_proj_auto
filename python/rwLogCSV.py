@@ -12,7 +12,7 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
     nome_sistema = rwSystemID.readSystemID()
 
     # Define the CSV filename
-    filename = "tmp_log_client.csv"
+    filename = "./log_files/tmp_log_client.csv"
 
     # Open the file in append mode
     with open(filename, 'a', newline='') as csvfile:
