@@ -63,14 +63,14 @@ def launchPaymentProcessing(price, paymentMethod):
         except Exception as e:
             print("except payment processing")
 
-            rwLogCSV.writeCSV("venda_erro", str(price), "Moderninha", "launchPaymentProcessing_Moderninha", str(e.__class__), str(e))
+            rwLogCSV.writeCSV("venda_erro", str(price), paymentMethod, "launchPaymentProcessing_Moderninha", str(e.__class__), str(e))
 
             payment_output = -1
 
         attempt += 1
 
     if attempt == retries:
-        rwLogCSV.writeCSV("venda_erro", str(price), "Moderninha", "launchPaymentProcessing_Moderninha", "",
+        rwLogCSV.writeCSV("venda_erro", str(price), paymentMethod, "launchPaymentProcessing_Moderninha", "",
                       "maximum number of attempts to connect to Moderninha exceeded")
     
     return payment_output

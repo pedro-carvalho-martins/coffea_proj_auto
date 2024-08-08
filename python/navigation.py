@@ -281,7 +281,7 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
    except Exception as e:
 
-      rwLogCSV.writeCSV("venda_erro", str(price_selected), "Pix", "launchPixRequest", str(e.__class__), str(e))
+      rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest", str(e.__class__), str(e))
 
       payprocessFrame.pack_forget()
       payprocessFrame.destroy()
@@ -332,6 +332,9 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
       if pay_output_code == 0:
           paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
           rwUltimoPag.writeValue(price_selected)
+
+          rwLogCSV.writeCSV("venda_sucesso", str(price_selected), payment_method_selected, "", "", "")
+
           threadSignal = Thread(target=launchSendSignal, args=(price_selected,0))
           threadSignal.start()
       else:
@@ -339,7 +342,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
    except Exception as e:
 
-      rwLogCSV.writeCSV("venda_erro", str(price_selected), "Undefined", "launchPayment", str(e.__class__), str(e))
+      rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__), str(e))
 
       payprocessFrame.pack_forget()
       payprocessFrame.destroy()
