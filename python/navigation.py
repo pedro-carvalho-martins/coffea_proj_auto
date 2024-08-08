@@ -60,8 +60,8 @@ def navigate_startupFrame(session_number):
    mainContainer.resizable(False, False)
 
    ## Comment block for Windows testing
-   mainContainer.attributes('-fullscreen', True)
-   #mainContainer.attributes('-fullscreen', False)
+   #mainContainer.attributes('-fullscreen', True)
+   mainContainer.attributes('-fullscreen', False)
    ## End of block for Windows testing
     
    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
