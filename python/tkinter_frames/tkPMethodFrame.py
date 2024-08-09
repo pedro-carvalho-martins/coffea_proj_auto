@@ -27,11 +27,11 @@ def getPaymentMethodList():
             or lista_metodos_pag_habilitados[i] == "Débito"
             or lista_metodos_pag_habilitados[i] == "Voucher"):
 
-            if status_conexoes["Moderninha"] == "erro":
+            if status_conexoes["Moderninha"] == "error":
                 conn_error_pMethods.append(lista_metodos_pag_habilitados.pop(i))
 
         elif (lista_metodos_pag_habilitados[i] == "QR Code (Pix)"):
-            if status_conexoes["QR Code (Pix)"] == "erro":
+            if status_conexoes["QR Code (Pix)"] == "error":
                 conn_error_pMethods.append(lista_metodos_pag_habilitados.pop(i))
 
     return lista_metodos_pag_habilitados, conn_error_pMethods

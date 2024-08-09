@@ -97,3 +97,5 @@ def writeConnCheckStatus(connCheckDict):
 #
 #     connCheckFile.close()
 
+if __name__ == "__main__":
+    readConnCheckStatus()
