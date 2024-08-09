@@ -126,7 +126,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
     ]
 
     attempt = 0
-    retries = 3
+    retries = 2
 
     while attempt < retries:
 
@@ -171,7 +171,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
             status_conn_moderninha = "error"
 
         attempt += 1
-        time.sleep(2)
+        time.sleep(1)
 
     if attempt == retries:
         rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "",
