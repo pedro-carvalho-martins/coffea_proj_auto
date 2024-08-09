@@ -1,11 +1,14 @@
 import random
 import subprocess
 import time
+
 import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
 import rwSystemID
 import rwLogCSV
+
+import threading
 
 import client_connection as servConn
 
@@ -100,6 +103,8 @@ def launchConnectBTProcess():
 
 def checkConnModerninha(dict_paymentMethods_settings):
 
+    global status_conn_moderninha
+
     # If all card payment options are disabled, status_conn_moderninha is disabled. Otherwise, do connection check
     if (dict_paymentMethods_settings['Débito'] == 'disabled'
             and dict_paymentMethods_settings['Crédito'] == 'disabled'
@@ -184,6 +189,8 @@ def checkConnModerninha(dict_paymentMethods_settings):
 
 def checkConnPixServer(dict_paymentMethods_settings):
 
+    global status_conn_servidor_pix
+
     # If QR Code payment option is disabled, status_conn_servidor_pix is disabled. Otherwise, do connection check
     if dict_paymentMethods_settings['QR Code (Pix)'] == 'disabled':
         status_conn_servidor_pix = "disabled"
@@ -239,8 +246,28 @@ def launchStartupConnCheckProcess():
     dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()
 
     # Call the functions that will retrieve the status of each connection
-    checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+    # Old implementation without threading - connection checks were not in parallel
+    # checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
+    # checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+
+    # Call the functions that will retrieve the status of each connection
+    # New implementation with threading - connection checks in parallel
+
+    # Create threads for each function, passing the necessary arguments
+    thread_checkConnModerninha = threading.Thread(target=checkConnModerninha, args=(dict_paymentMethods_settings,))
+    thread_checkConnPixServer = threading.Thread(target=checkConnPixServer, args=(dict_paymentMethods_settings,))
+
+    # Start the threads
+    thread_checkConnModerninha.start()
+    thread_checkConnPixServer.start()
+
+    # Wait for both threads to complete
+    thread_checkConnModerninha.join()
+    thread_checkConnPixServer.join()
+
+    # Assign the value of the global variables to the variables that will be passed on to the next functions
+    checkConnModerninha_result = status_conn_moderninha
+    checkConnPixServer_result = status_conn_servidor_pix
 
     # Assign the connection status to the variables that will define the images displayed on the connCheck frame
     tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
