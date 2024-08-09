@@ -259,10 +259,22 @@ def launchStartupConnCheckProcess():
         or tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "disabled")
     ):
         connCheck_output = 0 # Success
+
+    # If both fail, send output -1 indicating that the connCheck should be restarted
+    elif (
+        tkinter_frames.tkConnCheckFrame.status_conn_moderninha != "check"
+        and tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix != "check"
+    ):
+        connCheck_output = -1  # Complete fail
+
     else:
-        connCheck_output = 1 # Fail or partial fail
+        connCheck_output = 1 # Partial fail
+
+        # Feature de exibição dos botões "Reconectar" e "Continuar" no Frame de ConnCheck.
+        # Código comentado - feature abandonada para facilitar a experiência do usuário.
+        # No lugar de mostrar os botões, mostra o resultado dos testes com um sleep e segue adiante
         # Show buttons to reconnect or continue anyway after connection fails or partially fails
-        tkinter_frames.tkConnCheckFrame.display_buttons = "yes"
+        #tkinter_frames.tkConnCheckFrame.display_buttons = "yes"
 
     return connCheck_output
 

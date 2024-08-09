@@ -139,21 +139,34 @@ def launchConnCheck(connCheckFrame, dummyVariable):
       connCheckFrame.destroy()
       check_helloScreen(connCheckFrame)
 
-   else: # Falha completa ou parcial no teste de conexão: mostra falhas e botões de reconectar ou continuar
-      while True:
-         if tkConnCheckFrame.flag_reconectar == "sim":
-            tkConnCheckFrame.flag_reconectar = "none"
-            connCheckFrame.pack_forget()
-            connCheckFrame.destroy()
-            navigate_connCheckFrame(connCheckFrame)
-            break
-         if tkConnCheckFrame.flag_continuar == "sim":
-            tkConnCheckFrame.flag_continuar = "none"
-            connCheckFrame.pack_forget()
-            connCheckFrame.destroy()
-            check_helloScreen(connCheckFrame)
+   # Feature de exibição dos botões "Reconectar" e "Continuar" no Frame de ConnCheck.
+   # Código comentado - feature abandonada para facilitar a experiência do usuário.
+   # No lugar de mostrar os botões, mostra o resultado dos testes com um sleep e segue adiante
+   # else: # Falha completa ou parcial no teste de conexão: mostra falhas e botões de reconectar ou continuar
+   #    while True:
+   #       if tkConnCheckFrame.flag_reconectar == "sim":
+   #          tkConnCheckFrame.flag_reconectar = "none"
+   #          connCheckFrame.pack_forget()
+   #          connCheckFrame.destroy()
+   #          navigate_connCheckFrame(connCheckFrame)
+   #          break
+   #       if tkConnCheckFrame.flag_continuar == "sim":
+   #          tkConnCheckFrame.flag_continuar = "none"
+   #          connCheckFrame.pack_forget()
+   #          connCheckFrame.destroy()
+   #          check_helloScreen(connCheckFrame)
 
+   elif conn_check_output_code == 1: # Falha parcial de conexão - segue normalmente mas indica resultado na tela
+      time.sleep(3)
+      connCheckFrame.pack_forget()
+      connCheckFrame.destroy()
+      check_helloScreen(connCheckFrame)
 
+   else: # Falha completa de conexão - Faz o teste novamente.
+      time.sleep(10)
+      connCheckFrame.pack_forget()
+      connCheckFrame.destroy()
+      navigate_connCheckFrame(connCheckFrame)
 
 def check_helloScreen(currentFrame):
 

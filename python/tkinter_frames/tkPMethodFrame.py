@@ -117,8 +117,12 @@ def createPaymentMethodFrame(mainContainer, price_selected):
        text="Falha de conexão: "+str(conn_error_pMethods)+"\n" + "Entrar em contato com suporte técnico",
        font=('SegoeUI', 10), fg='red',
        wraplength=250)
-    if len(conn_error_pMethods) > 0:
-        label_flag_fail.grid(column=0, row=2, sticky=tk.S, pady=0, padx=20)
+
+    # Feature de exibição dos métodos de pagamento cujo ConnCheck falhou.
+    # Código comentado - feature abandonada para não confundir o usuário no momento do pagamento.
+
+    # if len(conn_error_pMethods) > 0:
+    #     label_flag_fail.grid(column=0, row=2, sticky=tk.S, pady=0, padx=20)
 
 
     ## Crio o Frame inferior
