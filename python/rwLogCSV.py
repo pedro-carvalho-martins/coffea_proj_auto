@@ -1,6 +1,8 @@
 from datetime import datetime
 import csv
 
+from shared_resource import file_lock
+
 import rwSystemID
 
 def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro, descricao_erro):
@@ -14,9 +16,10 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
     # Define the CSV filename
     filename = "./log_files/tmp_log_client.csv"
 
+    with file_lock:
     # Open the file in append mode
-    with open(filename, 'a', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=';')
-        csvwriter.writerow([datetime_register_str, nome_sistema, tipo_registro, valor_venda_str,
-                            metodo_pag, etapa_erro, classe_erro, descricao_erro])
+        with open(filename, 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=';')
+            csvwriter.writerow([datetime_register_str, nome_sistema, tipo_registro, valor_venda_str,
+                                metodo_pag, etapa_erro, classe_erro, descricao_erro])
 
