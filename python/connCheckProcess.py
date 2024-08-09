@@ -247,27 +247,29 @@ def launchStartupConnCheckProcess():
 
     # Call the functions that will retrieve the status of each connection
     # Old implementation without threading - connection checks were not in parallel
-    # checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-    # checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+    checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
+    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+
+    # 08.08.2024 - Using old implementation again
+    # There is suspicion that the new implementation was causing some problems in RPi Wi-Fi and BT capabilities by trying to use both simultaneously.
 
     # Call the functions that will retrieve the status of each connection
     # New implementation with threading - connection checks in parallel
-
     # Create threads for each function, passing the necessary arguments
-    thread_checkConnModerninha = threading.Thread(target=checkConnModerninha, args=(dict_paymentMethods_settings,))
-    thread_checkConnPixServer = threading.Thread(target=checkConnPixServer, args=(dict_paymentMethods_settings,))
-
-    # Start the threads
-    thread_checkConnModerninha.start()
-    thread_checkConnPixServer.start()
-
-    # Wait for both threads to complete
-    thread_checkConnModerninha.join()
-    thread_checkConnPixServer.join()
-
-    # Assign the value of the global variables to the variables that will be passed on to the next functions
-    checkConnModerninha_result = status_conn_moderninha
-    checkConnPixServer_result = status_conn_servidor_pix
+    # thread_checkConnModerninha = threading.Thread(target=checkConnModerninha, args=(dict_paymentMethods_settings,))
+    # thread_checkConnPixServer = threading.Thread(target=checkConnPixServer, args=(dict_paymentMethods_settings,))
+    #
+    # # Start the threads
+    # thread_checkConnModerninha.start()
+    # thread_checkConnPixServer.start()
+    #
+    # # Wait for both threads to complete
+    # thread_checkConnModerninha.join()
+    # thread_checkConnPixServer.join()
+    #
+    # # Assign the value of the global variables to the variables that will be passed on to the next functions
+    # checkConnModerninha_result = status_conn_moderninha
+    # checkConnPixServer_result = status_conn_servidor_pix
 
     # Assign the connection status to the variables that will define the images displayed on the connCheck frame
     tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
