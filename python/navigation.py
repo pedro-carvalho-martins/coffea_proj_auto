@@ -31,6 +31,8 @@ import signalListenerGPIO
 import connCheckProcess
 import kill_shell_loop
 
+import logTransmissionProcess
+
 import rwUltimoPag
 import rwHelloSettingFile
 import rwLogCSV
@@ -171,9 +173,14 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 def check_helloScreen(currentFrame):
 
    # Lanço verificação periódica de conexão
-   threadBackgoundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
-   threadBackgoundConnCheck.daemon = True
-   threadBackgoundConnCheck.start()
+   threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
+   threadBackgroundConnCheck.daemon = True
+   threadBackgroundConnCheck.start()
+
+   # Lanço envio de logs ao servidor
+   threadLogTransmission = Thread(target=logTransmissionProcess.startLogTransmission, args=(0, 0))
+   threadLogTransmission.daemon = True
+   threadLogTransmission.start()
 
    #helloScreenOn=1
    # Verifica se a tela de "toque aqui para iniciar" está habilitada ou não
