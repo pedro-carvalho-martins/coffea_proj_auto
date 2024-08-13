@@ -23,8 +23,8 @@ def get_server_datetime():
     return server_datetime
 
 def get_client_datetime():
-    datetime_register_str = str(datetime.now())[0:19]
-    return datetime_register_str
+    datetime_client_str = str(datetime.now())[0:19]
+    return datetime_client_str
 
 
 def send_json_file(request):
@@ -60,8 +60,15 @@ def prep_send_json_files(json_folder):
         print(request)
 
         # Send the request to server
-        server_response = send_json_file(request)
+        try:
+            server_response = send_json_file(request)
+        except Exception as e:
+            rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_send_json_file_errA", str(e.__class__),
+                              str(e))
+
         if server_response['status'] != 'received':
+            rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_send_json_file_errB", "",
+                              "check server log for details")
             return "fail"
 
 
@@ -98,37 +105,65 @@ def verify_json_files(json_folder):
         print('client size')
         print(client_size)
 
-        if server_size == client_size: # Not currently working. Investigate why.
+        if server_size == client_size: # Works only on Linux
         #if server_size > 0:
             request = {
                 "type": "acknowledge_file",
                 "param1": client_name,
                 "param2": os.path.basename(json_file)
             }
-            response_ack_json = servConn.send_request(request)
+            try:
+                response_ack_json = servConn.send_request(request)
+            except Exception as e:
+                rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_file_verification_errAckA", str(e.__class__),
+                      str(e))
 
             if response_ack_json['ack'] == 'acknowledged':
-                os.remove(json_file)
+                os.remove(file_path)
             else:
                 print('error')
+                rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_file_verification_errAckB", "", "")
+
+
+        else:
+            rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_file_verification_errSizeCheck", "",
+                              "file"+str(os.path.basename(json_file))+"server_size:"+str(server_size)+" client_size:"+str(client_size))
 
 
 def startLogTransmission():
 
     client_datetime = get_client_datetime()
-    server_datetime = get_server_datetime()
 
-    if server_datetime == "erro":
+    try:
+        server_datetime = get_server_datetime()
+    except Exception as e:
+        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_server_datetime_errA", str(e.__class__),
+                      str(e))
         return
 
-    json_files_folder_path = rwLogCSV.prepare_json_files_from_csv(client_datetime, server_datetime)
+    if server_datetime == "erro":
+        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_server_datetime_errB", "",
+                      "check server log for details")
+        return
 
-    # Call function to send files from json folder to server
-    status_files_sending = prep_send_json_files(json_files_folder_path)
+    try:
+        json_files_folder_path = rwLogCSV.build_json_files_from_csv(client_datetime, server_datetime)
+    except Exception as e:
+        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_build_json_from_csv", str(e.__class__),
+                      str(e))
+        return
+
+    # Call function to prepare request and send files from json folder to server
+    try:
+        status_files_sending = prep_send_json_files(json_files_folder_path)
+    except Exception as e:
+        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_send_json_files_errC", str(e.__class__),
+                      str(e))
+        return
+
 
     if status_files_sending == 'fail':
-        # Treat error later
-        # can be a partial or full error. Go in depth later on.
+        # Can be a partial or full error. Error catching is inside function.
         return
 
     ## Error treatment?? ##

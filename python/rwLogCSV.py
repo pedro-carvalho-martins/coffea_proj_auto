@@ -42,7 +42,7 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
 
 
 
-def prepare_json_files_from_csv(client_datetime, server_datetime, max_lines_per_file=5):
+def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_file=5):
     filename_csv_tmp_log = "./log_files/tmp_log_client.csv"
     json_filepath_folder = "./log_files/json_files_tmp/"
     client_name = rwSystemID.readSystemID()
@@ -72,5 +72,12 @@ def prepare_json_files_from_csv(client_datetime, server_datetime, max_lines_per_
                 with open(json_filepath, 'w') as jsonfile:
                     json.dump(json_data, jsonfile, indent=4)
                 part_num += 1
+
+        # Rows that haven't been passed to json files
+
+        remaining_rows = rows[(part_num-1) * max_lines_per_file:]
+        with open(filename_csv_tmp_log, 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=';')
+            csvwriter.writerows(remaining_rows)
 
     return json_filepath_folder
