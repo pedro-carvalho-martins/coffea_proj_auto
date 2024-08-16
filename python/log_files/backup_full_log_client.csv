@@ -58,3 +58,338 @@ datetime_register_str;nome_sistema;tipo_registro;valor_venda;metodo_pag;etapa_er
 2024-08-12 17:30:13;A123EE0;erro_outros;;;send_request_client_socket;<class -ConnectionRefusedError->;[WinError 10061] No connection could be made because the target machine actively refused it
 2024-08-12 17:30:15;A123EE0;erro_outros;;;send_request;;maximum number of attempts to connect to server exceeded
 2024-08-12 17:30:15;A123EE0;erro_outros;;;request_datetime_server;<class -UnboundLocalError->;cannot access local variable -response- where it is not associated with a value
+2024-08-13 12:18:49;A123EE0;erro_outros;0;N/A;logTransmission_send_json_file_errB;;check server log for details
+2024-08-13 12:23:03;A123EE0;erro_outros;;;send_request;<class -TimeoutError->;timed out
+2024-08-13 12:23:05;A123EE0;erro_outros;;;send_request_client_socket;<class -OSError->;[WinError 10038] An operation was attempted on something that is not a socket
+2024-08-13 12:23:07;A123EE0;erro_outros;;;send_request_client_socket;<class -OSError->;[WinError 10038] An operation was attempted on something that is not a socket
+2024-08-13 12:23:09;A123EE0;erro_outros;;;send_request;;maximum number of attempts to connect to server exceeded
+2024-08-13 12:23:09;A123EE0;erro_outros;;;request_datetime_server;<class -UnboundLocalError->;cannot access local variable -response- where it is not associated with a value
+2024-08-13 12:23:09;A123EE0;erro_outros;0;N/A;logTransmission_server_datetime_errB;;check server log for details
+2024-08-13 12:25:17;A123EE0;erro_outros;0;N/A;logTransmission_send_json_file_errB;;check server log for details
+2024-08-13 12:29:06;A123EE0;erro_outros;0;N/A;logTransmission_send_json_file_errB;;check server log for details
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_1.jsonserver_size:1421 client_size:1476
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_10.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_11.jsonserver_size:1674 client_size:1729
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_12.jsonserver_size:681 client_size:706
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_2.jsonserver_size:1625 client_size:1680
+2024-08-13 12:30:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_3.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_4.jsonserver_size:1535 client_size:1590
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_5.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_6.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_7.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_8.jsonserver_size:1458 client_size:1513
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_13_46_part_9.jsonserver_size:1558 client_size:1613
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_1.jsonserver_size:1421 client_size:1476
+2024-08-13 12:30:39;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_10.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_11.jsonserver_size:1674 client_size:1729
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_12.jsonserver_size:1683 client_size:1738
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_13.jsonserver_size:681 client_size:706
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_2.jsonserver_size:1625 client_size:1680
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_3.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_4.jsonserver_size:1535 client_size:1590
+2024-08-13 12:30:40;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_5.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_6.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_7.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_8.jsonserver_size:1458 client_size:1513
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-12 20_30_31_part_9.jsonserver_size:1558 client_size:1613
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_1.jsonserver_size:1421 client_size:1476
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_10.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_11.jsonserver_size:1674 client_size:1729
+2024-08-13 12:30:41;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_12.jsonserver_size:1683 client_size:1738
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_13.jsonserver_size:681 client_size:706
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_2.jsonserver_size:1625 client_size:1680
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_3.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_4.jsonserver_size:1535 client_size:1590
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_5.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:42;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_6.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_7.jsonserver_size:1587 client_size:1642
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_8.jsonserver_size:1458 client_size:1513
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_18_48_part_9.jsonserver_size:1558 client_size:1613
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_25_16_part_1.jsonserver_size:1457 client_size:1512
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_25_16_part_2.jsonserver_size:681 client_size:706
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_29_05_part_1.jsonserver_size:366 client_size:381
+2024-08-13 12:30:43;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-13 15_30_31_part_1.jsonserver_size:366 client_size:381
+2024-08-13 12:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:33:38;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:14;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:15;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:15;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:15;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:15;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:16;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:16;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:16;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:16;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:17;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:17;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:17;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:17;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:18;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:18;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:18;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:18;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:19;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:19;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:19;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:19;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:20;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:20;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:20;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:20;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:21;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:21;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:21;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:21;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:22;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:22;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:22;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:22;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:23;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:23;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:23;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:23;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:24;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:24;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:24;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:24;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:25;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:25;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:25;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:25;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:26;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:26;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:26;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:26;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-13 12:39:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:26;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:27;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:28;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:29;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:30;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:31;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:32;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:33;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:34;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:35;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:36;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:33:37;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:49;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:50;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:51;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:52;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:53;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:54;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:56;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:57;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:58;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:59;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:59;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:59;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:39:59;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errAckB;;
+2024-08-15 23:58:22;A123EE0;erro_outros;;;send_request_client_socket;<class -ConnectionRefusedError->;[WinError 10061] No connection could be made because the target machine actively refused it
+2024-08-15 23:58:26;A123EE0;erro_outros;;;send_request_client_socket;<class -ConnectionRefusedError->;[WinError 10061] No connection could be made because the target machine actively refused it
+2024-08-15 23:58:31;A123EE0;erro_outros;;;send_request_client_socket;<class -ConnectionRefusedError->;[WinError 10061] No connection could be made because the target machine actively refused it
+2024-08-15 23:58:33;A123EE0;erro_outros;;;send_request;;maximum number of attempts to connect to server exceeded
+2024-08-15 23:58:33;A123EE0;erro_outros;;;request_datetime_server;<class -UnboundLocalError->;cannot access local variable -response- where it is not associated with a value
+2024-08-15 23:58:33;A123EE0;erro_outros;0;N/A;logTransmission_server_datetime_errB;;check server log for details
