@@ -106,7 +106,7 @@ def verify_json_files(json_folder):
         print(client_size)
 
         if server_size == client_size: # Works on Raspberry Pi. Uncomment it after Windows testing
-        # if server_size == server_size: # Make this line uncommented only for Windows testing
+        #if server_size == server_size: # Make this line uncommented only for Windows testing
             request = {
                 "type": "acknowledge_file",
                 "param1": client_name,
