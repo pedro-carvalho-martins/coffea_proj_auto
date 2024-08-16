@@ -178,7 +178,7 @@ def check_helloScreen(currentFrame):
    threadBackgroundConnCheck.start()
 
    # Lanço envio de logs ao servidor
-   threadLogTransmission = Thread(target=logTransmissionProcess.startLogTransmission, args=())
+   threadLogTransmission = Thread(target=logTransmissionProcess.startLogTransmission, args=(0, 0))
    threadLogTransmission.daemon = True
    threadLogTransmission.start()
 

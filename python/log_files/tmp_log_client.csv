@@ -1,0 +1,2 @@
+datetime_register_str;nome_sistema;tipo_registro;valor_venda;metodo_pag;etapa_erro;descricao_erro
+2024-08-16 01:23:55;A123EE0;erro_outros;0;N/A;logTransmission_file_verification_errSizeCheck;;fileA123EE0_2024-08-16 04_23_54_part_1.jsonserver_size:560 client_size:583

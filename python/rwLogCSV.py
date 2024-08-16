@@ -76,6 +76,12 @@ def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_fi
         # Rows that haven't been passed to json files
 
         remaining_rows = rows[(part_num-1) * max_lines_per_file:]
+
+        # Ensure that the header is retained
+        if len(rows) > 0:
+            header = rows[0]  # Assuming the first row is the header
+            remaining_rows.insert(0, header)
+
         with open(filename_csv_tmp_log, 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerows(remaining_rows)

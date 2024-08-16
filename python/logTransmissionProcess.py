@@ -130,7 +130,7 @@ def verify_json_files(json_folder):
                               "file"+str(os.path.basename(json_file))+"server_size:"+str(server_size)+" client_size:"+str(client_size))
 
 
-def startLogTransmission():
+def startLogTransmission(placeholderVar1, placeholderVar2):
 
     client_datetime = get_client_datetime()
 
@@ -176,4 +176,4 @@ def startLogTransmission():
 
 
 if __name__ == "__main__":
-    startLogTransmission()
+    startLogTransmission(0, 0)
