@@ -187,7 +187,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
     return status_conn_moderninha
 
 
-def checkConnPixServer(dict_paymentMethods_settings):
+def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result):
 
     global status_conn_servidor_pix
 
@@ -211,8 +211,11 @@ def checkConnPixServer(dict_paymentMethods_settings):
     # Get system ID to be sent in request
     systemID = rwSystemID.readSystemID()
 
+    # Use Moderninha connection status to log to server's connection report log
+    moderninha_conn_status_str_req = "moderninha_"+checkConnModerninha_result
+
     try:
-        request_ping = {"type": "ping", "param1": systemID, "param2": 0}
+        request_ping = {"type": "ping", "param1": systemID, "param2": moderninha_conn_status_str_req}
         response_request_ping = servConn.send_request(request_ping)
     except Exception as e:
         print("Ping failure")
@@ -248,7 +251,7 @@ def launchStartupConnCheckProcess():
     # Call the functions that will retrieve the status of each connection
     # Old implementation without threading - connection checks were not in parallel
     checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
 
     # 08.08.2024 - Using old implementation again
     # There is suspicion that the new implementation was causing some problems in RPi Wi-Fi and BT capabilities by trying to use both simultaneously.
