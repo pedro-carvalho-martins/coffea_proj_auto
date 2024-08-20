@@ -322,7 +322,7 @@ def launchBackgroundConnCheckProcess(arg1, arg2):
 
         # Call the functions that will retrieve the status of each connection
         checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-        checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings)
+        checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
 
         # Assign the connection status to the variables that will define the images displayed on the connCheck frame
         tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
