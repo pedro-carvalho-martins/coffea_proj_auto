@@ -42,9 +42,15 @@ def prep_send_json_files(json_folder):
         # Construct the full file path
         file_path = os.path.join(json_folder, json_file)
 
-        # Read the JSON data from the file
-        with open(file_path, 'r') as file:
-            json_data = json.load(file)
+        try: # Catch errors if a json file is empty
+            # Read the JSON data from the file
+            with open(file_path, 'r') as file:
+                json_data = json.load(file)
+
+        except Exception as e: # If the file is empty or there is another problem, delete it.
+            rwLogCSV.writeCSV("erro_outros", "0", "N/A", "erroAberturaJSON_arquivoDeletado_prep_send_json_files", str(e.__class__),
+                              str(e))
+            os.remove(file_path)
 
         # Prepare the request
         request = {
