@@ -51,6 +51,7 @@ def prep_send_json_files(json_folder):
             rwLogCSV.writeCSV("erro_outros", "0", "N/A", "erroAberturaJSON_arquivoDeletado_prep_send_json_files", str(e.__class__),
                               str(e))
             os.remove(file_path)
+            continue
 
         # Prepare the request
         request = {
