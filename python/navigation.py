@@ -503,6 +503,8 @@ def navigate_InhibitFrame():
 
    global inhibitContainer
 
+   logTransmissionProcess.sendInhibitAlert()
+
    inhibitContainer = tk.Toplevel()
    inhibitContainer.title("inhibit_container")
 

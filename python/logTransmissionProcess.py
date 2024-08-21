@@ -182,5 +182,25 @@ def startLogTransmission(placeholderVar1, placeholderVar2):
     verify_json_files(json_files_folder_path)
 
 
+def sendInhibitAlert():
+
+    rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "sendInhibitAlert_called", '', '')
+
+    client_name = rwSystemID.readSystemID()
+
+    request = {
+        "type": "inhibit_alert",
+        "param1": client_name,
+        "param2": 0
+    }
+
+    try:
+        servConn.send_request(request)
+    except Exception as e:
+        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "sendInhibitAlert_called_exception", str(e.__class__),
+                          str(e))
+
+
+
 if __name__ == "__main__":
     startLogTransmission(0, 0)
