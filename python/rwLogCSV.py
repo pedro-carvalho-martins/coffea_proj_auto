@@ -94,6 +94,36 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
                                 metodo_pag, etapa_erro, classe_erro, descricao_erro])
 
 
+def remove_corrupted_characters(file_path, temp_file_path):
+    with open(file_path, 'rb') as file:
+        content = file.read()
+    # Remove null characters
+    cleaned_content = content.replace(b'\x00', b'')
+    # Write cleaned content to a temporary file
+    with open(temp_file_path, 'wb') as temp_file:
+        temp_file.write(cleaned_content)
+
+def clean_csv_file(csv_file_path):
+    temp_file_path = csv_file_path + '.tmp'
+
+    # Lock file to prevent simultaneous access
+    with file_lock:
+        # Remove null characters and create a temporary file
+        remove_corrupted_characters(csv_file_path, temp_file_path)
+
+        # Process the cleaned CSV file
+        with open(temp_file_path, 'r', encoding='utf-8', errors='replace') as file:
+            reader = csv.reader(file, delimiter=';')
+            rows = [row for row in reader]
+
+        # Write the cleaned content back to the original file
+        with open(csv_file_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file, delimiter=';')
+            writer.writerows(rows)
+
+        # Remove the temporary file
+        os.remove(temp_file_path)
+
 
 def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_file=5):
     filename_csv_tmp_log = "./log_files/tmp_log_client.csv"
@@ -101,6 +131,9 @@ def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_fi
     client_name = rwSystemID.readSystemID()
 
     server_datetime_str = server_datetime.replace(":", "_")
+
+    # Cleans the CSV file, since many issues with corrupted characters in this file started to arise
+    clean_csv_file("./log_files/tmp_log_client.csv")
 
     with file_lock:
         with open(filename_csv_tmp_log, 'r') as csvfile:
