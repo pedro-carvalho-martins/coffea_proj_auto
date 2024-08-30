@@ -1,2 +1,1 @@
 datetime_register_str;nome_sistema;tipo_registro;valor_venda;metodo_pag;etapa_erro;descricao_erro
-2024-08-29 23:36:12;Default_ID;erro_outros;;;checkConnModerninha;<class -OSError->;[WinError 193] %1 is not a valid Win32 application
