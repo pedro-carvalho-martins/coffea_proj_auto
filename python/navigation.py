@@ -64,6 +64,8 @@ def enqueue_hide_and_destroy_frame(currentFrame):
 def enqueue_pack_new_frame(newFrame):
     enqueue_ui_update(pack_new_frame, newFrame)
 
+def enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
+    enqueue_ui_update(launchPixRequest, payprocessFrame, price_selected, payment_method_selected)
 
 ## 2024.08.29 New implementation ends
 
@@ -303,9 +305,13 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
 
     if payment_method_selected == "QR Code (Pix)":
 
+        print('payment_method_selected == "QR Code (Pix)"')
+
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
         payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame_Pix(mainContainer)
+
+        print('payprocessFrame created')
 
         #payprocessFrame.pack(side="top", fill="both", expand=True)
 
@@ -316,10 +322,12 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         print('launch payment processing function')
 
         ## launch other thread
-        threadPixRequest = Thread(target=launchPixRequest,
-                                  args=(payprocessFrame, price_selected, payment_method_selected))
-        threadPixRequest.start()
+        #threadPixRequest = Thread(target=launchPixRequest,
+        #                          args=(payprocessFrame, price_selected, payment_method_selected))
+        #threadPixRequest.start()
         # thread.join()
+
+        enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected)
 
 
     # Se o pagamento for através da moderninha, por cartão:
