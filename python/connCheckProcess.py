@@ -131,7 +131,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
     ]
 
     attempt = 0
-    retries = 2
+    retries = 1
 
     while attempt < retries:
 
@@ -140,7 +140,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
                 connCheck_moderninha_sh_command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=3  # Set the timeout in seconds
+                timeout=5  # Set the timeout in seconds
             )
 
             print("debugTest")
@@ -176,7 +176,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
             status_conn_moderninha = "error"
 
         attempt += 1
-        time.sleep(1)
+        time.sleep(0)
 
     if attempt == retries:
         rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "",
