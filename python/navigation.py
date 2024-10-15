@@ -78,6 +78,9 @@ def navigate_startupFrame(session_number):
     global disableInterrupt
     disableInterrupt = 0
 
+    global disableBgConnCheck
+    disableBgConnCheck = 0
+
     mainContainer = tk.Tk()
     mainContainer.title("sistema_pagamento_plugpag")
 
@@ -215,7 +218,8 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
 def check_helloScreen(currentFrame):
     # Lanço verificação periódica de conexão
-    threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
+    #threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
+    threadBackgroundConnCheck = Thread(target=loopConnCheckBackground, args=(0, 0))
     threadBackgroundConnCheck.daemon = True
     threadBackgroundConnCheck.start()
 
@@ -266,6 +270,10 @@ def navigate_priceFrame(currentFrame):
 
 
 def navigate_payment_method_Frame(price_selected, currentFrame):
+
+    global disableBgConnCheck
+    disableBgConnCheck = 1
+
     print('navpMethod')
     print('price selected was:' + str(price_selected))
 
@@ -531,6 +539,18 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
     ## TEST ENDS
     print('debug1')
+
+
+
+def loopConnCheckBackground(dummyVar1, dummyVar2):
+
+    global disableBgConnCheck
+
+    while True:
+
+        time.sleep(300)
+        if disableBgConnCheck == 0:
+            connCheckProcess.launchBackgroundConnCheckProcess(0,0)
 
 
 # Will be able to detect if settings button is pressed or if the inhibit signal is on

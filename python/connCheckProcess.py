@@ -313,22 +313,20 @@ def launchStartupConnCheckProcess():
 
 def launchBackgroundConnCheckProcess(arg1, arg2):
 
-    while True:
-        time.sleep(300)
-        print("background connCheck starts")
+    print("background connCheck starts")
 
-        # Gets dictionary of payment method settings to check what is enabled and disabled
-        dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()
+    # Gets dictionary of payment method settings to check what is enabled and disabled
+    dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()
 
-        # Call the functions that will retrieve the status of each connection
-        checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-        checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
+    # Call the functions that will retrieve the status of each connection
+    checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
+    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
 
-        # Assign the connection status to the variables that will define the images displayed on the connCheck frame
-        tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
-        tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
+    # Assign the connection status to the variables that will define the images displayed on the connCheck frame
+    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
+    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
 
-        # Update the connCheck file that will be updated over the execution of the program
-        rwConnCheckFile.writeConnCheckStatus(
-            {"Moderninha": checkConnModerninha_result,
-             "QR Code (Pix)": checkConnPixServer_result})
+    # Update the connCheck file that will be updated over the execution of the program
+    rwConnCheckFile.writeConnCheckStatus(
+        {"Moderninha": checkConnModerninha_result,
+         "QR Code (Pix)": checkConnPixServer_result})
