@@ -1,12 +1,14 @@
 import RPi.GPIO as GPIO
 import time
+import rwPulseCoinValue
 
 def sendOutputSignal(price):
     
     print("SCRIPT TO SEND SIGNAL CALL")
     print(price)
     
-    pulse_coin_value = 0.25
+    # pulse_coin_value = 0.25 # Old implementation - constant value of pulse coin
+    pulse_coin_value = rwPulseCoinValue.readPulseCoinValue()
     
     number_of_pulses = round(price/pulse_coin_value)
 

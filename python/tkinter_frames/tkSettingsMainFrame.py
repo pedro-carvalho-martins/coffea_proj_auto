@@ -16,7 +16,7 @@ def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
 def createSettingSelectionFrame(settingsContainer):
 
 
-    lista_tipos_config = ["Preços", "Métodos pagamento", "Identificador sistema", "Endereço MAC Moderninha", "Config. de rede - Encerrar app", "Config. tela inicial", "Voltar"]
+    lista_tipos_config = ["Preços", "Métodos pagamento", "Identificador sistema", "Endereço MAC Moderninha", "Config. valor pulso", "Config. de rede - Encerrar app", "Config. tela inicial", "Voltar"]
 
 
     settingSelectionFrame = tk.Frame(settingsContainer, height=480, width=320)
@@ -57,7 +57,7 @@ def createSettingSelectionFrame(settingsContainer):
           tk.Button(button_frame,
                     text=lista_tipos_config[button_index],
                     #font=('SegoeUI', 20, 'bold'),
-                    font=('Ubuntu', 12),
+                    font=('Ubuntu', 10),
                     wraplength=250,
                     #command=button_clicked(button_index),
                     command= lambda idx=button_index: button_clicked(idx, lista_tipos_config, settingSelectionFrame))
@@ -66,7 +66,7 @@ def createSettingSelectionFrame(settingsContainer):
        )
 
     for button_index in range(len(buttons_list)):
-       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=10, ipady=10, pady=5, sticky=tk.EW)
+       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=10, ipady=5, pady=2, sticky=tk.EW)
 
 
     ## Crio o Frame inferior

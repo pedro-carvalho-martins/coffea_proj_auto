@@ -12,6 +12,7 @@ import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
+import tkinter_frames.tkPulseValueSettingFrame as tkPulseValueSettingFrame
 
 import queue
 import time
@@ -631,6 +632,10 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
     elif settingPageSelection == "Endereço MAC Moderninha":
         MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)
         MACSettingFrame.pack(side="top", fill="both", expand=True)
+
+    elif settingPageSelection == "Config. valor pulso":
+        PulseValueSettingFrame = tkPulseValueSettingFrame.createPulseValueSettingFrame(settingsContainer)
+        PulseValueSettingFrame.pack(side="top", fill="both", expand=True)
 
     elif settingPageSelection == "Config. de rede - Encerrar app":
         kill_shell_loop.kill_pid_executar()

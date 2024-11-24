@@ -216,7 +216,7 @@ def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
 
     try:
         request_ping = {"type": "ping", "param1": systemID, "param2": moderninha_conn_status_str_req}
-        response_request_ping = servConn.send_request(request_ping, max_retries=1, delay=0, timeout=5)
+        response_request_ping = servConn.send_request(request_ping, max_retries=2, delay=0, timeout=3)
     except Exception as e:
         print("Ping failure")
         rwLogCSV.writeCSV("erro_outros", "", "", "request_ping", str(e.__class__), str(e))
