@@ -113,10 +113,11 @@ def createPulseValueSettingFrame(settingsContainer):
     ## Configurando o Grid
 
     pulseValueSettingFrame.rowconfigure(0, weight=3)
-    pulseValueSettingFrame.rowconfigure(1, weight=6)
+    pulseValueSettingFrame.rowconfigure(1, weight=3)
     pulseValueSettingFrame.rowconfigure(2, weight=1)
     pulseValueSettingFrame.rowconfigure(3, weight=1)
     pulseValueSettingFrame.rowconfigure(4, weight=1)
+    pulseValueSettingFrame.rowconfigure(5, weight=1)
     pulseValueSettingFrame.columnconfigure(0, weight=1)
 
 
@@ -124,7 +125,7 @@ def createPulseValueSettingFrame(settingsContainer):
 
     titleLabel = tk.Label(
        pulseValueSettingFrame,
-       text="Configurar valor do pulso\n\nAtenção: o valor do pulso também\ndeverá ser modificado\nna máquina vending!",
+       text="Configurar valor do pulso\n\nAtenção:\nO valor do pulso também\ndeverá ser modificado\nna máquina vending!",
        font=('SegoeUI', 14))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
@@ -173,7 +174,7 @@ def createPulseValueSettingFrame(settingsContainer):
               # command=button_clicked(button_index),
               command= lambda: saveQuit_button_clicked())
 
-    saveQuitButton.grid(column=0, row=4, sticky=tk.S, pady=0, padx=20)
+    saveQuitButton.grid(column=0, row=3, sticky=tk.S, pady=0, padx=20)
 
     noSaveQuitButton = tk.Button(pulseValueSettingFrame,
               text=" Sair sem salvar ",
