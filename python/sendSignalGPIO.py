@@ -12,6 +12,10 @@ def sendOutputSignal(price):
     
     number_of_pulses = round(price/pulse_coin_value)
 
+    # New implementation in case pulse value is higher than price step
+    if price % pulse_coin_value > 0.1 and number_of_pulses < price/pulse_coin_value :
+        number_of_pulses = number_of_pulses + 1
+
     # msPulse = 50 and msBetweenPulses = 200 ocasionally fails -> do not use
     # msPulse = 100 and msBetweenPulses = 400 works perfectly but is a bit too slow
     # test with msPulse = 80 and msBetweenPulses = 300?
