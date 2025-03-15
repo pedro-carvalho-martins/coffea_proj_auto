@@ -37,6 +37,8 @@ import rwUltimoPag
 import rwHelloSettingFile
 import rwLogCSV
 
+from logger import logger
+
 
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner
 
@@ -412,6 +414,7 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
     except Exception as e:
 
+        logger.exception(f"Error venda_erro launchPixRequest:")
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest",
                           str(e.__class__), str(e))
 
@@ -499,7 +502,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
 
     except Exception as e:
-
+        logger.exception(f"Error venda_erro_launchPayment:")
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
                           str(e))
 
@@ -693,6 +696,7 @@ def launchSendSignal(price, dummyVar):
     try:
         sendSignalGPIO.sendOutputSignal(price)
     except Exception as e:
+        logger.exception(f"Error sendSignalGPIO:")
         rwLogCSV.writeCSV("erro_outros", str(price), "Undefined", "launchSendSignal_sendSignalGPIO", str(e.__class__),
                           str(e))
 

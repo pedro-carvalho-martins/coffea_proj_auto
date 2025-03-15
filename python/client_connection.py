@@ -9,6 +9,8 @@ import time
 
 import rwLogCSV
 
+from logger import logger
+
 
 # Function to send requests to the server
 def send_request(request, max_retries=3, delay=2, timeout=5):
@@ -23,10 +25,15 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
     server_port = 8080  # Server's port number
 
     attempt = 0
+    response = None  # Prevents UnboundLocalError
+
     while attempt < max_retries:
 
         try:
+            logger.info(f"Connecting to server at {server_ip}:{server_port}, Attempt {attempt + 1}")
             client_socket.connect((server_ip, server_port))
+            logger.debug(f"Connected successfully. Sending request: {json.dumps(request)}")
+
 
             try:
                 # Send request to the server
@@ -36,12 +43,16 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
                 response = client_socket.recv(1024).decode()
                 response = json.loads(response)
                 print("Response from server:", response)
+
+                logger.debug(f"Response received: {response}")
+
                 break # If it succeeds, exits the loop (break executes 'finally' before exiting)
 
 
             except Exception as e:
-
+                logger.error(f"Error during send_request (Attempt {attempt + 1}): {e}")
                 rwLogCSV.writeCSV("erro_outros", "", "", "send_request", str(e.__class__), str(e))
+                response = {"error": "Request failed"}  # Prevents UnboundLocalError
 
                 print("Exception raised")
 
@@ -50,6 +61,7 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
                 client_socket.close()
 
         except Exception as e:
+            logger.error(f"Error during send_request_client_socket: {e}")
 
             rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(e.__class__), str(e))
 
@@ -59,6 +71,7 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
         time.sleep(delay)
 
     if (attempt == max_retries):
+        logger.error(f"Max retries exceeded. Could not connect to server.")
         rwLogCSV.writeCSV("erro_outros", "", "", "send_request", "", "maximum number of attempts to connect to server exceeded")
 
     return response

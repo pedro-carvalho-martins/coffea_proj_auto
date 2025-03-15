@@ -8,6 +8,8 @@ from shared_resource import file_lock
 
 import rwSystemID
 
+from logger import logger
+
 
 def delete_old_csv_backup_files():
     # Get the current year
@@ -28,30 +30,40 @@ def delete_old_csv_backup_files():
 
 
 def prepare_and_check_current_year_week_backup_csv_path():
+    logger.info("Checking or creating weekly log file...")
 
-    datetime_now_isocalendar = datetime.datetime.now().isocalendar()
-    year_week_string = 'Y' + str(datetime_now_isocalendar[0]) + '_W' + str(datetime_now_isocalendar[1]).zfill(2)
+    try:
 
-    current_yearweek_csv_file_path = "./log_files/csv_full_logs_backup/backup_full_client_log_" + year_week_string + ".csv"
+        datetime_now_isocalendar = datetime.datetime.now().isocalendar()
+        year_week_string = 'Y' + str(datetime_now_isocalendar[0]) + '_W' + str(datetime_now_isocalendar[1]).zfill(2)
 
-    # Check if the CSV file exists
-    if not os.path.isfile(current_yearweek_csv_file_path):
+        current_yearweek_csv_file_path = "./log_files/csv_full_logs_backup/backup_full_client_log_" + year_week_string + ".csv"
 
-        # Define the model CSV file path
-        model_csv_path = "./log_files/log_header_backup_model.csv"
+        # Check if the CSV file exists
+        if not os.path.isfile(current_yearweek_csv_file_path):
 
-        # Check if the model CSV file exists
-        if os.path.isfile(model_csv_path):
-            # Copy the model CSV file to the specified path
-            shutil.copyfile(model_csv_path, current_yearweek_csv_file_path)
-            print(f"'{current_yearweek_csv_file_path}' created from '{model_csv_path}'.")
+            # Define the model CSV file path
+            model_csv_path = "./log_files/log_header_backup_model.csv"
 
-            # Delete old backup files
-            delete_old_csv_backup_files()
+            # Check if the model CSV file exists
+            if os.path.isfile(model_csv_path):
+                # Copy the model CSV file to the specified path
+                shutil.copyfile(model_csv_path, current_yearweek_csv_file_path)
+                print(f"'{current_yearweek_csv_file_path}' created from '{model_csv_path}'.")
+                logger.info(f"Weekly log file created from model: {current_yearweek_csv_file_path}")
 
-        else:
-            print(f"Model CSV file '{model_csv_path}' does not exist.")
-            # Error treatment pending
+                # Delete old backup files
+                delete_old_csv_backup_files()
+
+            else:
+                logger.error(f"Model CSV file '{model_csv_path}' is missing! Returning error.")
+                print(f"Model CSV file '{model_csv_path}' does not exist.")
+                # Error treatment pending
+
+    except Exception as e:
+        logger.exception(f"Error prepare and check current year week backup csv file:")
+
+    logger.debug(f"Weekly log file path confirmed: {current_yearweek_csv_file_path}")
 
     return current_yearweek_csv_file_path
 

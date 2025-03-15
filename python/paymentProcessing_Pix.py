@@ -11,6 +11,7 @@ from PIL import Image
 
 import client_connection as servConn
 
+from logger import logger
 
 
 
@@ -51,6 +52,8 @@ def get_status_cobranca(txid):
 
 def verify_payment_pix(txid):
 
+    logger.info(f"Verifying Pix payment for txid: {txid}")
+
 
     time_sec = 0
 
@@ -59,6 +62,8 @@ def verify_payment_pix(txid):
         time.sleep(5)
 
         response_payment_status = get_status_cobranca(txid)
+        logger.debug(f"Raw Pix payment response: {response_payment_status}")
+
 
         payment_status = response_payment_status['status_cob_pix']
 
