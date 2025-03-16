@@ -25,7 +25,6 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
     server_port = 8080  # Server's port number
 
     attempt = 0
-    response = None  # Prevents UnboundLocalError
 
     while attempt < max_retries:
 
