@@ -61,7 +61,7 @@ def prepare_and_check_current_year_week_backup_csv_path():
                 # Error treatment pending
 
     except Exception as e:
-        logger.exception(f"Error prepare and check current year week backup csv file:")
+        logger.exception(f"Error prepare and check current year week backup csv file: {e}")
 
     logger.debug(f"Weekly log file path confirmed: {current_yearweek_csv_file_path}")
 

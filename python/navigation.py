@@ -414,7 +414,7 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
     except Exception as e:
 
-        logger.exception(f"Error venda_erro launchPixRequest:")
+        logger.exception(f"Error venda_erro launchPixRequest: {e}")
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest",
                           str(e.__class__), str(e))
 
@@ -502,7 +502,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
 
     except Exception as e:
-        logger.exception(f"Error venda_erro_launchPayment:")
+        logger.exception(f"Error venda_erro_launchPayment: {e}")
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
                           str(e))
 
@@ -696,7 +696,7 @@ def launchSendSignal(price, dummyVar):
     try:
         sendSignalGPIO.sendOutputSignal(price)
     except Exception as e:
-        logger.exception(f"Error sendSignalGPIO:")
+        logger.exception(f"Error sendSignalGPIO: {e}")
         rwLogCSV.writeCSV("erro_outros", str(price), "Undefined", "launchSendSignal_sendSignalGPIO", str(e.__class__),
                           str(e))
 
