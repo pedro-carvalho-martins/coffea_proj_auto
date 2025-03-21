@@ -1,1 +1,6 @@
 datetime_register_str;nome_sistema;tipo_registro;valor_venda;metodo_pag;etapa_erro;descricao_erro
+2025-03-21 16:45:03;DIAG $PIX SNK06 Unitec;erro_outros;;;send_request;<class -socket.timeout->;timed out
+2025-03-21 16:45:05;DIAG $PIX SNK06 Unitec;erro_outros;;;send_request_client_socket;<class -OSError->;[Errno 9] Bad file descriptor
+2025-03-21 16:45:07;DIAG $PIX SNK06 Unitec;erro_outros;;;send_request_client_socket;<class -OSError->;[Errno 9] Bad file descriptor
+2025-03-21 16:45:09;DIAG $PIX SNK06 Unitec;erro_outros;;;send_request;;maximum number of attempts to connect to server exceeded
+2025-03-21 16:45:09;DIAG $PIX SNK06 Unitec;erro_outros;0;N/A;logTransmission_send_json_files_errC;<class -KeyError->;-status-
