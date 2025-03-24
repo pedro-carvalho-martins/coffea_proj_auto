@@ -21,7 +21,7 @@ def delete_old_csv_backup_files():
     for csv_file in csv_files:
         if csv_file.startswith('backup_full_client_log_Y'):
             # Extract the year from the file name
-            year = int(csv_file[25:29])
+            year = int(csv_file[24:28])
 
             # If the file is older than last year, delete it
             if year < current_year - 1:
