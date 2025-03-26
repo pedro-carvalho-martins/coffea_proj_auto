@@ -1,2 +1,2 @@
-X-Moderninha
-X-QR Code (Pix)
+C-Moderninha
+C-QR Code (Pix)
