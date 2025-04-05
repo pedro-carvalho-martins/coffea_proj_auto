@@ -7,6 +7,7 @@ import shutil
 from shared_resource import file_lock
 
 import rwSystemID
+import rwSystemVersion
 
 
 def delete_old_csv_backup_files():
@@ -69,6 +70,7 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
 
     # Obtains the name of the system (system ID)
     nome_sistema = rwSystemID.readSystemID()
+    versao_sistema = rwSystemVersion.readVersion()
 
     # Define the CSV filename
     filename_csv_tmp = "./log_files/tmp_log_client.csv"
@@ -79,7 +81,7 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
         with open(filename_csv_tmp, 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerow([datetime_register_str, nome_sistema, tipo_registro, valor_venda_str,
-                                metodo_pag, etapa_erro, classe_erro[0:50], descricao_erro[0:100]])
+                                metodo_pag, etapa_erro, classe_erro[0:50], descricao_erro[0:100], versao_sistema])
 
 
     # WRITE TO BACKUP CSV
@@ -91,7 +93,7 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
         with open(filename_csv_backup, 'a', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerow([datetime_register_str, nome_sistema, tipo_registro, valor_venda_str,
-                                metodo_pag, etapa_erro, classe_erro, descricao_erro])
+                                metodo_pag, etapa_erro, classe_erro, descricao_erro, versao_sistema])
 
 
 def remove_corrupted_characters(file_path, temp_file_path):
