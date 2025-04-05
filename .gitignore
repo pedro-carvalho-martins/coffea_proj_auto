@@ -1,3 +1,7 @@
+# Project-specific ignores
+/settings_files/*
+!/settings_files/version.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
