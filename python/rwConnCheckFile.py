@@ -1,20 +1,36 @@
 # New implementation using file lock to avoid problems with threads accessing the same file at the same time
 
+import os
 from shared_resource import file_lock
 
+# Global file path and default content
+conn_check_filename = './settings_files/connCheck.txt'
+DEFAULT_CONN_CHECK_CONTENT =\
+    """X-Moderninha
+X-QR Code (Pix)"""
+
+def createConnCheckFile():
+    """Creates the connCheck.txt file with default values."""
+    with open(conn_check_filename, 'w', encoding='utf-8') as file:
+        file.write(DEFAULT_CONN_CHECK_CONTENT)
+    print(f"{conn_check_filename} created with default connection check statuses.")
+
 def readConnCheckStatus():
-    with file_lock:  # Acquire the lock to ensure exclusive access
+    with file_lock:  # Ensure exclusive access
         print("readList BEGINS")
 
+        if not os.path.exists(conn_check_filename):
+            createConnCheckFile()
+
         # Open and read the file
-        with open('./settings_files/connCheck.txt', "r", encoding='utf-8') as connCheckFile:
+        with open(conn_check_filename, "r", encoding='utf-8') as connCheckFile:
             connCheckList = connCheckFile.readlines()
 
         connCheckDict = {}
 
         # Process the file content
         for line in connCheckList:
-            line = line.strip()  # Removes \n
+            line = line.strip()
             if line.startswith('C-'):
                 connCheckDict[line[2:]] = "check"
             elif line.startswith('D-'):
@@ -39,9 +55,8 @@ def writeConnCheckStatus(connCheckDict):
 
     print(outString)
 
-    with file_lock:  # Acquire the lock to ensure exclusive access
-        # Write to file
-        with open('./settings_files/connCheck.txt', "w", encoding='utf-8') as connCheckFile:
+    with file_lock:  # Ensure exclusive access
+        with open(conn_check_filename, "w", encoding='utf-8') as connCheckFile:
             connCheckFile.write(outString)
 
 

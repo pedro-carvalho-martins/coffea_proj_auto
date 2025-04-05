@@ -1,40 +1,39 @@
 
-def readValue():
+import os
 
+# Global file path and default content
+ultimo_pagamento_filename = './settings_files/ultimoPagamento.txt'
+DEFAULT_ULTIMO_VALOR = "2.99"
+
+def createUltimoPagamentoFile():
+    """Creates ultimoPagamento.txt with the default value."""
+    with open(ultimo_pagamento_filename, 'w', encoding='utf-8') as file:
+        file.write(DEFAULT_ULTIMO_VALOR)
+    print(f"{ultimo_pagamento_filename} created with default value: {DEFAULT_ULTIMO_VALOR.strip()}")
+
+def readValue():
     print("readUltimoValor BEGINS")
 
-    ultimoPagFile = open('./settings_files/ultimoPagamento.txt', "r", encoding='utf-8')
-    ultimoValor = float(ultimoPagFile.readlines()[0])
+    if not os.path.exists(ultimo_pagamento_filename):
+        createUltimoPagamentoFile()
+
+    with open(ultimo_pagamento_filename, "r", encoding='utf-8') as ultimoPagFile:
+        ultimoValor = float(ultimoPagFile.readline().strip())
 
     print(ultimoValor)
-
-    # for lineIndex in range(len(priceList)):
-    #
-    #     # Removes \n
-    #     priceList[lineIndex] = priceList[lineIndex].split("\n")[0]
-    #
-    #     priceList[lineIndex] = float(priceList[lineIndex])
-    #
-    # print(priceList)
-
     print("readUltimoValor ENDS")
 
     return ultimoValor
 
-
 def writeValue(lastValue):
-
-    outString=str(lastValue)
+    outString = str(lastValue) + '\n'  # Ensures it writes with a newline at the end
 
     print(outString)
 
-    pMethodsFile = open('./settings_files/ultimoPagamento.txt', "w", encoding='utf-8')
-
-    pMethodsFile.write(outString)
-
-    pMethodsFile.close()
+    with open(ultimo_pagamento_filename, "w", encoding='utf-8') as pMethodsFile:
+        pMethodsFile.write(outString)
 
 
-
-readValue()
+if __name__ == "__main__":
+    readValue()
 

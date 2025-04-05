@@ -4,11 +4,11 @@ filename = './settings_files/paymentMethods.txt'
 
 DEFAULT_FILE_CONTENT =\
     """Débito
-    Crédito
-    #Voucher
-    QR Code (Pix)"""
+Crédito
+#Voucher
+QR Code (Pix)"""
 
-def createNewFile(filename):
+def createNewFile():
     # Creates the payment methods file with default content
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_FILE_CONTENT)

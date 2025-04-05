@@ -1,69 +1,70 @@
+import os
+
+# Global file path and default content
+hello_filename = './settings_files/helloScreenSetting.txt'
+DEFAULT_HELLO_CONTENT = "Tela inicial"
+
+def createHelloSettingFile():
+    """Creates helloScreenSetting.txt with default content."""
+    with open(hello_filename, 'w', encoding='utf-8') as file:
+        file.write(DEFAULT_HELLO_CONTENT)
+    print(f"{hello_filename} created with default content.")
+
 def readListCheckHello():
-    
     print("readList BEGINS")
 
-    helloSettingFile = open('./settings_files/helloScreenSetting.txt', "r", encoding='utf-8')
-    helloSetting = helloSettingFile.readlines()
-    for lineIndex in range(len(helloSetting)-1,-1,-1):
+    if not os.path.exists(hello_filename):
+        createHelloSettingFile()
 
-        # Removes \n
-        helloSetting[lineIndex] = helloSetting[lineIndex].split("\n")[0]
+    with open(hello_filename, "r", encoding='utf-8') as helloSettingFile:
+        helloSetting = helloSettingFile.readlines()
+
+    for lineIndex in range(len(helloSetting)-1, -1, -1):
+        helloSetting[lineIndex] = helloSetting[lineIndex].strip()
 
         if helloSetting[lineIndex][0] == '#':
             return 0
         else:
             return 1
 
-
-
 def readHelloSetting():
-
     print("readList BEGINS")
 
-    helloSettingFile = open('./settings_files/helloScreenSetting.txt', "r", encoding='utf-8')
-    helloSetting = helloSettingFile.readlines()
+    if not os.path.exists(hello_filename):
+        createHelloSettingFile()
+
+    with open(hello_filename, "r", encoding='utf-8') as helloSettingFile:
+        helloSetting = helloSettingFile.readlines()
+
     helloSettingDict = {}
 
     for lineIndex in range(len(helloSetting)):
+        helloSetting[lineIndex] = helloSetting[lineIndex].strip()
 
-        # Removes \n
-        helloSetting[lineIndex] = helloSetting[lineIndex].split("\n")[0]
-
-        # Treats items starting with '#' and adds items to dictionary
         if helloSetting[lineIndex][0] == '#':
             helloSettingDict[helloSetting[lineIndex][1:]] = "disabled"
         else:
             helloSettingDict[helloSetting[lineIndex]] = "enabled"
 
-
     print(helloSettingDict)
-
     print("readList ENDS")
 
     return helloSettingDict
 
 def writeListSettings(helloSettingDict):
+    outString = ""
 
-    helloSetting = helloSettingDict.items()
-
-    outString=""
-
-    for item in helloSetting:
+    for item in helloSettingDict.items():
         if item[1] == "enabled":
-            outString = outString + item[0] + '\n'
+            outString += item[0] + '\n'
         else:
-            outString = outString + "#" + item[0] + '\n'
+            outString += "#" + item[0] + '\n'
 
     print(outString)
 
-    helloSettingFile = open('./settings_files/helloScreenSetting.txt', "w", encoding='utf-8')
+    with open(hello_filename, "w", encoding='utf-8') as helloSettingFile:
+        helloSettingFile.write(outString)
 
-    helloSettingFile.write(outString)
-
-    helloSettingFile.close()
-
-# #TESTES READ:
-#
-# readListSettings()
-# readListDisplay()
-#
+if __name__ == "__main__":
+    print(readListCheckHello())
+    readHelloSetting()

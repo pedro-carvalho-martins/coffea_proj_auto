@@ -1,41 +1,45 @@
-# Construir baseado no rwPaymentMethodsList
+import os
+
+# Global filename and default contents
+price_list_filename = './settings_files/listaPrecos.txt'
+DEFAULT_PRICE_LIST = """4.0
+3.0
+1.5"""
+
+def createPriceListFile():
+    """Creates listaPrecos.txt with default price values."""
+    with open(price_list_filename, 'w', encoding='utf-8') as file:
+        file.write(DEFAULT_PRICE_LIST)
+    print(f"{price_list_filename} created with default price list.")
 
 def readList():
-
     print("readList BEGINS")
 
-    pricesFile = open('./settings_files/listaPrecos.txt', "r", encoding='utf-8')
-    priceList = pricesFile.readlines()
+    if not os.path.exists(price_list_filename):
+        createPriceListFile()
+
+    with open(price_list_filename, "r", encoding='utf-8') as pricesFile:
+        priceList = pricesFile.readlines()
+
     for lineIndex in range(len(priceList)):
-
-        # Removes \n
-        priceList[lineIndex] = priceList[lineIndex].split("\n")[0]
-
+        priceList[lineIndex] = priceList[lineIndex].strip()
         priceList[lineIndex] = float(priceList[lineIndex])
 
     print(priceList)
-
     print("readList ENDS")
 
     return priceList
 
-
 def writeListSettings(priceList):
-
-    outString=""
+    outString = ""
 
     for item in priceList:
-        outString = outString + str(item) + '\n'
+        outString += str(item) + '\n'
 
     print(outString)
 
-    pMethodsFile = open('./settings_files/listaPrecos.txt', "w", encoding='utf-8')
+    with open(price_list_filename, "w", encoding='utf-8') as pricesFile:
+        pricesFile.write(outString)
 
-    pMethodsFile.write(outString)
-
-    pMethodsFile.close()
-
-
-
-
-
+if __name__ == "__main__":
+    print(readList())
