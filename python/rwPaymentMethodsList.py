@@ -1,71 +1,77 @@
+import os
+
+filename = './settings_files/paymentMethods.txt'
+
+DEFAULT_FILE_CONTENT =\
+    """Débito
+    Crédito
+    #Voucher
+    QR Code (Pix)"""
+
+def createNewFile(filename):
+    # Creates the payment methods file with default content
+    with open(filename, 'w', encoding='utf-8') as file:
+        file.write(DEFAULT_FILE_CONTENT)
+    print(f"{filename} created with default content.")
+
 def readListDisplay():
-    
     print("readList BEGINS")
 
-    pMethodsFile = open('./settings_files/paymentMethods.txt', "r", encoding='utf-8')
-    pMethods = pMethodsFile.readlines()
-    for lineIndex in range(len(pMethods)-1,-1,-1):
+    if not os.path.exists(filename):
+        createNewFile()
 
-        # Removes \n
-        pMethods[lineIndex] = pMethods[lineIndex].split("\n")[0]
+    with open(filename, "r", encoding='utf-8') as pMethodsFile:
+        pMethods = pMethodsFile.readlines()
 
-        # Removes items starting with '#'
+    for lineIndex in range(len(pMethods)-1, -1, -1):
+        pMethods[lineIndex] = pMethods[lineIndex].strip()
+
         if pMethods[lineIndex][0] == '#':
             del pMethods[lineIndex]
 
-
     print(pMethods)
-
     print("readList ENDS")
-
     return pMethods
 
-
 def readListSettings():
-
     print("readList BEGINS")
 
-    pMethodsFile = open('./settings_files/paymentMethods.txt', "r", encoding='utf-8')
-    pMethods = pMethodsFile.readlines()
+    if not os.path.exists(filename):
+        createNewFile()
+
+    with open(filename, "r", encoding='utf-8') as pMethodsFile:
+        pMethods = pMethodsFile.readlines()
+
     pMethodsDict = {}
 
-    for lineIndex in range(len(pMethods)):
-
-        # Removes \n
-        pMethods[lineIndex] = pMethods[lineIndex].split("\n")[0]
-
-        # Treats items starting with '#' and adds items to dictionary
-        if pMethods[lineIndex][0] == '#':
-            pMethodsDict[pMethods[lineIndex][1:]] = "disabled"
+    for line in pMethods:
+        line = line.strip()
+        if line[0] == '#':
+            pMethodsDict[line[1:]] = "disabled"
         else:
-            pMethodsDict[pMethods[lineIndex]] = "enabled"
-
+            pMethodsDict[line] = "enabled"
 
     print(pMethodsDict)
-
     print("readList ENDS")
-
     return pMethodsDict
 
 def writeListSettings(pMethodsDict):
-
-    pMethods = pMethodsDict.items()
-
-    outString=""
-
-    for item in pMethods:
-        if item[1] == "enabled":
-            outString = outString + item[0] + '\n'
+    outString = ""
+    for item, status in pMethodsDict.items():
+        if status == "enabled":
+            outString += item + '\n'
         else:
-            outString = outString + "#" + item[0] + '\n'
+            outString += "#" + item + '\n'
 
     print(outString)
 
-    pMethodsFile = open('./settings_files/paymentMethods.txt', "w", encoding='utf-8')
+    with open(filename, "w", encoding='utf-8') as pMethodsFile:
+        pMethodsFile.write(outString)
 
-    pMethodsFile.write(outString)
 
-    pMethodsFile.close()
+if __name__ == "__main__":
+    readListSettings()
+    readListDisplay()
 
 # #TESTES READ:
 #
