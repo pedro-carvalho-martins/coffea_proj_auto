@@ -74,6 +74,16 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
 
     # Define the CSV filename
     filename_csv_tmp = "./log_files/tmp_log_client.csv"
+    model_csv_path = "./log_files/log_header_backup_model.csv"
+
+    # Create tmp_log_client.csv from model if it doesn't exist
+    if not os.path.isfile(filename_csv_tmp):
+        if os.path.isfile(model_csv_path):
+            shutil.copyfile(model_csv_path, filename_csv_tmp)
+            print(f"'{filename_csv_tmp}' created from '{model_csv_path}'.")
+        else:
+            print(f"Model file '{model_csv_path}' not found. Cannot create '{filename_csv_tmp}'.")
+            return  # Exit early if the model is missing
 
     # WRITE TO CSV TO BE PASSED TO SERVER
     with file_lock:
@@ -174,4 +184,16 @@ def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_fi
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerows(remaining_rows)
 
-    return json_filepath_folder
+    return
+
+# Define the CSV filename
+filename_csv_tmp = "./log_files/tmp_log_client.csv"
+model_csv_path = "./log_files/log_header_backup_model.csv"
+
+# Create tmp_log_client.csv from model if it doesn't exist
+if not os.path.isfile(filename_csv_tmp):
+    if os.path.isfile(model_csv_path):
+        shutil.copyfile(model_csv_path, filename_csv_tmp)
+        print(f"'{filename_csv_tmp}' created from '{model_csv_path}'.")
+    else:
+        print(f"Model file '{model_csv_path}' not found. Cannot create '{filename_csv_tmp}'.")
