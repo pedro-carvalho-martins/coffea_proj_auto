@@ -184,7 +184,7 @@ def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_fi
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerows(remaining_rows)
 
-    return
+    return json_filepath_folder
 
 # Define the CSV filename
 filename_csv_tmp = "./log_files/tmp_log_client.csv"
