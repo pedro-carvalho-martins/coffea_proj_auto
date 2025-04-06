@@ -1,6 +1,7 @@
 # Project-specific ignores
 python/settings_files/*
 !python/settings_files/version.txt
+python/log_files/tmp_log_client.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
