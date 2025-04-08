@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import navigation
+import rwSystemVersion
 
 
 ## Ação de clique em botão
@@ -34,8 +35,8 @@ def createSettingSelectionFrame(settingsContainer):
 
     label = tk.Label(
        settingSelectionFrame,
-       text="Configurações",
-       font=('SegoeUI', 14),
+       text="Configurações\nv"+rwSystemVersion.readVersion(),
+       font=('SegoeUI', 12),
        wraplength=250)
     label.grid(column=0, row=0, sticky=tk.S, pady=10, padx=20)
 
