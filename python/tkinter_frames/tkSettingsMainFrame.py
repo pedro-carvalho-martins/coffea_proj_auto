@@ -36,7 +36,7 @@ def createSettingSelectionFrame(settingsContainer):
     label = tk.Label(
        settingSelectionFrame,
        text="Configurações\nv"+rwSystemVersion.readVersion(),
-       font=('SegoeUI', 12),
+       font=('SegoeUI', 14),
        wraplength=250)
     label.grid(column=0, row=0, sticky=tk.S, pady=10, padx=20)
 
