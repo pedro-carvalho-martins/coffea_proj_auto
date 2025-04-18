@@ -3,6 +3,8 @@ import time
 import rwPulseCoinValue
 
 def sendOutputSignal(price):
+
+    GPIO.cleanup()
     
     print("SCRIPT TO SEND SIGNAL CALL")
     print(price)

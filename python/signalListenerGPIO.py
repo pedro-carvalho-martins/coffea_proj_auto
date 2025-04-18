@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 def listenGPIO():
+
+    GPIO.cleanup()
     
     print("SCRIPT TO LISTEN TO INHIBIT AND SETTINGS GPIO SIGNAL")
 

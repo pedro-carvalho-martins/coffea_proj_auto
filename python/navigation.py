@@ -560,10 +560,6 @@ def signalListener(dummyVar1, dummyVar2):
 
     while True:
 
-        ## Comment block for Windows testing
-        listener_outcome = signalListenerGPIO.listenGPIO()
-        ## End of comment block for Windows testing
-
         ## Additional code block for Windows testing
         # listener_outcome = "no"
         # disableInterrupt = 1
@@ -572,6 +568,8 @@ def signalListener(dummyVar1, dummyVar2):
         ## End of additional code block for Windows testing
 
         if disableInterrupt == 0:
+
+            listener_outcome = signalListenerGPIO.listenGPIO()
 
             if listener_outcome == "settings":
                 print('navigate to settings main frame')
