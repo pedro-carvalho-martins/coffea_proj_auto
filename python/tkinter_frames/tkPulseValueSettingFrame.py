@@ -11,23 +11,23 @@ def modvalue_button_clicked(index_button, sign_mod, step):
     print(index_button)
     print(sign_mod)
 
-    global pulseValueList_singleValue
+    global pulseValuesList
     global valueLabelList
 
     modValue = 0
 
     if sign_mod == "plus":
         modValue = step
-    elif sign_mod == "minus" and pulseValueList_singleValue[index_button] > step:
+    elif sign_mod == "minus" and pulseValuesList[index_button] > step:
         modValue = -1*step
 
 
-    pulseValueList_singleValue[index_button] = pulseValueList_singleValue[index_button] + modValue
+    pulseValuesList[index_button] = pulseValuesList[index_button] + modValue
 
     valueLabelList[index_button].config(
-        text=str(pulseValueList_singleValue[index_button]))
+        text=str(pulseValuesList[index_button]))
 
-    print(pulseValueList_singleValue)
+    print(pulseValuesList)
 
 
 def appendValueLabel(pulseValueFloat):
@@ -59,7 +59,7 @@ def appendPlusMinusButton(valueLabel_index, sign, display_text, increment_step):
 
 def saveQuit_button_clicked():
 
-    rwPulseCoinValue.writePulseCoinValue(pulseValueList_singleValue[0])
+    rwPulseCoinValue.writePulseCoinValue(pulseValuesList[0])
 
     navigation.quitProgramAfterSettings()
 
@@ -73,7 +73,7 @@ def noSaveQuit_button_clicked():
 def createPulseValueSettingFrame(settingsContainer):
 
     ### VER SE ESSA DECLARAÇÃO VAI FUNCIONAR NA IMPLEMENTAÇÃO FINAL
-    global pulseValueList_singleValue
+    global pulseValuesList
     global valueLabelList
     global values_frame
 
@@ -131,7 +131,7 @@ def createPulseValueSettingFrame(settingsContainer):
 
     # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
     ## Append value label
-    appendValueLabel(pulseValueList_singleValue[0])
+    appendValueLabel(pulseValuesList[0])
     ## Append minus button
     appendPlusMinusButton(0, sign="minus", display_text=" – ", increment_step=0.25)
     ## Append plus button
@@ -139,7 +139,7 @@ def createPulseValueSettingFrame(settingsContainer):
 
     # Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
     ## Append value label
-    appendValueLabel(pulseValueList_singleValue[1])
+    appendValueLabel(pulseValuesList[1])
     ## Append minus button
     appendPlusMinusButton(1, sign="minus", display_text=" – ", increment_step=20)
     ## Append plus button
@@ -147,7 +147,7 @@ def createPulseValueSettingFrame(settingsContainer):
 
     # Index 2: interval between pulses (ms)
     ## Append value label
-    appendValueLabel(pulseValueList_singleValue[2])
+    appendValueLabel(pulseValuesList[2])
     ## Append minus button
     appendPlusMinusButton(2, sign="minus", display_text=" – ", increment_step=20)
     ## Append plus button
