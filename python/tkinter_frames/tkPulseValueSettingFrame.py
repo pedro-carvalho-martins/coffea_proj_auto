@@ -6,8 +6,7 @@ import rwPulseCoinValue
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
-
-def modvalue_button_clicked(index_button, sign_mod):
+def modvalue_button_clicked(index_button, sign_mod, step):
     print('Button clicked')
     print(index_button)
     print(sign_mod)
@@ -18,9 +17,9 @@ def modvalue_button_clicked(index_button, sign_mod):
     modValue = 0
 
     if sign_mod == "plus":
-        modValue = +0.25
-    elif sign_mod == "minus" and pulseValueList_singleValue[index_button] > 0.25:
-        modValue = -0.25
+        modValue = step
+    elif sign_mod == "minus" and pulseValueList_singleValue[index_button] > step:
+        modValue = -1*step
 
 
     pulseValueList_singleValue[index_button] = pulseValueList_singleValue[index_button] + modValue
@@ -42,34 +41,18 @@ def appendValueLabel(pulseValueFloat):
     )
 
 
-def appendMinusButton(valueLabel_index):
+def appendPlusMinusButton(valueLabel_index, sign, display_text, increment_step):
 
     buttonMinusList.append(
         tk.Button(values_frame,
-                  text=" – ",
+                  text=display_text,
                   # font=('SegoeUI', 20, 'bold'),
                   font=('Ubuntu', 12, 'bold'),
                   # command=button_clicked(button_index),
-                  command=lambda idx=valueLabel_index: modvalue_button_clicked(idx, "minus"))
+                  command=lambda idx=valueLabel_index: modvalue_button_clicked(idx, sign, increment_step))
         # height=1,
         # width=1)
     )
-
-
-def appendPlusButton(valueLabel_index):
-
-    buttonPlusList.append(
-        tk.Button(values_frame,
-                  text=" + ",
-                  # font=('SegoeUI', 20, 'bold'),
-                  font=('Ubuntu', 12, 'bold'),
-                  # command=button_clicked(button_index),
-                  command= lambda idx=valueLabel_index: modvalue_button_clicked(idx, "plus"))
-        # height=1,
-        # width=1)
-    )
-
-
 
 
 
@@ -99,9 +82,14 @@ def createPulseValueSettingFrame(settingsContainer):
 
 
     pulse_value_float = rwPulseCoinValue.readPulseCoinValue()
+    pulse_duration_int = 100
+    pulse_sleep_interval_int = 400
     
-    pulseValueList_singleValue = []
-    pulseValueList_singleValue.append(pulse_value_float)
+    pulseValuesList = [] # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
+
+    pulseValuesList.append(pulse_value_float)
+    pulseValuesList.append(pulse_duration_int)
+    pulseValuesList.append(pulse_sleep_interval_int)
 
     #### TEMPORARY TO TEST IMPLEMENTATION: DELETE ASAP
     # pulseValueList_singleValue = [0.25]
@@ -135,30 +123,62 @@ def createPulseValueSettingFrame(settingsContainer):
     values_frame = tk.Frame(pulseValueSettingFrame)
     values_frame.grid(column=0, row=1, pady=0, padx=20)
 
-
     valueLabelList = []
     buttonMinusList = []
     buttonPlusList = []
 
     # add a set of 1) Label 2) Minus button 3) Plus button for each value
 
-    for valueLabel_index in range(len(pulseValueList_singleValue)):
+    # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
+    ## Append value label
+    appendValueLabel(pulseValueList_singleValue[0])
+    ## Append minus button
+    appendPlusMinusButton(0, sign="minus", display_text=" – ", increment_step=0.25)
+    ## Append plus button
+    appendPlusMinusButton(0, sign="plus", display_text=" + ", increment_step=0.25)
 
-        # Append price label
-        appendValueLabel(pulseValueList_singleValue[valueLabel_index])
+    # Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
+    ## Append value label
+    appendValueLabel(pulseValueList_singleValue[1])
+    ## Append minus button
+    appendPlusMinusButton(1, sign="minus", display_text=" – ", increment_step=20)
+    ## Append plus button
+    appendPlusMinusButton(1, sign="plus", display_text=" + ", increment_step=20)
 
-        # Append minus button
-        appendMinusButton(valueLabel_index)
+    # Index 2: interval between pulses (ms)
+    ## Append value label
+    appendValueLabel(pulseValueList_singleValue[2])
+    ## Append minus button
+    appendPlusMinusButton(2, sign="minus", display_text=" – ", increment_step=20)
+    ## Append plus button
+    appendPlusMinusButton(2, sign="plus", display_text=" + ", increment_step=20)
 
-        # Append plus button
-        appendPlusButton(valueLabel_index)
+    descriptionLabelList = [
+        tk.Label(
+            pulseValueSettingFrame,
+            text="Valor ($) pulso",
+            font=('SegoeUI', 10)),
+
+        tk.Label(
+            pulseValueSettingFrame,
+            text="Duração pulso (ms) (padrão: 100ms)",
+            font=('SegoeUI', 10)),
+
+        tk.Label(
+            pulseValueSettingFrame,
+            text="Intervalo entre pulsos (ms) (padrão: 400ms)",
+            font=('SegoeUI', 10))
+    ]
+
 
     # place items on the grid
 
     for valueLabel_index in range(len(valueLabelList)):
-        valueLabelList[valueLabel_index].grid(column=1, row=valueLabel_index+1, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
-        buttonMinusList[valueLabel_index].grid(column=0, row=valueLabel_index+1, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
-        buttonPlusList[valueLabel_index].grid(column=2, row=valueLabel_index+1, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
+        descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
+
+        valueLabelList[valueLabel_index].grid(column=1, row=valueLabel_index*2+2, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
+        buttonMinusList[valueLabel_index].grid(column=0, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
+        buttonPlusList[valueLabel_index].grid(column=2, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
 
     print("last valueLabel_index")
     print(valueLabel_index)
