@@ -114,7 +114,7 @@ def createPulseValueSettingFrame(settingsContainer):
 
     titleLabel = tk.Label(
        pulseValueSettingFrame,
-       text="Configurar pulso\n\nAtenção:\nO valor ($) do pulso também deverá ser\nmodificado na máquina vending!",
+       text="Configurar pulso\n\nAtenção:\nO valor ($) do pulso também deve\nser alterado na máquina vending!",
        font=('SegoeUI', 12))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
