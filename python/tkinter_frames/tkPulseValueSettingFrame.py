@@ -43,18 +43,17 @@ def appendValueLabel(pulseValueFloat):
 
 def appendPlusMinusButton(valueLabel_index, sign, display_text, increment_step):
 
-    buttonMinusList.append(
-        tk.Button(values_frame,
+    button_to_append = tk.Button(values_frame,
                   text=display_text,
                   # font=('SegoeUI', 20, 'bold'),
                   font=('Ubuntu', 12, 'bold'),
                   # command=button_clicked(button_index),
                   command=lambda idx=valueLabel_index: modvalue_button_clicked(idx, sign, increment_step))
-        # height=1,
-        # width=1)
-    )
 
-
+    if sign == "minus":
+        buttonMinusList.append(button_to_append)
+    if sign == "plus":
+        buttonMinusList.append(button_to_append)
 
 
 def saveQuit_button_clicked():
