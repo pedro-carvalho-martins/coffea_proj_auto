@@ -179,7 +179,7 @@ def createPulseValueSettingFrame(settingsContainer):
         button_minus = tk.Button(row_frame,
                                  text=" – ",
                                  font=('Ubuntu', 12, 'bold'),
-                                 command=lambda idx=i: modvalue_button_clicked(idx, "minus", steps[idx]))
+                                 command=lambda idx=i, s=steps[i]: modvalue_button_clicked(idx, "minus", s))
         button_minus.pack(side="left", padx=5)
         buttonMinusList.append(button_minus)
 
@@ -194,7 +194,7 @@ def createPulseValueSettingFrame(settingsContainer):
         button_plus = tk.Button(row_frame,
                                 text=" + ",
                                 font=('Ubuntu', 12, 'bold'),
-                                command=lambda idx=i: modvalue_button_clicked(idx, "plus", steps[idx]))
+                                command=lambda idx=i, s=steps[i]: modvalue_button_clicked(idx, "plus", s))
         button_plus.pack(side="left", padx=5)
         buttonPlusList.append(button_plus)
 
