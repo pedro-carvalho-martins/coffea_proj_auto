@@ -105,6 +105,7 @@ def createPulseValueSettingFrame(settingsContainer):
     pulseValueSettingFrame.rowconfigure(3, weight=1)
     pulseValueSettingFrame.rowconfigure(4, weight=1)
     pulseValueSettingFrame.rowconfigure(5, weight=1)
+    pulseValueSettingFrame.rowconfigure(6, weight=1)
     pulseValueSettingFrame.columnconfigure(0, weight=1)
 
 
@@ -113,7 +114,7 @@ def createPulseValueSettingFrame(settingsContainer):
     titleLabel = tk.Label(
        pulseValueSettingFrame,
        text="Configurar valor do pulso\n\nAtenção:\nO valor do pulso também\ndeverá ser modificado\nna máquina vending!",
-       font=('SegoeUI', 14))
+       font=('SegoeUI', 10))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
 
@@ -178,7 +179,7 @@ def createPulseValueSettingFrame(settingsContainer):
     # place items on the grid
 
     for valueLabel_index in range(len(valueLabelList)):
-        #descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
+        descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
 
         valueLabelList[valueLabel_index].grid(column=1, row=valueLabel_index*2+2, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
         buttonMinusList[valueLabel_index].grid(column=0, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
