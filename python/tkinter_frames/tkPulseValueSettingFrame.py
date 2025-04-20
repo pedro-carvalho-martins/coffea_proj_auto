@@ -53,7 +53,7 @@ def appendPlusMinusButton(valueLabel_index, sign, display_text, increment_step):
     if sign == "minus":
         buttonMinusList.append(button_to_append)
     if sign == "plus":
-        buttonMinusList.append(button_to_append)
+        buttonPlusList.append(button_to_append)
 
 
 def saveQuit_button_clicked():
