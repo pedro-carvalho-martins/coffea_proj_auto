@@ -24,6 +24,8 @@ def readPulseCharacteristics():
 
     if len(pulseCharacteristicsList) < 3:
         createPulseCoinFile()
+        with open(pulse_coin_filename, "r", encoding='utf-8') as pulseCoinValueFile:
+            pulseCharacteristicsList = pulseCoinValueFile.readlines()
 
     pulseCoinValue_float = float(pulseCharacteristicsList[0].strip())
     pulse_duration_int = float(pulseCharacteristicsList[1].strip())
