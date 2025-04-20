@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-#import navigation
-#import rwPulseCoinValue
+import navigation
+import rwPulseCoinValue
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -58,7 +58,7 @@ def appendPlusMinusButton(valueLabel_index, sign, display_text, increment_step):
 
 def saveQuit_button_clicked():
 
-    rwPulseCoinValue.writePulseCoinValue(pulseValuesList[0])
+    rwPulseCoinValue.writePulseCharacteristics(pulseValuesList)
 
     navigation.quitProgramAfterSettings()
 
@@ -80,10 +80,7 @@ def createPulseValueSettingFrame(settingsContainer):
     global buttonPlusList
 
 
-    #pulse_value_float = rwPulseCoinValue.readPulseCoinValue()
-    pulse_value_float = 8.76
-    pulse_duration_int = 100
-    pulse_sleep_interval_int = 400
+    pulse_value_float, pulse_duration_int, pulse_sleep_interval_int = rwPulseCoinValue.readPulseCharacteristics()
     
     pulseValuesList = [] # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
 
