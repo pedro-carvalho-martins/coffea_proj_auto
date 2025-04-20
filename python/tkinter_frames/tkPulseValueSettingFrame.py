@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-import navigation
-import rwPulseCoinValue
+#import navigation
+#import rwPulseCoinValue
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -80,7 +80,8 @@ def createPulseValueSettingFrame(settingsContainer):
     global buttonPlusList
 
 
-    pulse_value_float, pulse_duration_int, pulse_sleep_interval_int = rwPulseCoinValue.readPulseCharacteristics()
+    #pulse_value_float, pulse_duration_int, pulse_sleep_interval_int = rwPulseCoinValue.readPulseCharacteristics()
+    pulse_value_float, pulse_duration_int, pulse_sleep_interval_int = [0.26, 101, 401]
     
     pulseValuesList = [] # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
 
@@ -128,30 +129,28 @@ def createPulseValueSettingFrame(settingsContainer):
     # add a set of 1) Label 2) Minus button 3) Plus button for each value
 
     # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
-    ## Append value label
-    appendValueLabel(pulseValuesList[0])
-    ## Append minus button
-    appendPlusMinusButton(0, sign="minus", display_text=" – ", increment_step=0.25)
-    ## Append plus button
-    appendPlusMinusButton(0, sign="plus", display_text=" + ", increment_step=0.25)
-
-    # Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
-    ## Append value label
-    appendValueLabel(pulseValuesList[1])
-    ## Append minus button
-    appendPlusMinusButton(1, sign="minus", display_text=" – ", increment_step=20)
-    ## Append plus button
-    appendPlusMinusButton(1, sign="plus", display_text=" + ", increment_step=20)
-
-    # Index 2: interval between pulses (ms)
-    ## Append value label
-    appendValueLabel(pulseValuesList[2])
-    ## Append minus button
-    appendPlusMinusButton(2, sign="minus", display_text=" – ", increment_step=20)
-    ## Append plus button
-    appendPlusMinusButton(2, sign="plus", display_text=" + ", increment_step=20)
-
-    # place items on the grid
+    # ## Append value label
+    # appendValueLabel(pulseValuesList[0])
+    # ## Append minus button
+    # appendPlusMinusButton(0, sign="minus", display_text=" – ", increment_step=0.25)
+    # ## Append plus button
+    # appendPlusMinusButton(0, sign="plus", display_text=" + ", increment_step=0.25)
+    #
+    # # Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
+    # ## Append value label
+    # appendValueLabel(pulseValuesList[1])
+    # ## Append minus button
+    # appendPlusMinusButton(1, sign="minus", display_text=" – ", increment_step=20)
+    # ## Append plus button
+    # appendPlusMinusButton(1, sign="plus", display_text=" + ", increment_step=20)
+    #
+    # # Index 2: interval between pulses (ms)
+    # ## Append value label
+    # appendValueLabel(pulseValuesList[2])
+    # ## Append minus button
+    # appendPlusMinusButton(2, sign="minus", display_text=" – ", increment_step=20)
+    # ## Append plus button
+    # appendPlusMinusButton(2, sign="plus", display_text=" + ", increment_step=20)
 
     descriptions = [
         "Valor ($) pulso (padrão: 0.25)",
