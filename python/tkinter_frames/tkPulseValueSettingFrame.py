@@ -158,8 +158,8 @@ def createPulseValueSettingFrame(settingsContainer):
 
     descriptions = [
         "Valor ($) pulso (padrão: 0.25)",
-        "Duração pulso (ms) (padrão: 100)",
-        "Intervalo entre pulsos (ms) (padrão: 400)"
+        "Duração pulso (padrão: 100ms)",
+        "Intervalo entre pulsos (padrão: 400ms)"
     ]
 
     # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
