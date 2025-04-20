@@ -121,6 +121,11 @@ def createPulseValueSettingFrame(settingsContainer):
 
     values_frame = tk.Frame(pulseValueSettingFrame)
     values_frame.grid(column=0, row=1, pady=0, padx=20)
+    values_frame.grid(column=0, row=2, pady=0, padx=20)
+    values_frame.grid(column=0, row=3, pady=0, padx=20)
+    values_frame.grid(column=0, row=4, pady=0, padx=20)
+    values_frame.grid(column=0, row=5, pady=0, padx=20)
+    values_frame.grid(column=0, row=6, pady=0, padx=20)
 
     valueLabelList = []
     buttonMinusList = []
@@ -173,7 +178,7 @@ def createPulseValueSettingFrame(settingsContainer):
     # place items on the grid
 
     for valueLabel_index in range(len(valueLabelList)):
-        descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
+        #descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
 
         valueLabelList[valueLabel_index].grid(column=1, row=valueLabel_index*2+2, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
         buttonMinusList[valueLabel_index].grid(column=0, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
