@@ -155,17 +155,17 @@ def createPulseValueSettingFrame(settingsContainer):
 
     descriptionLabelList = [
         tk.Label(
-            pulseValueSettingFrame,
+            values_frame,
             text="Valor ($) pulso",
             font=('SegoeUI', 10)),
 
         tk.Label(
-            pulseValueSettingFrame,
+            values_frame,
             text="Duração pulso (ms) (padrão: 100ms)",
             font=('SegoeUI', 10)),
 
         tk.Label(
-            pulseValueSettingFrame,
+            values_frame,
             text="Intervalo entre pulsos (ms) (padrão: 400ms)",
             font=('SegoeUI', 10))
     ]
