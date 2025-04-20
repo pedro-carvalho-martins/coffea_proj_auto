@@ -1,8 +1,8 @@
 import tkinter as tk
 
 ## TEMPORARY COMMENT TO TEST ON WINDOWS. UNCOMMENT ASAP
-import navigation
-import rwPulseCoinValue
+#import navigation
+#import rwPulseCoinValue
 ## TEMPORARY COMMENT ENDS. UNCOMMENT ASAP.
 
 
@@ -80,7 +80,8 @@ def createPulseValueSettingFrame(settingsContainer):
     global buttonPlusList
 
 
-    pulse_value_float = rwPulseCoinValue.readPulseCoinValue()
+    #pulse_value_float = rwPulseCoinValue.readPulseCoinValue()
+    pulse_value_float = 8.76
     pulse_duration_int = 100
     pulse_sleep_interval_int = 400
     
@@ -113,8 +114,8 @@ def createPulseValueSettingFrame(settingsContainer):
 
     titleLabel = tk.Label(
        pulseValueSettingFrame,
-       text="Configurar valor do pulso\n\nAtenção:\nO valor do pulso também\ndeverá ser modificado\nna máquina vending!",
-       font=('SegoeUI', 10))
+       text="Configurar pulso\n\nAtenção:\nO valor ($) do pulso também deverá ser\nmodificado na máquina vending!",
+       font=('SegoeUI', 12))
     titleLabel.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
 
 
@@ -153,35 +154,53 @@ def createPulseValueSettingFrame(settingsContainer):
     ## Append plus button
     appendPlusMinusButton(2, sign="plus", display_text=" + ", increment_step=20)
 
-    descriptionLabelList = [
-        tk.Label(
-            values_frame,
-            text="Valor ($) pulso",
-            font=('SegoeUI', 10)),
-
-        tk.Label(
-            values_frame,
-            text="Duração pulso (ms) (padrão: 100ms)",
-            font=('SegoeUI', 10)),
-
-        tk.Label(
-            values_frame,
-            text="Intervalo entre pulsos (ms) (padrão: 400ms)",
-            font=('SegoeUI', 10))
-    ]
-
-
     # place items on the grid
 
-    for valueLabel_index in range(len(valueLabelList)):
-        descriptionLabelList[valueLabel_index].grid(column=1, row=valueLabel_index * 2 + 1, ipadx=20, ipady=0, padx=5,sticky=tk.EW)
+    descriptions = [
+        "Valor ($) pulso (padrão: 0.25)",
+        "Duração pulso (ms) (padrão: 100)",
+        "Intervalo entre pulsos (ms) (padrão: 400)"
+    ]
 
-        valueLabelList[valueLabel_index].grid(column=1, row=valueLabel_index*2+2, ipadx=20, ipady=0, padx=5, sticky=tk.EW)
-        buttonMinusList[valueLabel_index].grid(column=0, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
-        buttonPlusList[valueLabel_index].grid(column=2, row=valueLabel_index*2+2, ipadx=0, ipady=0, padx=5, sticky=tk.EW)
+    # Index 0: coin value ; Index 1: pulse duration (ms) ; Index 2: interval between pulses (ms)
+    steps = [0.25, 20, 20]
 
-    print("last valueLabel_index")
-    print(valueLabel_index)
+    for i in range(len(pulseValuesList)):
+        # 1. Description label (top of the block)
+        desc_label = tk.Label(
+            values_frame,
+            text=descriptions[i],
+            font=('SegoeUI', 11)
+        )
+        desc_label.pack(anchor="center", pady=(10 if i == 0 else 5, 0))  # top padding only for the first one
+
+        # 2. Create a horizontal frame to hold the buttons and value
+        row_frame = tk.Frame(values_frame)
+        row_frame.pack(pady=2)
+
+        # 3. Minus Button
+        button_minus = tk.Button(row_frame,
+                                 text=" – ",
+                                 font=('Ubuntu', 12, 'bold'),
+                                 command=lambda idx=i: modvalue_button_clicked(idx, "minus", steps[idx]))
+        button_minus.pack(side="left", padx=5)
+        buttonMinusList.append(button_minus)
+
+        # 4. Value Label
+        value_label = tk.Label(row_frame,
+                               text=str(pulseValuesList[i]),
+                               font=('Ubuntu', 18))
+        value_label.pack(side="left", padx=15, expand=True)
+        valueLabelList.append(value_label)
+
+        # 5. Plus Button
+        button_plus = tk.Button(row_frame,
+                                text=" + ",
+                                font=('Ubuntu', 12, 'bold'),
+                                command=lambda idx=i: modvalue_button_clicked(idx, "plus", steps[idx]))
+        button_plus.pack(side="left", padx=5)
+        buttonPlusList.append(button_plus)
+
 
 
 
@@ -210,23 +229,16 @@ def createPulseValueSettingFrame(settingsContainer):
 
 
 
+if __name__ == "__main__":
 
+    mainContainer = tk.Tk()
+    mainContainer.title("teste")
 
+    mainContainer.geometry('320x480')
+    mainContainer.resizable(False, False)
+    mainContainer.attributes('-fullscreen', False)
 
+    helloFrame = createPulseValueSettingFrame(mainContainer)
+    helloFrame.pack(side="top", fill="both", expand=True)
 
-##### TEMPORARY SCRIPT JUST TO TEST EXECUTION OF FRAME ######
-
-# mainContainer = tk.Tk()
-# mainContainer.title("teste")
-#
-# mainContainer.geometry('320x480')
-# mainContainer.resizable(False, False)
-# mainContainer.attributes('-fullscreen', False)
-#
-# helloFrame = createPulseValueSettingFrame()
-# helloFrame.pack(side="top", fill="both", expand=True)
-#
-# mainContainer.mainloop()
-
-####### TEMPORARY SCRIPT ENDS. DELETE ASAP.
-#################################################
+    mainContainer.mainloop()
