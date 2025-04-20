@@ -22,6 +22,9 @@ def readPulseCharacteristics():
     with open(pulse_coin_filename, "r", encoding='utf-8') as pulseCoinValueFile:
         pulseCharacteristicsList = pulseCoinValueFile.readlines()
 
+    if len(pulseCharacteristicsList) < 3:
+        createPulseCoinFile()
+
     pulseCoinValue_float = float(pulseCharacteristicsList[0].strip())
     pulse_duration_int = float(pulseCharacteristicsList[1].strip())
     pulse_sleep_interval_int = float(pulseCharacteristicsList[2].strip())
@@ -36,8 +39,8 @@ def writePulseCharacteristics(pulseCharacteristicsList):
 
     print(outString)
 
-    with open(pulseCharacteristicsList, "w", encoding='utf-8') as pricesFile:
-        pricesFile.write(outString)
+    with open(pulse_coin_filename, "w", encoding='utf-8') as pulseFile:
+        pulseFile.write(outString)
 
 if __name__ == "__main__":
     print(readPulseCharacteristics())
