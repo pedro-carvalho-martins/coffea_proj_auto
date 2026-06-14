@@ -56,7 +56,10 @@ def enqueue_ui_update(function, *args):
 def process_ui_queue():
     while not ui_update_queue.empty():
         function, args = ui_update_queue.get()
-        function(*args)
+        try:
+            function(*args)
+        except Exception as e:
+            print(f"UI update failed in {getattr(function, '__name__', 'unknown')}: {e}")
     mainContainer.after(100, process_ui_queue)
 
 def enqueue_hide_and_destroy_frame(currentFrame):
@@ -183,8 +186,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
 
 def finish_conn_check(connCheckFrame):
-    hide_and_destroy_frame(connCheckFrame)
-    check_helloScreen()
+    check_helloScreen(connCheckFrame)
 
 
 def retry_conn_check(connCheckFrame):
@@ -192,7 +194,7 @@ def retry_conn_check(connCheckFrame):
     navigate_connCheckFrame(None)
 
 
-def check_helloScreen():
+def check_helloScreen(currentFrame):
     # Lanço verificação periódica de conexão
     #threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
     threadBackgroundConnCheck = Thread(target=loopConnCheckBackground, args=(0, 0))
@@ -209,19 +211,20 @@ def check_helloScreen():
     helloScreenOn = rwHelloSettingFile.readListCheckHello()
 
     if helloScreenOn == 1:
-        navigate_helloFrame(None)
+        navigate_helloFrame(currentFrame)
     else:
-        navigate_priceFrame(None)
+        navigate_priceFrame(currentFrame)
 
 
 def navigate_helloFrame(currentFrame):
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
+    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
+
     if currentFrame is not None:
         currentFrame.pack_forget()
         currentFrame.destroy()
 
-    helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
     helloFrame.pack(side="top", fill="both", expand=True)
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
@@ -232,10 +235,11 @@ def navigate_priceFrame(currentFrame):
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    if currentFrame is not None:
-        enqueue_hide_and_destroy_frame(currentFrame)
-
     priceFrame = tkPriceFrame.createPriceFrame(mainContainer)
+
+    if currentFrame is not None:
+        currentFrame.pack_forget()
+        currentFrame.destroy()
 
     #priceFrame.pack(side="top", fill="both", expand=True)
 
