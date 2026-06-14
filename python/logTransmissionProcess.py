@@ -14,10 +14,12 @@ def get_server_datetime():
         request = {"type": "ping", "param1": systemID, "param2": 0}
         response_request_datetime_server = servConn.send_request(request)
 
+    except ConnectionError:
+        return None
     except Exception as e:
         print("Get server datetime failure")
         rwLogCSV.writeCSV("erro_outros", "", "", "request_datetime_server", str(e.__class__), str(e))
-        response_request_datetime_server = {'ping': "erro", 'datetime_server': "erro"}
+        return "erro"
 
     server_datetime = response_request_datetime_server.get("datetime_server")
     return server_datetime
@@ -28,7 +30,10 @@ def get_client_datetime():
 
 
 def send_json_file(request):
-    server_response = servConn.send_request(request)
+    try:
+        server_response = servConn.send_request(request)
+    except ConnectionError:
+        return None
     return server_response
 
 
@@ -72,6 +77,10 @@ def prep_send_json_files(json_folder):
         except Exception as e:
             rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_send_json_file_errA", str(e.__class__),
                               str(e))
+            return "fail"
+
+        if server_response is None:
+            return "fail"
 
         if server_response['status'] != 'received':
             rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_send_json_file_errB", "",
@@ -95,7 +104,10 @@ def verify_json_files(json_folder):
             "param1": client_name,
             "param2": os.path.basename(json_file)
         }
-        response_verify_json = servConn.send_request(request)
+        try:
+            response_verify_json = servConn.send_request(request)
+        except ConnectionError:
+            return
 
         print(os.path.basename(json_file))
         print('response verify json')
@@ -121,6 +133,8 @@ def verify_json_files(json_folder):
             }
             try:
                 response_ack_json = servConn.send_request(request)
+            except ConnectionError:
+                return
             except Exception as e:
                 rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_file_verification_errAckA", str(e.__class__),
                       str(e))
@@ -146,6 +160,9 @@ def startLogTransmission(placeholderVar1, placeholderVar2):
     except Exception as e:
         rwLogCSV.writeCSV("erro_outros", "0", "N/A", "logTransmission_server_datetime_errA", str(e.__class__),
                       str(e))
+        return
+
+    if server_datetime is None:
         return
 
     if server_datetime == "erro":
@@ -196,6 +213,8 @@ def sendInhibitAlert():
 
     try:
         servConn.send_request(request)
+    except ConnectionError:
+        return
     except Exception as e:
         rwLogCSV.writeCSV("erro_outros", "0", "N/A", "sendInhibitAlert_called_exception", str(e.__class__),
                           str(e))

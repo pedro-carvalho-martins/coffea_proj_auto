@@ -10,13 +10,70 @@ import time
 import rwLogCSV
 
 
+# Track repeated connection outages so we only log transitions.
+_connection_outage_active = False
+_connection_suppressed_count = 0
+_connection_last_signature = None
+
+
+def _connection_signature(exc):
+    return f"{exc.__class__.__name__}:{getattr(exc, 'errno', None)}:{str(exc)}"
+
+
+def _is_connection_issue(exc):
+    return isinstance(exc, (socket.timeout, TimeoutError, ConnectionError, OSError))
+
+
+def _log_connection_outage_once(exc):
+    global _connection_outage_active
+    global _connection_suppressed_count
+    global _connection_last_signature
+
+    signature = _connection_signature(exc)
+
+    if not _connection_outage_active:
+        rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(exc.__class__), str(exc))
+        _connection_outage_active = True
+        _connection_suppressed_count = 0
+        _connection_last_signature = signature
+        return
+
+    if signature == _connection_last_signature:
+        _connection_suppressed_count += 1
+        return
+
+    rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(exc.__class__), str(exc))
+    _connection_suppressed_count += 1
+    _connection_last_signature = signature
+
+
+def _log_connection_recovery():
+    global _connection_outage_active
+    global _connection_suppressed_count
+    global _connection_last_signature
+
+    if _connection_outage_active:
+        if _connection_suppressed_count > 0:
+            rwLogCSV.writeCSV(
+                "erro_outros",
+                "",
+                "",
+                "send_request",
+                "",
+                f"connection restored after suppressing {_connection_suppressed_count} repeated connection failures"
+            )
+
+        _connection_outage_active = False
+        _connection_suppressed_count = 0
+        _connection_last_signature = None
+
+
 # Function to send requests to the server
 def send_request(request, max_retries=3, delay=2, timeout=5):
     server_ip = '18.230.15.249'  # Server's Elastic IP address (AWS)
     server_port = 8080  # Server's port number
 
     attempt = 0
-    response = None
 
     while attempt < max_retries:
         try:
@@ -32,17 +89,18 @@ def send_request(request, max_retries=3, delay=2, timeout=5):
                 response_text = client_socket.recv(1024).decode()
                 response = json.loads(response_text)
                 print("Response from server:", response)
+                _log_connection_recovery()
                 return response
 
         except Exception as e:
-            rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(e.__class__), str(e))
+            if _is_connection_issue(e):
+                _log_connection_outage_once(e)
+            else:
+                rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(e.__class__), str(e))
             print("Exception raised")
 
         attempt += 1
         time.sleep(delay)
-
-    if attempt == max_retries:
-        rwLogCSV.writeCSV("erro_outros", "", "", "send_request", "", "maximum number of attempts to connect to server exceeded")
 
     raise ConnectionError("maximum number of attempts to connect to server exceeded")
 
