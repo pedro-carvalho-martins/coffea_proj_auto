@@ -59,7 +59,16 @@ def process_ui_queue():
         try:
             function(*args)
         except Exception as e:
-            print(f"UI update failed in {getattr(function, '__name__', 'unknown')}: {e}")
+            rwLogCSV.writeCSV(
+                "erro_outros",
+                "",
+                "",
+                "process_ui_queue",
+                str(e.__class__),
+                f"UI callback {getattr(function, '__name__', 'unknown')} failed: {e}"
+            )
+            mainContainer.destroy()
+            return
     mainContainer.after(100, process_ui_queue)
 
 def enqueue_hide_and_destroy_frame(currentFrame):
