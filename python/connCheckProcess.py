@@ -11,8 +11,7 @@ import rwLogCSV
 import threading
 
 import client_connection as servConn
-
-#import tkinter_frames.tkConnCheckFrame
+import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 
 def launchConnCheckProcess():
 #TEST
@@ -275,8 +274,8 @@ def launchStartupConnCheckProcess():
     # checkConnPixServer_result = status_conn_servidor_pix
 
     # Assign the connection status to the variables that will define the images displayed on the connCheck frame
-    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
-    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
+    tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
+    tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
 
     # Update the connCheck file that will be updated over the execution of the program
     rwConnCheckFile.writeConnCheckStatus(
@@ -285,17 +284,17 @@ def launchStartupConnCheckProcess():
 
     # If there are no errors (e.g. only check or disable), send success output (=0); otherwise, send fail output (=1)
     if (
-        (tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "check"
-        or tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "disabled")
-        and (tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "check"
-        or tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "disabled")
+        (tkConnCheckFrame.status_conn_moderninha == "check"
+        or tkConnCheckFrame.status_conn_moderninha == "disabled")
+        and (tkConnCheckFrame.status_conn_servidor_pix == "check"
+        or tkConnCheckFrame.status_conn_servidor_pix == "disabled")
     ):
         connCheck_output = 0 # Success
 
     # If both fail, send output -1 indicating that the connCheck should be restarted
     elif (
-        tkinter_frames.tkConnCheckFrame.status_conn_moderninha != "check"
-        and tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix != "check"
+        tkConnCheckFrame.status_conn_moderninha != "check"
+        and tkConnCheckFrame.status_conn_servidor_pix != "check"
     ):
         connCheck_output = -1  # Complete fail
 
@@ -306,7 +305,7 @@ def launchStartupConnCheckProcess():
         # Código comentado - feature abandonada para facilitar a experiência do usuário.
         # No lugar de mostrar os botões, mostra o resultado dos testes com um sleep e segue adiante
         # Show buttons to reconnect or continue anyway after connection fails or partially fails
-        #tkinter_frames.tkConnCheckFrame.display_buttons = "yes"
+        # tkConnCheckFrame.display_buttons = "yes"
 
     return connCheck_output
 
@@ -323,8 +322,8 @@ def launchBackgroundConnCheckProcess(arg1, arg2):
     checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
 
     # Assign the connection status to the variables that will define the images displayed on the connCheck frame
-    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
-    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
+    tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
+    tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
 
     # Update the connCheck file that will be updated over the execution of the program
     rwConnCheckFile.writeConnCheckStatus(
