@@ -12,56 +12,39 @@ import rwLogCSV
 
 # Function to send requests to the server
 def send_request(request, max_retries=3, delay=2, timeout=5):
-    # Create a socket object
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Set a timeout for the socket operations (in seconds)
-    client_socket.settimeout(timeout)
-
-    # Connect to the server
     server_ip = '18.230.15.249'  # Server's Elastic IP address (AWS)
     server_port = 8080  # Server's port number
 
     attempt = 0
+    response = None
+
     while attempt < max_retries:
-
         try:
-            client_socket.connect((server_ip, server_port))
+            # Open a fresh socket for each attempt so failed retries do not reuse a bad connection.
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+                client_socket.settimeout(timeout)
+                client_socket.connect((server_ip, server_port))
 
-            try:
                 # Send request to the server
-                client_socket.send(json.dumps(request).encode())
+                client_socket.sendall(json.dumps(request).encode())
 
                 # Receive response from the server
-                response = client_socket.recv(1024).decode()
-                response = json.loads(response)
+                response_text = client_socket.recv(1024).decode()
+                response = json.loads(response_text)
                 print("Response from server:", response)
-                break # If it succeeds, exits the loop (break executes 'finally' before exiting)
-
-
-            except Exception as e:
-
-                rwLogCSV.writeCSV("erro_outros", "", "", "send_request", str(e.__class__), str(e))
-
-                print("Exception raised")
-
-            finally:
-                # Close the socket
-                client_socket.close()
+                return response
 
         except Exception as e:
-
             rwLogCSV.writeCSV("erro_outros", "", "", "send_request_client_socket", str(e.__class__), str(e))
-
             print("Exception raised")
 
         attempt += 1
         time.sleep(delay)
 
-    if (attempt == max_retries):
+    if attempt == max_retries:
         rwLogCSV.writeCSV("erro_outros", "", "", "send_request", "", "maximum number of attempts to connect to server exceeded")
 
-    return response
+    raise ConnectionError("maximum number of attempts to connect to server exceeded")
 
 # # Example usage: Send "create_pix" request
 # request_create_pix = {"type": "create_pix", "param1": 10, "param2": 20}

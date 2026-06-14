@@ -65,9 +65,6 @@ def enqueue_hide_and_destroy_frame(currentFrame):
 def enqueue_pack_new_frame(newFrame):
     enqueue_ui_update(pack_new_frame, newFrame)
 
-def enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
-    enqueue_ui_update(launchPixRequest, payprocessFrame, price_selected, payment_method_selected)
-
 ## 2024.08.29 New implementation ends
 
 
@@ -124,10 +121,8 @@ def navigate_connCheckFrame(currentFrame):
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    #currentFrame.pack_forget()
-    #currentFrame.destroy()
-
-    enqueue_hide_and_destroy_frame(currentFrame)
+    if currentFrame is not None:
+        enqueue_hide_and_destroy_frame(currentFrame)
 
     connCheckFrame = tkConnCheckFrame.createNewConnCheckFrame(mainContainer)
 
@@ -157,17 +152,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
     if conn_check_output_code == 0:  # Sucesso no teste de conexão: mostra checks por 3s e segue a execução do programa
         time.sleep(3)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #connCheckFrame.pack_forget()
-        #connCheckFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(connCheckFrame)
-
-        check_helloScreen(connCheckFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+        enqueue_ui_update(finish_conn_check, connCheckFrame)
 
 
     # Feature de exibição dos botões "Reconectar" e "Continuar" no Frame de ConnCheck.
@@ -189,35 +174,25 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
     elif conn_check_output_code == 1:  # Falha parcial de conexão - segue normalmente mas indica resultado na tela
         time.sleep(3)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #connCheckFrame.pack_forget()
-        #connCheckFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(connCheckFrame)
-
-        check_helloScreen(connCheckFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+        enqueue_ui_update(finish_conn_check, connCheckFrame)
 
 
     else:  # Falha completa de conexão - Faz o teste novamente.
         time.sleep(10)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #connCheckFrame.pack_forget()
-        #connCheckFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(connCheckFrame)
-
-        navigate_connCheckFrame(connCheckFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+        enqueue_ui_update(retry_conn_check, connCheckFrame)
 
 
-def check_helloScreen(currentFrame):
+def finish_conn_check(connCheckFrame):
+    hide_and_destroy_frame(connCheckFrame)
+    check_helloScreen()
+
+
+def retry_conn_check(connCheckFrame):
+    hide_and_destroy_frame(connCheckFrame)
+    navigate_connCheckFrame(None)
+
+
+def check_helloScreen():
     # Lanço verificação periódica de conexão
     #threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
     threadBackgroundConnCheck = Thread(target=loopConnCheckBackground, args=(0, 0))
@@ -234,16 +209,17 @@ def check_helloScreen(currentFrame):
     helloScreenOn = rwHelloSettingFile.readListCheckHello()
 
     if helloScreenOn == 1:
-        navigate_helloFrame(currentFrame)
+        navigate_helloFrame(None)
     else:
-        navigate_priceFrame(currentFrame)
+        navigate_priceFrame(None)
 
 
 def navigate_helloFrame(currentFrame):
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    currentFrame.pack_forget()
-    currentFrame.destroy()
+    if currentFrame is not None:
+        currentFrame.pack_forget()
+        currentFrame.destroy()
 
     helloFrame = tkHelloFrame.createHelloFrame(mainContainer)
     helloFrame.pack(side="top", fill="both", expand=True)
@@ -256,10 +232,8 @@ def navigate_priceFrame(currentFrame):
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    #currentFrame.pack_forget()
-    #currentFrame.destroy()
-
-    enqueue_hide_and_destroy_frame(currentFrame)
+    if currentFrame is not None:
+        enqueue_hide_and_destroy_frame(currentFrame)
 
     priceFrame = tkPriceFrame.createPriceFrame(mainContainer)
 
@@ -280,10 +254,8 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    #currentFrame.pack_forget()
-    #currentFrame.destroy()
-
-    enqueue_hide_and_destroy_frame(currentFrame)
+    if currentFrame is not None:
+        enqueue_hide_and_destroy_frame(currentFrame)
 
     ##### TESTE: pausa de 1 segundo entre telas:
     time.sleep(0.5)
@@ -305,10 +277,8 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    #currentFrame.pack_forget()
-    #currentFrame.destroy()
-
-    enqueue_hide_and_destroy_frame(currentFrame)
+    if currentFrame is not None:
+        enqueue_hide_and_destroy_frame(currentFrame)
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -331,12 +301,12 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         print('launch payment processing function')
 
         ## launch other thread
-        #threadPixRequest = Thread(target=launchPixRequest,
-        #                          args=(payprocessFrame, price_selected, payment_method_selected))
-        #threadPixRequest.start()
-        # thread.join()
-
-        enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected)
+        threadPixRequest = Thread(
+            target=launchPixRequest,
+            args=(payprocessFrame, price_selected, payment_method_selected),
+            daemon=True
+        )
+        threadPixRequest.start()
 
 
     # Se o pagamento for através da moderninha, por cartão:
@@ -369,7 +339,11 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
 
         ## launch other thread
         # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-        threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected, 0))
+        threadPay = Thread(
+            target=launchPayment,
+            args=(payprocessFrame, price_selected, payment_method_selected, 0),
+            daemon=True
+        )
         threadPay.start()
         # thread.join()
 
@@ -388,51 +362,40 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
         pix_copiaecola, pix_txid = paymentProcessing_Pix.PixRequest(price_selected)
 
         directory_filename_qrcode_pix_img = paymentProcessing_Pix.generate_img_QR_Code_Pix(pix_copiaecola)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(payprocessFrame)
-
-        pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(mainContainer, price_selected,
-                                                                      directory_filename_qrcode_pix_img)
-        #pixDisplayFrame.pack(side="top", fill="both", expand=True)
-
-        enqueue_pack_new_frame(pixDisplayFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        ## launch new thread
-        # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-        threadPay = Thread(target=launchPayment,
-                           args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
-        threadPay.start()
+        enqueue_ui_update(
+            show_pix_display_and_start_verification,
+            payprocessFrame,
+            price_selected,
+            payment_method_selected,
+            directory_filename_qrcode_pix_img,
+            pix_txid
+        )
 
     except Exception as e:
 
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest",
                           str(e.__class__), str(e))
 
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+        enqueue_ui_update(finalize_payment_ui, payprocessFrame, price_selected, payment_method_selected, -1)
 
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
 
-        enqueue_hide_and_destroy_frame(payprocessFrame)
+def show_pix_display_and_start_verification(payprocessFrame, price_selected, payment_method_selected,
+                                             directory_filename_qrcode_pix_img, pix_txid):
+    hide_and_destroy_frame(payprocessFrame)
 
-        paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
+    pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(
+        mainContainer,
+        price_selected,
+        directory_filename_qrcode_pix_img
+    )
+    pack_new_frame(pixDisplayFrame)
 
-        #paycompleteFrame.pack(side="top", fill="both", expand=True)
-
-        enqueue_pack_new_frame(paycompleteFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        time_buffer = 5000
-
-        paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy())
+    threadPay = Thread(
+        target=launchPayment,
+        args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid),
+        daemon=True
+    )
+    threadPay.start()
 
 
 def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_txid):
@@ -440,6 +403,8 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
     global disableInterrupt
     disableInterrupt = 1
+
+    pay_output_code = -1
 
     try:
         # pay_output_code == 0 => Success ; else: Failure
@@ -468,78 +433,35 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
         else:
             pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
 
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(payprocessFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        if pay_output_code == 0:
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-            paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-            rwUltimoPag.writeValue(price_selected)
-
-            rwLogCSV.writeCSV("venda_sucesso", str(price_selected), payment_method_selected, "", "", "")
-
-            threadSignal = Thread(target=launchSendSignal, args=(price_selected, 0))
-            threadSignal.start()
-        else:
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-            paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-
     except Exception as e:
 
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
                           str(e))
+        pay_output_code = -1
 
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+    enqueue_ui_update(finalize_payment_ui, payprocessFrame, price_selected, payment_method_selected, pay_output_code)
 
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
 
-        enqueue_hide_and_destroy_frame(payprocessFrame)
+def finalize_payment_ui(payprocessFrame, price_selected, payment_method_selected, pay_output_code):
+    hide_and_destroy_frame(payprocessFrame)
 
+    if pay_output_code == 0:
+        paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
+        rwUltimoPag.writeValue(price_selected)
+        rwLogCSV.writeCSV("venda_sucesso", str(price_selected), payment_method_selected, "", "", "")
+
+        threadSignal = Thread(target=launchSendSignal, args=(price_selected, 0), daemon=True)
+        threadSignal.start()
+    else:
         paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
 
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    #paycompleteFrame.pack(side="top", fill="both", expand=True)
-
-    enqueue_pack_new_frame(paycompleteFrame)
-
-    ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    print('paymentCompleteOK')
-    print('process ends')
-
-    ## TEST
-    # paycompleteFrame.after(5000, print('ok'))#nav_restart(paycompleteFrame) )
-    # paycompleteFrame.after(5000, paycompleteFrame.destroy() )
+    pack_new_frame(paycompleteFrame)
 
     time_buffer = 5000
-    try:
-        if pay_output_code == 0:  # If payment is successful, display successful payment screen for 20s
-            time_buffer = 20000
-    except:
-        pass
+    if pay_output_code == 0:
+        time_buffer = 20000
 
     paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy())
-
-    ## TEST ENDS
-    print('debug1')
 
 
 
@@ -573,12 +495,12 @@ def signalListener(dummyVar1, dummyVar2):
 
             if listener_outcome == "settings":
                 print('navigate to settings main frame')
-                navigate_SettingsMainFrame()
+                enqueue_ui_update(navigate_SettingsMainFrame)
                 break
 
             elif listener_outcome == "inhibit":
                 print('launch inhibit')
-                navigate_InhibitFrame()
+                enqueue_ui_update(navigate_InhibitFrame)
                 break
 
             else:
@@ -682,9 +604,13 @@ def navigate_InhibitFrame():
 
 def inhibitEndListener(dummyVar1, dummyVar2):
     inhibit_end_listener_outcome = signalListenerGPIO.inhibitEndListenGPIO()
+    enqueue_ui_update(close_app_after_inhibit)
 
+
+def close_app_after_inhibit():
     mainContainer.destroy()
-    settingsContainer.destroy()
+    if 'settingsContainer' in globals():
+        settingsContainer.destroy()
 
 
 def launchSendSignal(price, dummyVar):
@@ -698,3 +624,4 @@ def launchSendSignal(price, dummyVar):
 def quitProgramAfterSettings():
     mainContainer.destroy()
     settingsContainer.destroy()
+

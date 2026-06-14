@@ -12,7 +12,7 @@ import threading
 
 import client_connection as servConn
 
-import tkinter_frames.tkConnCheckFrame
+#import tkinter_frames.tkConnCheckFrame
 
 def launchConnCheckProcess():
 #TEST
@@ -330,3 +330,7 @@ def launchBackgroundConnCheckProcess(arg1, arg2):
     rwConnCheckFile.writeConnCheckStatus(
         {"Moderninha": checkConnModerninha_result,
          "QR Code (Pix)": checkConnPixServer_result})
+
+
+if __name__ == "__main__":
+    launchStartupConnCheckProcess()

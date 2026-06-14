@@ -1,23 +1,22 @@
 import RPi.GPIO as GPIO
 import time
+from shared_resource import gpio_lock
 
 def listenGPIO():
-
-    GPIO.cleanup()
-    
     print("SCRIPT TO LISTEN TO INHIBIT AND SETTINGS GPIO SIGNAL")
 
-    GPIO.setmode(GPIO.BCM)
+    with gpio_lock:
+        GPIO.setmode(GPIO.BCM)
 
-    # INHIBIT SIGNAL INPUT
-    GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+        # INHIBIT SIGNAL INPUT
+        GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
-    # SETTINGS SIGNAL INPUT
-    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+        # SETTINGS SIGNAL INPUT
+        GPIO.setup(20, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
-    # VOLTAGE SOURCE FOR SETTINGS SIGNAL INPUT
-    GPIO.setup(21, GPIO.OUT)
-    GPIO.output(21, GPIO.HIGH)
+        # VOLTAGE SOURCE FOR SETTINGS SIGNAL INPUT
+        GPIO.setup(21, GPIO.OUT)
+        GPIO.output(21, GPIO.HIGH)
 
     listener_outcome = "no"
 
@@ -37,8 +36,6 @@ def listenGPIO():
             print('no signal detected')
         time.sleep(1)
         
-    GPIO.cleanup()
-        
     print("End of listener")
     print(listener_outcome)
     return listener_outcome
@@ -47,10 +44,11 @@ def listenGPIO():
 def inhibitEndListenGPIO():
     print("SCRIPT TO DETECT WHEN INHIBIT SIGNAL IS OVER")
 
-    GPIO.setmode(GPIO.BCM)
+    with gpio_lock:
+        GPIO.setmode(GPIO.BCM)
 
-    # INHIBIT SIGNAL INPUT
-    GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        # INHIBIT SIGNAL INPUT
+        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     inhibit_end_listener_outcome = "no"
 
@@ -62,10 +60,6 @@ def inhibitEndListenGPIO():
             inhibit_end_listener_outcome = "inhibit ends"
             break
 
-
-    GPIO.cleanup()
-
     print("End of listener")
     print(inhibit_end_listener_outcome)
     return inhibit_end_listener_outcome
-

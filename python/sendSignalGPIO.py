@@ -1,11 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 import rwPulseCoinValue
+from shared_resource import gpio_lock
 
 def sendOutputSignal(price):
-
-    GPIO.cleanup()
-    
     print("SCRIPT TO SEND SIGNAL CALL")
     print(price)
     
@@ -20,21 +18,24 @@ def sendOutputSignal(price):
     # New implementation in case pulse value is higher than price step
     if price % pulse_coin_value > 0.1 and number_of_pulses < price/pulse_coin_value :
         number_of_pulses = number_of_pulses + 1
-    
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(26, GPIO.OUT)
-    
-    for i in range(number_of_pulses):
-        
-        GPIO.output(26, GPIO.HIGH)
-        time.sleep(msPulse/1000)
+
+    with gpio_lock:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(26, GPIO.OUT)
         GPIO.output(26, GPIO.LOW)
-        time.sleep(msBetweenPulses/1000)
-        
-        print("pulsetest")
-        
-    GPIO.cleanup()
-        
+
+        try:
+            for i in range(number_of_pulses):
+                GPIO.output(26, GPIO.HIGH)
+                time.sleep(msPulse/1000)
+                GPIO.output(26, GPIO.LOW)
+                time.sleep(msBetweenPulses/1000)
+
+                print("pulsetest")
+        finally:
+            # Leave the output in a known state even if the pulse loop is interrupted.
+            GPIO.output(26, GPIO.LOW)
+
     print("End of GPIO pulse")
     
     
