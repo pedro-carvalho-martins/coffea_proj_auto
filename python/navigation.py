@@ -7,7 +7,7 @@ import tkinter_frames.tkHelloFrame as tkHelloFrame
 import tkinter_frames.tkPriceSettingFrame as tkPriceSettingFrame
 import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
 import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
-import tkinter_frames.tkIDSettingFrame as tkIDSettingFrame
+import tkinter_frames.tkSystemNameSettingFrame as tkSystemNameSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
@@ -43,6 +43,13 @@ import rwLogCSV
 def hide_and_destroy_frame(currentFrame):
     currentFrame.pack_forget()
     currentFrame.destroy()
+
+    setting_page_aliases = {
+        "Precos": "PreÃ§os",
+        "Metodos pagamento": "MÃ©todos pagamento",
+        "Endereco MAC Moderninha": "EndereÃ§o MAC Moderninha",
+    }
+    settingPageSelection = setting_page_aliases.get(settingPageSelection, settingPageSelection)
 
 def pack_new_frame(newFrame):
     newFrame.pack(side="top", fill="both", expand=True)
@@ -623,9 +630,9 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
         pMethodSettingFrame = tkPMethodSettingFrame.createPMethodSettingFrame(settingsContainer)
         pMethodSettingFrame.pack(side="top", fill="both", expand=True)
 
-    elif settingPageSelection == "Identificador sistema":
-        IDSettingFrame = tkIDSettingFrame.createIDSettingFrame(settingsContainer)
-        IDSettingFrame.pack(side="top", fill="both", expand=True)
+    elif settingPageSelection == "Nome sistema":
+        systemNameSettingFrame = tkSystemNameSettingFrame.createSystemNameSettingFrame(settingsContainer)
+        systemNameSettingFrame.pack(side="top", fill="both", expand=True)
 
     elif settingPageSelection == "Endereço MAC Moderninha":
         MACSettingFrame = tkMACSettingFrame.createMACSettingFrame(settingsContainer)

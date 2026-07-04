@@ -1,8 +1,8 @@
 
-import os
+from app_paths import VERSION_FILE
 
 # Global file path
-system_version_filename = './settings_files/version.txt'
+system_version_filename = VERSION_FILE
 
 def readVersion():
     print("read system version BEGINS")

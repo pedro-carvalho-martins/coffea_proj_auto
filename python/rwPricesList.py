@@ -1,13 +1,15 @@
 import os
+from app_paths import PRICE_LIST_FILE, ensure_parent_dir
 
 # Global filename and default contents
-price_list_filename = './settings_files/listaPrecos.txt'
+price_list_filename = PRICE_LIST_FILE
 DEFAULT_PRICE_LIST = """4.0
 3.0
 1.5"""
 
 def createPriceListFile():
     """Creates listaPrecos.txt with default price values."""
+    ensure_parent_dir(price_list_filename)
     with open(price_list_filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_PRICE_LIST)
     print(f"{price_list_filename} created with default price list.")
@@ -38,6 +40,7 @@ def writeListSettings(priceList):
 
     print(outString)
 
+    ensure_parent_dir(price_list_filename)
     with open(price_list_filename, "w", encoding='utf-8') as pricesFile:
         pricesFile.write(outString)
 

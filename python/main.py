@@ -4,6 +4,7 @@ import tkinter as tk
 
 import navigation
 import connCheckProcess
+import rwSystemId
 
 
 ## Configurando o container principal
@@ -20,6 +21,9 @@ session_number = 0
 
 #while True:
 session_number = session_number + 1
+
+# Forces creation of the persistent machine ID on first execution.
+rwSystemId.readSystemId()
 
 navigation.navigate_startupFrame(session_number)
 

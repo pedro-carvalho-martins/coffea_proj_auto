@@ -5,17 +5,26 @@ import os
 import shutil
 
 from shared_resource import file_lock
+from app_paths import (
+    LOGS_BACKUP_DIR,
+    LOGS_JSON_TMP_DIR,
+    LOG_HEADER_MODEL_FILE,
+    TMP_LOG_FILE,
+    ensure_parent_dir,
+    ensure_runtime_layout,
+)
 
-import rwSystemID
+import rwSystemName
 import rwSystemVersion
 
 
 def delete_old_csv_backup_files():
+    ensure_runtime_layout()
     # Get the current year
     current_year = datetime.datetime.now().year
 
     # Get all CSV files in the backup directory
-    csv_files = [f for f in os.listdir('./log_files/csv_full_logs_backup/') if f.endswith('.csv')]
+    csv_files = [f for f in os.listdir(LOGS_BACKUP_DIR) if f.endswith('.csv')]
 
     for csv_file in csv_files:
         if csv_file.startswith('backup_full_client_log_Y'):
@@ -24,26 +33,31 @@ def delete_old_csv_backup_files():
 
             # If the file is older than last year, delete it
             if year < current_year - 1:
-                os.remove(os.path.join('./log_files/csv_full_logs_backup/', csv_file))
+                os.remove(os.path.join(LOGS_BACKUP_DIR, csv_file))
                 print(f"Deleted old backup CSV file: {csv_file}")
 
 
 def prepare_and_check_current_year_week_backup_csv_path():
+    ensure_runtime_layout()
 
     datetime_now_isocalendar = datetime.datetime.now().isocalendar()
     year_week_string = 'Y' + str(datetime_now_isocalendar[0]) + '_W' + str(datetime_now_isocalendar[1]).zfill(2)
 
-    current_yearweek_csv_file_path = "./log_files/csv_full_logs_backup/backup_full_client_log_" + year_week_string + ".csv"
+    current_yearweek_csv_file_path = os.path.join(
+        LOGS_BACKUP_DIR,
+        "backup_full_client_log_" + year_week_string + ".csv"
+    )
 
     # Check if the CSV file exists
     if not os.path.isfile(current_yearweek_csv_file_path):
 
         # Define the model CSV file path
-        model_csv_path = "./log_files/log_header_backup_model.csv"
+        model_csv_path = LOG_HEADER_MODEL_FILE
 
         # Check if the model CSV file exists
         if os.path.isfile(model_csv_path):
             # Copy the model CSV file to the specified path
+            ensure_parent_dir(current_yearweek_csv_file_path)
             shutil.copyfile(model_csv_path, current_yearweek_csv_file_path)
             print(f"'{current_yearweek_csv_file_path}' created from '{model_csv_path}'.")
 
@@ -59,6 +73,7 @@ def prepare_and_check_current_year_week_backup_csv_path():
 
 
 def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro, descricao_erro):
+    ensure_runtime_layout()
 
     classe_erro = classe_erro.replace('"','-')
     classe_erro = classe_erro.replace("'", "-")
@@ -68,17 +83,18 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
     # Obtains the datetime at the moment of the log register
     datetime_register_str = str(datetime.datetime.now())[0:19]
 
-    # Obtains the name of the system (system ID)
-    nome_sistema = rwSystemID.readSystemID()
+    # Obtains the configured name of the system
+    nome_sistema = rwSystemName.readSystemName()
     versao_sistema = rwSystemVersion.readVersion()
 
     # Define the CSV filename
-    filename_csv_tmp = "./log_files/tmp_log_client.csv"
-    model_csv_path = "./log_files/log_header_backup_model.csv"
+    filename_csv_tmp = TMP_LOG_FILE
+    model_csv_path = LOG_HEADER_MODEL_FILE
 
     # Create tmp_log_client.csv from model if it doesn't exist
     if not os.path.isfile(filename_csv_tmp):
         if os.path.isfile(model_csv_path):
+            ensure_parent_dir(filename_csv_tmp)
             shutil.copyfile(model_csv_path, filename_csv_tmp)
             print(f"'{filename_csv_tmp}' created from '{model_csv_path}'.")
         else:
@@ -138,14 +154,15 @@ def clean_csv_file(csv_file_path):
 
 
 def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_file=5):
-    filename_csv_tmp_log = "./log_files/tmp_log_client.csv"
-    json_filepath_folder = "./log_files/json_files_tmp/"
-    client_name = rwSystemID.readSystemID()
+    ensure_runtime_layout()
+    filename_csv_tmp_log = TMP_LOG_FILE
+    json_filepath_folder = LOGS_JSON_TMP_DIR
+    client_name = rwSystemName.readSystemName()
 
     server_datetime_str = server_datetime.replace(":", "_")
 
     # Cleans the CSV file, since many issues with corrupted characters in this file started to arise
-    clean_csv_file("./log_files/tmp_log_client.csv")
+    clean_csv_file(filename_csv_tmp_log)
 
     with file_lock:
         with open(filename_csv_tmp_log, 'r') as csvfile:
@@ -187,12 +204,14 @@ def build_json_files_from_csv(client_datetime, server_datetime, max_lines_per_fi
     return json_filepath_folder
 
 # Define the CSV filename
-filename_csv_tmp = "./log_files/tmp_log_client.csv"
-model_csv_path = "./log_files/log_header_backup_model.csv"
+ensure_runtime_layout()
+filename_csv_tmp = TMP_LOG_FILE
+model_csv_path = LOG_HEADER_MODEL_FILE
 
 # Create tmp_log_client.csv from model if it doesn't exist
 if not os.path.isfile(filename_csv_tmp):
     if os.path.isfile(model_csv_path):
+        ensure_parent_dir(filename_csv_tmp)
         shutil.copyfile(model_csv_path, filename_csv_tmp)
         print(f"'{filename_csv_tmp}' created from '{model_csv_path}'.")
     else:

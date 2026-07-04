@@ -1,35 +1,25 @@
-- comandos inicialização BT p/ sinc maquininha (sempre que liga o rpi?? a cada compra?? conferir o rfcomm??)
-- verificação de conexões
-- sinais GPIO (pulsos p/ máquina e disable quando fora de serviço)
-- evitar falha no pagamento por duplicata
-- definir código de venda? incremental?
-- ajeitar para interrupção de compra no app após 60s e cancelar na maquininha(é possível?)
-  -caso não seja possível, notificar pela telinha após 30? 60? segundos para o usuário cancelar a operação e recomeçar
-- fazer log de operações
-- tratar aprovação ou falha da operação -- dar feedback ao usuário
-- assegurar que haverá sincronia entre as telas do rpi e da maquininha, para evitar solicitação de compra em momento no qual maquininha estiver bloqueada
-  -tratar erro de maquininha "bloqueada" --> (em um menu,...) para aparecer na tela que não foi possível processar a compra
-- adicionar método de pagamento e valor aos prints do retorno da compra para adicionar ao log
-- adicionar monitoramento de temperatura da placa? (teste para evitar qualquer possível problema)
+Trabalhando com releases e implementando lógica de atualização
 
-- ENTENDER E ARRUMAR THREADING!! (se necessário) (estamos lançando dois threads novos a cada execução???)
+- Baixar release, extrair e colocar numa pasta do Rpi
+- Criar script que faz todo esse processo automaticamente
+	O script executar2.sh tem que ver um arquivo de texto (atualizar.txt) que vai ter um 0 ou 1. Se for 1, tem que atualizar.
+	Baixa os arquivos, confere tudo, salva backup da pasta antiga, transfere os arquivos novos, passa o flag do atualizar.txt para zero, executa o código
+- Testar que o script extrai corretamente todos os arquivos em uma pasta dedicada
 
+Trabalhando com scripts do release sem nenhum arquivo de configuração
 
-para prox dev, referencia da organização das listas de string de resultado de compra
+- Todos os scripts têm que estar na pasta coffea_proj_auto. Nessa pasta, não haverá nenhum arquivo de configuração nem QR Code pix. Objetivo: conseguir limpar toda a pasta de códigos a cada atualização e não perder arquivos de configuração. Esses arquivos ficarão na pasta settings, na mesma pasta que o coffea_proj_auto (pasta "coffeapag"?)
+- Ajeitar o código para seguir essa lógica. Usar paths absolutos por tudo?
+- Implementar lógica de criação de um ID do sistema de pagamento, que deve ser criado no momento da primeira execução do sistema
+- todos os arquivos de settings também devem ser criados na primeira execução
+- apenas o txt da versão deve ficar com os scripts
 
-compra com sucesso OUTPUT:
+Deixar o Codex otimizar levemente o código
 
-stdout PRINT DEBUG
-['VENDA', '', 'RETORNO: 0', '', 'Transaction Result', '\tmessage [Transacao realizada com sucesso]', '\ttransactionCode [D140851DB2E64832AEEE1CE3E302446C]', '\tdate [2023-02-06]', '\ttime [02:09:49]', '\thostNsu [020668725522]', '\tcardBrand [MASTERCARD]', '\tbin [545505]', '\tholder [6515]', '\tuser reference [ABC]', '']
-stderr PRINT DEBUG
-['']
-paymentCompleteOK
+- Fazer ele revisar os códigos de GPIO novamente e ver se há algum problema que possa levar a perda de pulsos
 
+Testar Codex com repo do hardware MDB
 
-compra cancelada na maquininha OUTPUT:
+- Ver se ele sabe interpretar e adaptar o código
 
-stdout PRINT DEBUG
-['VENDA', '', 'RETORNO: -1004', '', 'Transaction Result', '\tmessage [Transacao nao realizada]', '\ttransactionCode []', '\tdate []', '\ttime []', '\thostNsu []', '\tcardBrand []', '\tbin []', '\tholder []', '\tuser reference []', '']
-stderr PRINT DEBUG
-['']
-paymentCompleteOK
+Futuro: deixar o servidor enviar sinais de atualização e mudança de configurações para interagir com site.

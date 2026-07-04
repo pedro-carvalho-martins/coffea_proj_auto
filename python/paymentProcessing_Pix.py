@@ -5,7 +5,8 @@ import ssl
 import qrcode
 import time
 
-import rwSystemID
+import rwSystemName
+from app_paths import PIX_QRCODE_FILE, ensure_parent_dir
 
 from PIL import Image
 
@@ -16,10 +17,10 @@ import client_connection as servConn
 
 def PixRequest(price_selected):
 
-    # Get system ID to be sent in request
-    systemID = rwSystemID.readSystemID()
+    # Get system name to be sent in request
+    system_name = rwSystemName.readSystemName()
 
-    request_create_pix = {"type": "create_pix", "param1": systemID, "param2": price_selected}
+    request_create_pix = {"type": "create_pix", "param1": system_name, "param2": price_selected}
     response_PixRequest = servConn.send_request(request_create_pix)
 
     return response_PixRequest['pix_qrcode_copiaecola'], response_PixRequest['pix_txid']
@@ -27,9 +28,10 @@ def PixRequest(price_selected):
 
 def generate_img_QR_Code_Pix(pixCopiaECola):
 
-    directory_filename_pix_img = "qrCodePix.png"
+    directory_filename_pix_img = PIX_QRCODE_FILE
 
     img_qrcode = qrcode.make(pixCopiaECola)
+    ensure_parent_dir(directory_filename_pix_img)
     img_qrcode.save(directory_filename_pix_img)
 
 
@@ -39,10 +41,10 @@ def generate_img_QR_Code_Pix(pixCopiaECola):
 
 def get_status_cobranca(txid):
 
-    # Get system ID to be sent in request
-    systemID = rwSystemID.readSystemID()
+    # Get system name to be sent in request
+    system_name = rwSystemName.readSystemName()
 
-    request_cob_read = {"type": "cob_read", "param1": systemID, "param2": txid}
+    request_cob_read = {"type": "cob_read", "param1": system_name, "param2": txid}
     response_StatusCob = servConn.send_request(request_cob_read, max_retries=5, delay=0)
 
     return response_StatusCob

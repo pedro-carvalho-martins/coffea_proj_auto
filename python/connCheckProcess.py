@@ -5,7 +5,7 @@ import time
 import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
-import rwSystemID
+import rwSystemName
 import rwLogCSV
 
 import threading
@@ -208,14 +208,14 @@ def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
     # else:
     #     status_conn_servidor_pix = "erro"
 
-    # Get system ID to be sent in request
-    systemID = rwSystemID.readSystemID()
+    # Get system name to be sent in request
+    system_name = rwSystemName.readSystemName()
 
     # Use Moderninha connection status to log to server's connection report log
     moderninha_conn_status_str_req = "moderninha_"+checkConnModerninha_result
 
     try:
-        request_ping = {"type": "ping", "param1": systemID, "param2": moderninha_conn_status_str_req}
+        request_ping = {"type": "ping", "param1": system_name, "param2": moderninha_conn_status_str_req}
         response_request_ping = servConn.send_request(request_ping, max_retries=2, delay=0, timeout=3)
     except Exception as e:
         print("Ping failure")

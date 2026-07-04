@@ -1,14 +1,16 @@
 
 import os
+from app_paths import PULSE_COIN_FILE, ensure_parent_dir
 
 # Global file path and default content
-pulse_coin_filename = './settings_files/pulseCoinValue.txt'
+pulse_coin_filename = PULSE_COIN_FILE
 DEFAULT_PULSE_COIN_VALUE = """0.25
 100
 400"""
 
 def createPulseCoinFile():
     """Creates pulseCoinValue.txt with default coin value."""
+    ensure_parent_dir(pulse_coin_filename)
     with open(pulse_coin_filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_PULSE_COIN_VALUE)
     print(f"{pulse_coin_filename} created with default values.")
@@ -41,6 +43,7 @@ def writePulseCharacteristics(pulseCharacteristicsList):
 
     print(outString)
 
+    ensure_parent_dir(pulse_coin_filename)
     with open(pulse_coin_filename, "w", encoding='utf-8') as pulseFile:
         pulseFile.write(outString)
 

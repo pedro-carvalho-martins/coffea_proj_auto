@@ -1,11 +1,13 @@
 import os
+from app_paths import HELLO_SETTING_FILE, ensure_parent_dir
 
 # Global file path and default content
-hello_filename = './settings_files/helloScreenSetting.txt'
+hello_filename = HELLO_SETTING_FILE
 DEFAULT_HELLO_CONTENT = "Tela inicial"
 
 def createHelloSettingFile():
     """Creates helloScreenSetting.txt with default content."""
+    ensure_parent_dir(hello_filename)
     with open(hello_filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_HELLO_CONTENT)
     print(f"{hello_filename} created with default content.")
@@ -62,6 +64,7 @@ def writeListSettings(helloSettingDict):
 
     print(outString)
 
+    ensure_parent_dir(hello_filename)
     with open(hello_filename, "w", encoding='utf-8') as helloSettingFile:
         helloSettingFile.write(outString)
 

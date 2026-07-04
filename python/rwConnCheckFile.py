@@ -2,15 +2,17 @@
 
 import os
 from shared_resource import file_lock
+from app_paths import CONN_CHECK_FILE, ensure_parent_dir
 
 # Global file path and default content
-conn_check_filename = './settings_files/connCheck.txt'
+conn_check_filename = CONN_CHECK_FILE
 DEFAULT_CONN_CHECK_CONTENT =\
     """X-Moderninha
 X-QR Code (Pix)"""
 
 def createConnCheckFile():
     """Creates the connCheck.txt file with default values."""
+    ensure_parent_dir(conn_check_filename)
     with open(conn_check_filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_CONN_CHECK_CONTENT)
     print(f"{conn_check_filename} created with default connection check statuses.")
@@ -56,6 +58,7 @@ def writeConnCheckStatus(connCheckDict):
     print(outString)
 
     with file_lock:  # Ensure exclusive access
+        ensure_parent_dir(conn_check_filename)
         with open(conn_check_filename, "w", encoding='utf-8') as connCheckFile:
             connCheckFile.write(outString)
 

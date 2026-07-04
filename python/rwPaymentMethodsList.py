@@ -1,6 +1,7 @@
 import os
+from app_paths import PAYMENT_METHODS_FILE, ensure_parent_dir
 
-filename = './settings_files/paymentMethods.txt'
+filename = PAYMENT_METHODS_FILE
 
 DEFAULT_FILE_CONTENT =\
     """Débito
@@ -10,6 +11,7 @@ QR Code (Pix)"""
 
 def createNewFile():
     # Creates the payment methods file with default content
+    ensure_parent_dir(filename)
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(DEFAULT_FILE_CONTENT)
     print(f"{filename} created with default content.")
@@ -65,6 +67,7 @@ def writeListSettings(pMethodsDict):
 
     print(outString)
 
+    ensure_parent_dir(filename)
     with open(filename, "w", encoding='utf-8') as pMethodsFile:
         pMethodsFile.write(outString)
 

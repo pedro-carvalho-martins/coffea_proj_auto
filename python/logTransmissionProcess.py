@@ -1,5 +1,5 @@
 import client_connection as servConn
-import rwSystemID
+import rwSystemName
 import rwLogCSV
 import os
 import json
@@ -7,11 +7,11 @@ from datetime import datetime
 
 def get_server_datetime():
 
-    # Get system ID to be sent in request
-    systemID = rwSystemID.readSystemID()
+    # Get system name to be sent in request
+    system_name = rwSystemName.readSystemName()
 
     try:
-        request = {"type": "ping", "param1": systemID, "param2": 0}
+        request = {"type": "ping", "param1": system_name, "param2": 0}
         response_request_datetime_server = servConn.send_request(request)
 
     except Exception as e:
@@ -33,7 +33,7 @@ def send_json_file(request):
 
 
 def prep_send_json_files(json_folder):
-    client_name = rwSystemID.readSystemID()
+    client_name = rwSystemName.readSystemName()
 
     # List all files in the specified folder
     json_files = [f for f in os.listdir(json_folder) if f.endswith('.json')]
@@ -81,7 +81,7 @@ def prep_send_json_files(json_folder):
 
 def verify_json_files(json_folder):
 
-    client_name = rwSystemID.readSystemID()
+    client_name = rwSystemName.readSystemName()
 
     # List all files in the specified folder
     json_files = [f for f in os.listdir(json_folder) if f.endswith('.json')]
@@ -186,7 +186,7 @@ def sendInhibitAlert():
 
     rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "sendInhibitAlert_called", '', '')
 
-    client_name = rwSystemID.readSystemID()
+    client_name = rwSystemName.readSystemName()
 
     request = {
         "type": "inhibit_alert",
