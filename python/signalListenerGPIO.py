@@ -1,69 +1,84 @@
 import RPi.GPIO as GPIO
 import time
 
-def listenGPIO():
+from shared_resource import gpio_lock, gpio_listener_pause
 
-    GPIO.cleanup()
-    
+
+LISTENER_INPUT_INHIBIT = 16
+LISTENER_INPUT_SETTINGS = 20
+LISTENER_SETTINGS_VCC = 21
+_listener_gpio_initialized = False
+
+
+def _ensure_listener_gpio_initialized():
+    global _listener_gpio_initialized
+
+    if _listener_gpio_initialized:
+        return
+
     print("SCRIPT TO LISTEN TO INHIBIT AND SETTINGS GPIO SIGNAL")
-
     GPIO.setmode(GPIO.BCM)
 
     # INHIBIT SIGNAL INPUT
-    GPIO.setup(16, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+    GPIO.setup(LISTENER_INPUT_INHIBIT, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     # SETTINGS SIGNAL INPUT
-    GPIO.setup(20, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+    GPIO.setup(LISTENER_INPUT_SETTINGS, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     # VOLTAGE SOURCE FOR SETTINGS SIGNAL INPUT
-    GPIO.setup(21, GPIO.OUT)
-    GPIO.output(21, GPIO.HIGH)
+    GPIO.setup(LISTENER_SETTINGS_VCC, GPIO.OUT)
+    GPIO.output(LISTENER_SETTINGS_VCC, GPIO.HIGH)
 
-    listener_outcome = "no"
+    _listener_gpio_initialized = True
 
-    while True:
 
-        if(GPIO.input(20)==1):
+def pollListenerSignal():
+    if gpio_listener_pause.is_set():
+        return "paused"
+
+    with gpio_lock:
+        _ensure_listener_gpio_initialized()
+
+        if GPIO.input(LISTENER_INPUT_SETTINGS) == 1:
             print('settings pressionado')
-            listener_outcome = "settings"
-            break
+            return "settings"
 
-        elif(GPIO.input(16)==1):
+        if GPIO.input(LISTENER_INPUT_INHIBIT) == 1:
             print('inhibit acionado')
-            listener_outcome = "inhibit"
-            break
+            return "inhibit"
 
-        else:
-            print('no signal detected')
+    return "no"
+
+
+def listenGPIO():
+    while True:
+        listener_outcome = pollListenerSignal()
+
+        if listener_outcome != "no":
+            print("End of listener")
+            print(listener_outcome)
+            return listener_outcome
+
+        print('no signal detected')
         time.sleep(1)
-        
-    GPIO.cleanup()
-        
-    print("End of listener")
-    print(listener_outcome)
-    return listener_outcome
 
 
 def inhibitEndListenGPIO():
     print("SCRIPT TO DETECT WHEN INHIBIT SIGNAL IS OVER")
 
-    GPIO.setmode(GPIO.BCM)
-
-    # INHIBIT SIGNAL INPUT
-    GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
     inhibit_end_listener_outcome = "no"
 
     while True:
         time.sleep(3)
-        if (GPIO.input(16) == 1):
+        with gpio_lock:
+            _ensure_listener_gpio_initialized()
+            inhibit_is_active = GPIO.input(LISTENER_INPUT_INHIBIT) == 1
+
+        if inhibit_is_active:
             print('continue inhibit')
         else:
             inhibit_end_listener_outcome = "inhibit ends"
             break
-
-
-    GPIO.cleanup()
 
     print("End of listener")
     print(inhibit_end_listener_outcome)

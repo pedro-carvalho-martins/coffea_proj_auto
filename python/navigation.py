@@ -561,17 +561,8 @@ def signalListener(dummyVar1, dummyVar2):
     global disableInterrupt
 
     while True:
-
-        ## Additional code block for Windows testing
-        # listener_outcome = "no"
-        # disableInterrupt = 1
-        time.sleep(
-            2)  # Run loop every two seconds. This might be interesting for the production version (otherwise this is continuously in a loop without a time break)
-        ## End of additional code block for Windows testing
-
         if disableInterrupt == 0:
-
-            listener_outcome = signalListenerGPIO.listenGPIO()
+            listener_outcome = signalListenerGPIO.pollListenerSignal()
 
             if listener_outcome == "settings":
                 print('navigate to settings main frame')
@@ -585,6 +576,8 @@ def signalListener(dummyVar1, dummyVar2):
 
             else:
                 print('not defined')
+
+        time.sleep(0.2)
 
 
 # def navigate_SettingsMainFrame(currentFrame):
