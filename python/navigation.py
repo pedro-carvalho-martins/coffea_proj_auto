@@ -44,21 +44,18 @@ def hide_and_destroy_frame(currentFrame):
     currentFrame.pack_forget()
     currentFrame.destroy()
 
-    setting_page_aliases = {
-        "Precos": "PreÃ§os",
-        "Metodos pagamento": "MÃ©todos pagamento",
-        "Endereco MAC Moderninha": "EndereÃ§o MAC Moderninha",
-    }
-    settingPageSelection = setting_page_aliases.get(settingPageSelection, settingPageSelection)
 
 def pack_new_frame(newFrame):
     newFrame.pack(side="top", fill="both", expand=True)
 
+
 # Global queue for UI updates
 ui_update_queue = queue.Queue()
 
+
 def enqueue_ui_update(function, *args):
     ui_update_queue.put((function, args))
+
 
 def process_ui_queue():
     while not ui_update_queue.empty():
@@ -66,17 +63,20 @@ def process_ui_queue():
         function(*args)
     mainContainer.after(100, process_ui_queue)
 
+
 def enqueue_hide_and_destroy_frame(currentFrame):
     enqueue_ui_update(hide_and_destroy_frame, currentFrame)
+
 
 def enqueue_pack_new_frame(newFrame):
     enqueue_ui_update(pack_new_frame, newFrame)
 
+
 def enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
     enqueue_ui_update(launchPixRequest, payprocessFrame, price_selected, payment_method_selected)
 
-## 2024.08.29 New implementation ends
 
+## 2024.08.29 New implementation ends
 
 
 def navigate_startupFrame(session_number):
@@ -162,7 +162,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
     conn_check_output_code = connCheckProcess.launchStartupConnCheckProcess()
 
-    if conn_check_output_code == 0:  # Sucesso no teste de conexão: mostra checks por 3s e segue a execução do programa
+    if conn_check_output_code == 0:  # Sucesso no teste de conexÃ£o: mostra checks por 3s e segue a execuÃ§Ã£o do programa
         time.sleep(3)
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
@@ -177,10 +177,10 @@ def launchConnCheck(connCheckFrame, dummyVariable):
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
 
-    # Feature de exibição dos botões "Reconectar" e "Continuar" no Frame de ConnCheck.
-    # Código comentado - feature abandonada para facilitar a experiência do usuário.
-    # No lugar de mostrar os botões, mostra o resultado dos testes com um sleep e segue adiante
-    # else: # Falha completa ou parcial no teste de conexão: mostra falhas e botões de reconectar ou continuar
+    # Feature de exibiÃ§Ã£o dos botÃµes "Reconectar" e "Continuar" no Frame de ConnCheck.
+    # CÃ³digo comentado - feature abandonada para facilitar a experiÃªncia do usuÃ¡rio.
+    # No lugar de mostrar os botÃµes, mostra o resultado dos testes com um sleep e segue adiante
+    # else: # Falha completa ou parcial no teste de conexÃ£o: mostra falhas e botÃµes de reconectar ou continuar
     #    while True:
     #       if tkConnCheckFrame.flag_reconectar == "sim":
     #          tkConnCheckFrame.flag_reconectar = "none"
@@ -194,7 +194,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
     #          connCheckFrame.destroy()
     #          check_helloScreen(connCheckFrame)
 
-    elif conn_check_output_code == 1:  # Falha parcial de conexão - segue normalmente mas indica resultado na tela
+    elif conn_check_output_code == 1:  # Falha parcial de conexÃ£o - segue normalmente mas indica resultado na tela
         time.sleep(3)
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
@@ -209,7 +209,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
 
-    else:  # Falha completa de conexão - Faz o teste novamente.
+    else:  # Falha completa de conexÃ£o - Faz o teste novamente.
         time.sleep(10)
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
@@ -225,19 +225,19 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
 
 def check_helloScreen(currentFrame):
-    # Lanço verificação periódica de conexão
+    # LanÃ§o verificaÃ§Ã£o periÃ³dica de conexÃ£o
     #threadBackgroundConnCheck = Thread(target=connCheckProcess.launchBackgroundConnCheckProcess, args=(0, 0))
     threadBackgroundConnCheck = Thread(target=loopConnCheckBackground, args=(0, 0))
     threadBackgroundConnCheck.daemon = True
     threadBackgroundConnCheck.start()
 
-    # Lanço envio de logs ao servidor
+    # LanÃ§o envio de logs ao servidor
     threadLogTransmission = Thread(target=logTransmissionProcess.startLogTransmission, args=(0, 0))
     threadLogTransmission.daemon = True
     threadLogTransmission.start()
 
     # helloScreenOn=1
-    # Verifica se a tela de "toque aqui para iniciar" está habilitada ou não
+    # Verifica se a tela de "toque aqui para iniciar" estÃ¡ habilitada ou nÃ£o
     helloScreenOn = rwHelloSettingFile.readListCheckHello()
 
     if helloScreenOn == 1:
@@ -346,7 +346,7 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected)
 
 
-    # Se o pagamento for através da moderninha, por cartão:
+    # Se o pagamento for atravÃ©s da moderninha, por cartÃ£o:
 
     else:
 
@@ -366,16 +366,16 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         print(threading.active_count())
         print("ENDS PRINT ACTIVE THREADS")
 
-        # Verifico se o preço selecionado corresponde ao valor da última compra realizada. Se sim, desconto um centavo.
+        # Verifico se o preÃ§o selecionado corresponde ao valor da Ãºltima compra realizada. Se sim, desconto um centavo.
 
         valorUltimaCompra = rwUltimoPag.readValue()
-        # Se os valores forem iguais e o valor da ultima compra não for quebrado
+        # Se os valores forem iguais e o valor da ultima compra nÃ£o for quebrado
         if (valorUltimaCompra % .25 < 0.001) and (price_selected - valorUltimaCompra < 0.001):
             price_selected = price_selected - 0.01
         #
 
         ## launch other thread
-        # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+        # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
         threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected, 0))
         threadPay.start()
         # thread.join()
@@ -412,7 +412,7 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
         ## launch new thread
-        # Último argumento é zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+        # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
         threadPay = Thread(target=launchPayment,
                            args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
         threadPay.start()
@@ -460,17 +460,14 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
             # pass qr code text to tk function -> display QR Code on screen
             # launch a thread to check for payment completion ((maybe start THIS on this function for Pix, and have a previous func to return qr code and call the tk to display it
             # this func to check for payment completion should last max 3 minutes? then expire. if anything fails or timeout, pay_output_code!=1; if all is good, pay_output_code = 1
-            # integrate code from comm_inter_teste_pycharm_project from the folder \Integração API Inter\comm_inter_teste...
+            # integrate code from comm_inter_teste_pycharm_project from the folder \IntegraÃ§Ã£o API Inter\comm_inter_teste...
 
             # temporary test
             # pay_output_code = paymentProcessing_Pix.launchPaymentProcessing_Pix_TEST_DONOTCALL(price_selected, payprocessFrame)
 
-            # Chamar função para conexão com API do Inter e gerar QR Code (enquanto isso, tela de loading que já está carregada (mas botar um loading com imagem!!)
+            # Chamar funÃ§Ã£o para conexÃ£o com API do Inter e gerar QR Code (enquanto isso, tela de loading que jÃ¡ estÃ¡ carregada (mas botar um loading com imagem!!)
             # Assim que gerar o QR Code, passar para a tela que mostra o QR Code e aguardar o pagamento
             # Assim que o pagamento for confirmado, dar pay_output_code = 0
-
-
-
 
         else:
             pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
@@ -503,7 +500,6 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
             ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
             paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
             ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
 
     except Exception as e:
 
@@ -549,7 +545,6 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
     print('debug1')
 
 
-
 def loopConnCheckBackground(dummyVar1, dummyVar2):
 
     global disableBgConnCheck
@@ -558,7 +553,7 @@ def loopConnCheckBackground(dummyVar1, dummyVar2):
 
         time.sleep(300)
         if disableBgConnCheck == 0:
-            connCheckProcess.launchBackgroundConnCheckProcess(0,0)
+            connCheckProcess.launchBackgroundConnCheckProcess(0, 0)
 
 
 # Will be able to detect if settings button is pressed or if the inhibit signal is on

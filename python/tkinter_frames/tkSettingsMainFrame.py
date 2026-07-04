@@ -12,10 +12,10 @@ def button_clicked(index_button, lista_tipos_config, settingSelectionFrame):
 
 def createSettingSelectionFrame(settingsContainer):
     lista_tipos_config = [
-        "Precos",
-        "Metodos pagamento",
+        "Preços",
+        "Métodos pagamento",
         "Nome sistema",
-        "Endereco MAC Moderninha",
+        "Endereço MAC Moderninha",
         "Config. valor pulso",
         "Config. de rede - Encerrar app",
         "Config. tela inicial",
@@ -31,7 +31,7 @@ def createSettingSelectionFrame(settingsContainer):
 
     label = tk.Label(
         settingSelectionFrame,
-        text="Configuracoes\nv" + rwSystemVersion.readVersion(),
+        text="Configurações\nv" + rwSystemVersion.readVersion(),
         font=("SegoeUI", 14),
         wraplength=250,
     )
