@@ -9,13 +9,13 @@ def kill_pid_executar():
     processes = result.stdout.splitlines()
 
     for process in processes:
-        if 'executar2.sh' in process:
+        if 'run_coffeapag_loop.sh' in process:
             # Extract the PID (second column)
             pid = int(process.split()[1])
             try:
                 # Kill the process
                 os.kill(pid, signal.SIGTERM)
-                print(f"Terminated process {pid} for executar2.sh")
+                print(f"Terminated process {pid} for run_coffeapag_loop.sh")
             except ProcessLookupError:
                 print(f"Process {pid} not found")
             except PermissionError:
