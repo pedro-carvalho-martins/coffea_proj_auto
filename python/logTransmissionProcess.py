@@ -186,20 +186,6 @@ def sendInhibitAlert():
 
     rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "sendInhibitAlert_called", '', '')
 
-    client_name = rwSystemName.readSystemName()
-
-    request = {
-        "type": "inhibit_alert",
-        "param1": client_name,
-        "param2": 0
-    }
-
-    try:
-        servConn.send_request(request)
-    except Exception as e:
-        rwLogCSV.writeCSV("erro_outros", "0", "N/A", "sendInhibitAlert_called_exception", str(e.__class__),
-                          str(e))
-
 
 
 if __name__ == "__main__":

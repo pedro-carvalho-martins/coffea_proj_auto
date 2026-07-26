@@ -22,6 +22,8 @@ CONN_CHECK_FILE = os.path.join(SETTINGS_DIR, "connCheck.txt")
 PULSE_COIN_FILE = os.path.join(SETTINGS_DIR, "pulseCoinValue.txt")
 SYSTEM_ID_FILE = os.path.join(SETTINGS_DIR, "systemId.txt")
 SYSTEM_NAME_FILE = os.path.join(SETTINGS_DIR, "systemName.txt")
+SERVER_PAIRING_TOKEN_FILE = os.path.join(SETTINGS_DIR, "serverPairingToken.txt")
+SERVER_PAIRING_MODE_FILE = os.path.join(SETTINGS_DIR, "serverPairingMode.txt")
 ULTIMO_PAGAMENTO_FILE = os.path.join(SETTINGS_DIR, "ultimoPagamento.txt")
 
 TMP_LOG_FILE = os.path.join(LOGS_DIR, "tmp_log_client.csv")

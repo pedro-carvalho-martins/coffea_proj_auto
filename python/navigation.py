@@ -13,6 +13,7 @@ import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
 import tkinter_frames.tkPulseValueSettingFrame as tkPulseValueSettingFrame
+import tkinter_frames.tkServerPairingSettingFrame as tkServerPairingSettingFrame
 
 import queue
 import time
@@ -32,6 +33,7 @@ import connCheckProcess
 import kill_shell_loop
 
 import logTransmissionProcess
+import serverPairingProcess
 
 import rwUltimoPag
 import rwHelloSettingFile
@@ -100,6 +102,8 @@ def navigate_startupFrame(session_number):
     mainContainer.attributes('-fullscreen', True)
     # mainContainer.attributes('-fullscreen', False)
     ## End of block for Windows testing
+
+    serverPairingProcess.start_pairing_worker()
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -230,11 +234,6 @@ def check_helloScreen(currentFrame):
     threadBackgroundConnCheck = Thread(target=loopConnCheckBackground, args=(0, 0))
     threadBackgroundConnCheck.daemon = True
     threadBackgroundConnCheck.start()
-
-    # LanÃ§o envio de logs ao servidor
-    threadLogTransmission = Thread(target=logTransmissionProcess.startLogTransmission, args=(0, 0))
-    threadLogTransmission.daemon = True
-    threadLogTransmission.start()
 
     # helloScreenOn=1
     # Verifica se a tela de "toque aqui para iniciar" estÃ¡ habilitada ou nÃ£o
@@ -647,6 +646,10 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
     elif settingPageSelection == "Config. tela inicial":
         HelloSettingFrame = tkHelloSettingFrame.createHelloSettingFrame(settingsContainer)
         HelloSettingFrame.pack(side="top", fill="both", expand=True)
+
+    elif settingPageSelection == "Pareamento com servidor":
+        pairingSettingFrame = tkServerPairingSettingFrame.createServerPairingSettingFrame(settingsContainer)
+        pairingSettingFrame.pack(side="top", fill="both", expand=True)
 
     else:
         ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE

@@ -5,12 +5,10 @@ import time
 import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
-import rwSystemName
 import rwLogCSV
+import serverPairingProcess
 
 import threading
-
-import client_connection as servConn
 
 import tkinter_frames.tkConnCheckFrame
 
@@ -208,24 +206,11 @@ def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
     # else:
     #     status_conn_servidor_pix = "erro"
 
-    # Get system name to be sent in request
-    system_name = rwSystemName.readSystemName()
-
-    # Use Moderninha connection status to log to server's connection report log
-    moderninha_conn_status_str_req = "moderninha_"+checkConnModerninha_result
-
-    try:
-        request_ping = {"type": "ping", "param1": system_name, "param2": moderninha_conn_status_str_req}
-        response_request_ping = servConn.send_request(request_ping, max_retries=2, delay=0, timeout=3)
-    except Exception as e:
-        print("Ping failure")
-        rwLogCSV.writeCSV("erro_outros", "", "", "request_ping", str(e.__class__), str(e))
-        response_request_ping = {'ping': "erro"}
-
-    if response_request_ping['ping'] == "OK":
+    pairing_state = serverPairingProcess.wait_for_initial_sync()
+    if pairing_state["status"] == "paired":
         status_conn_servidor_pix = "check"
     else:
-        status_conn_servidor_pix = "erro"
+        status_conn_servidor_pix = "error"
 
     print("status conn servidor pix: " + status_conn_servidor_pix)
 
@@ -294,8 +279,8 @@ def launchStartupConnCheckProcess():
 
     # If both fail, send output -1 indicating that the connCheck should be restarted
     elif (
-        tkinter_frames.tkConnCheckFrame.status_conn_moderninha != "check"
-        and tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix != "check"
+        tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "error"
+        and tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "error"
     ):
         connCheck_output = -1  # Complete fail
 

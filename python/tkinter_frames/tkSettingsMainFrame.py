@@ -19,6 +19,7 @@ def createSettingSelectionFrame(settingsContainer):
         "Config. valor pulso",
         "Config. de rede - Encerrar app",
         "Config. tela inicial",
+        "Pareamento com servidor",
         "Voltar",
     ]
 
