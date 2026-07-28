@@ -32,7 +32,6 @@ import signalListenerGPIO
 import connCheckProcess
 import kill_shell_loop
 
-import logTransmissionProcess
 import serverPairingProcess
 
 import rwUltimoPag
@@ -660,7 +659,7 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 def navigate_InhibitFrame():
     global inhibitContainer
 
-    logTransmissionProcess.sendInhibitAlert()
+    rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "navigate_InhibitFrame", "", "")
 
     inhibitContainer = tk.Toplevel()
     inhibitContainer.title("inhibit_container")
