@@ -37,6 +37,7 @@ import serverPairingProcess
 import rwUltimoPag
 import rwHelloSettingFile
 import rwLogCSV
+import shared_resource
 
 
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner
@@ -89,6 +90,7 @@ def navigate_startupFrame(session_number):
 
     global disableBgConnCheck
     disableBgConnCheck = 0
+    shared_resource.set_customer_interaction_active(False)
 
     mainContainer = tk.Tk()
     mainContainer.title("sistema_pagamento_plugpag")
@@ -258,6 +260,7 @@ def navigate_helloFrame(currentFrame):
 
 def navigate_priceFrame(currentFrame):
     print('navPrice')
+    shared_resource.set_customer_interaction_active(True)
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -581,6 +584,7 @@ def signalListener(dummyVar1, dummyVar2):
 # def navigate_SettingsMainFrame(currentFrame):
 def navigate_SettingsMainFrame():
     print('navSettingsMenu')
+    shared_resource.set_customer_interaction_active(True)
 
     global settingsContainer
 
@@ -658,6 +662,7 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 
 def navigate_InhibitFrame():
     global inhibitContainer
+    shared_resource.set_customer_interaction_active(True)
 
     rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "navigate_InhibitFrame", "", "")
 

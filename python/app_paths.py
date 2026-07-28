@@ -24,6 +24,8 @@ SYSTEM_ID_FILE = os.path.join(SETTINGS_DIR, "systemId.txt")
 SYSTEM_NAME_FILE = os.path.join(SETTINGS_DIR, "systemName.txt")
 SERVER_PAIRING_TOKEN_FILE = os.path.join(SETTINGS_DIR, "serverPairingToken.txt")
 SERVER_PAIRING_MODE_FILE = os.path.join(SETTINGS_DIR, "serverPairingMode.txt")
+REMOTE_COMMAND_RESULT_FILE = os.path.join(SETTINGS_DIR, "remoteCommandResult.json")
+UPDATE_INPUT_FILE = os.path.join(SETTINGS_DIR, "update_input.txt")
 ULTIMO_PAGAMENTO_FILE = os.path.join(SETTINGS_DIR, "ultimoPagamento.txt")
 
 TMP_LOG_FILE = os.path.join(LOGS_DIR, "tmp_log_client.csv")

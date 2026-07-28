@@ -5,9 +5,12 @@ import time
 from datetime import datetime
 
 import rwServerPairingSettings
+import rwPaymentMethodsList
+import rwPricesList
 import rwSystemId
 import rwSystemName
 import rwSystemVersion
+import remoteCommandProcess
 from server_api_client import DeviceApiError, post_json
 
 
@@ -51,7 +54,20 @@ def sync_once():
                 "sistema_pag_nome": rwSystemName.readSystemName(),
                 "versao_sistema_pag": rwSystemVersion.readVersion(),
                 "pairing_code": rwServerPairingSettings.get_pairing_code(),
+                "settings": {
+                    "prices": rwPricesList.readList(),
+                    "payment_methods": {},
+                },
+                "command_results": [],
             }
+            current_methods = rwPaymentMethodsList.readListSettings()
+            payload["settings"]["payment_methods"] = {
+                method: current_methods.get(method) == "enabled"
+                for method in remoteCommandProcess.SUPPORTED_PAYMENT_METHODS
+            }
+            pending_result = remoteCommandProcess.read_pending_result()
+            if pending_result:
+                payload["command_results"].append(pending_result)
             token = rwServerPairingSettings.read_pairing_token()
             response = post_json("/sync", payload, token)
         except DeviceApiError as exc:
@@ -65,6 +81,11 @@ def sync_once():
 
         status = response.get("status", "connection_error")
         _update_state(status, contacted=True)
+        if status == "paired":
+            if pending_result:
+                remoteCommandProcess.clear_pending_result(pending_result["command_id"])
+            for command in response.get("commands", []):
+                remoteCommandProcess.process_command_if_safe(command)
         return status == "paired"
 
 
@@ -77,7 +98,10 @@ def wait_for_initial_sync(timeout=12):
 def run_pairing_loop():
     """Synchronize immediately on startup, then every five minutes."""
     while True:
-        sync_once()
+        try:
+            sync_once()
+        except Exception as exc:
+            _update_state("connection_error", str(exc))
         time.sleep(SYNC_INTERVAL_SECONDS)
 
 
