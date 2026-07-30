@@ -5,19 +5,23 @@ import time
 from datetime import datetime
 
 import rwServerPairingSettings
+import rwHelloSettingFile
+import rwMACAddress
 import rwPaymentMethodsList
+import rwPulseCoinValue
 import rwPricesList
 import rwSystemId
 import rwSystemName
 import rwSystemVersion
 import remoteCommandProcess
+import shared_resource
 from server_api_client import DeviceApiError, post_json
 
 
 SYNC_INTERVAL_SECONDS = 300
 
 _state_lock = threading.Lock()
-_sync_lock = threading.Lock()
+_sync_lock = shared_resource.server_sync_lock
 _worker_lock = threading.Lock()
 _initial_sync_done = threading.Event()
 _worker_started = False
@@ -45,10 +49,16 @@ def sync_once():
     """Send one pairing heartbeat unless offline operation is enabled."""
     with _sync_lock:
         try:
+            if shared_resource.factory_reset_in_progress.is_set():
+                _update_state("offline")
+                return False
             if not rwServerPairingSettings.is_online_mode_enabled():
                 _update_state("offline")
                 return False
 
+            pulse_value, pulse_duration_ms, pulse_interval_ms = (
+                rwPulseCoinValue.readPulseCharacteristics()
+            )
             payload = {
                 "sistema_pag_id": rwSystemId.readSystemId(),
                 "sistema_pag_nome": rwSystemName.readSystemName(),
@@ -57,6 +67,13 @@ def sync_once():
                 "settings": {
                     "prices": rwPricesList.readList(),
                     "payment_methods": {},
+                    "moderninha_mac": rwMACAddress.readMACAddress(),
+                    "pulse_value": pulse_value,
+                    "pulse_duration_ms": pulse_duration_ms,
+                    "pulse_interval_ms": pulse_interval_ms,
+                    "hello_screen_enabled": bool(
+                        rwHelloSettingFile.readListCheckHello()
+                    ),
                 },
                 "command_results": [],
             }

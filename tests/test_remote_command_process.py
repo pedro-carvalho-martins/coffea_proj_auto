@@ -10,7 +10,10 @@ PYTHON_DIR = Path(__file__).resolve().parents[1] / "python"
 sys.path.insert(0, str(PYTHON_DIR))
 
 import remoteCommandProcess
+import rwHelloSettingFile
+import rwMACAddress
 import rwPaymentMethodsList
+import rwPulseCoinValue
 import rwPricesList
 import rwSystemName
 import shared_resource
@@ -25,6 +28,9 @@ class RemoteCommandProcessTests(unittest.TestCase):
         self.name_file = os.path.join(base, "systemName.txt")
         self.prices_file = os.path.join(base, "listaPrecos.txt")
         self.methods_file = os.path.join(base, "paymentMethods.txt")
+        self.mac_file = os.path.join(base, "enderecoMAC.txt")
+        self.pulse_file = os.path.join(base, "pulseCoinValue.txt")
+        self.hello_file = os.path.join(base, "helloScreenSetting.txt")
 
         self.patchers = [
             patch.object(remoteCommandProcess, "REMOTE_COMMAND_RESULT_FILE", self.result_file),
@@ -32,6 +38,9 @@ class RemoteCommandProcessTests(unittest.TestCase):
             patch.object(rwSystemName, "system_name_filename", self.name_file),
             patch.object(rwPricesList, "price_list_filename", self.prices_file),
             patch.object(rwPaymentMethodsList, "filename", self.methods_file),
+            patch.object(rwMACAddress, "mac_filename", self.mac_file),
+            patch.object(rwPulseCoinValue, "pulse_coin_filename", self.pulse_file),
+            patch.object(rwHelloSettingFile, "hello_filename", self.hello_file),
         ]
         for patcher in self.patchers:
             patcher.start()
@@ -71,6 +80,11 @@ class RemoteCommandProcessTests(unittest.TestCase):
                         "Voucher": True,
                         "QR Code (Pix)": False,
                     },
+                    "moderninha_mac": "AA:BB:CC:DD:EE:FF",
+                    "pulse_value": 0.5,
+                    "pulse_duration_ms": 120,
+                    "pulse_interval_ms": 420,
+                    "hello_screen_enabled": False,
                 },
             }
         )
@@ -85,6 +99,16 @@ class RemoteCommandProcessTests(unittest.TestCase):
                 "Voucher": "enabled",
                 "QR Code (Pix)": "disabled",
             },
+        )
+        self.assertEqual(rwMACAddress.readMACAddress(), "AA:BB:CC:DD:EE:FF")
+        self.assertEqual(
+            rwPulseCoinValue.readPulseCharacteristics(),
+            (0.5, 120.0, 420.0),
+        )
+        self.assertFalse(rwHelloSettingFile.readListCheckHello())
+        self.assertIn(
+            "novo MAC",
+            remoteCommandProcess.read_pending_result()["message"],
         )
 
     def test_command_is_deferred_during_customer_interaction(self):
@@ -142,12 +166,43 @@ class RemoteCommandProcessTests(unittest.TestCase):
                         "Voucher": True,
                         "QR Code (Pix)": True,
                     },
+                    "moderninha_mac": "AA:BB:CC:DD:EE:FF",
+                    "pulse_value": 0.25,
+                    "pulse_duration_ms": 100,
+                    "pulse_interval_ms": 400,
+                    "hello_screen_enabled": True,
                 },
             }
         )
 
         self.assertEqual(remoteCommandProcess.read_pending_result()["status"], "failed")
         self.assertFalse(os.path.exists(self.prices_file))
+
+    def test_invalid_mac_does_not_partially_apply_settings(self):
+        remoteCommandProcess.process_command_if_safe(
+            {
+                "command_id": "8d684e09-94b3-41ce-80de-046716c39630",
+                "type": "settings",
+                "payload": {
+                    "system_name": "Coffea Teste",
+                    "prices": [2.5],
+                    "payment_methods": {
+                        "Débito": True,
+                        "Crédito": True,
+                        "Voucher": True,
+                        "QR Code (Pix)": True,
+                    },
+                    "moderninha_mac": "invalid",
+                    "pulse_value": 0.25,
+                    "pulse_duration_ms": 100,
+                    "pulse_interval_ms": 400,
+                    "hello_screen_enabled": True,
+                },
+            }
+        )
+
+        self.assertEqual(remoteCommandProcess.read_pending_result()["status"], "failed")
+        self.assertFalse(os.path.exists(self.name_file))
 
 
 if __name__ == "__main__":

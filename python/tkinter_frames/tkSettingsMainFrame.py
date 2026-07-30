@@ -16,10 +16,9 @@ def createSettingSelectionFrame(settingsContainer):
         "Métodos pagamento",
         "Nome sistema",
         "Endereço MAC Moderninha",
-        "Config. valor pulso",
         "Config. de rede - Encerrar app",
-        "Config. tela inicial",
         "Pareamento com servidor",
+        "Configurações avançadas",
         "Voltar",
     ]
 

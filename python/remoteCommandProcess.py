@@ -8,6 +8,9 @@ import subprocess
 import threading
 
 import rwPaymentMethodsList
+import rwHelloSettingFile
+import rwMACAddress
+import rwPulseCoinValue
 import rwPricesList
 import rwSystemName
 import shared_resource
@@ -16,6 +19,7 @@ from app_paths import REMOTE_COMMAND_RESULT_FILE, UPDATE_INPUT_FILE, ensure_pare
 
 SUPPORTED_PAYMENT_METHODS = ("Débito", "Crédito", "Voucher", "QR Code (Pix)")
 UPDATE_TAG_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
+MAC_ADDRESS_PATTERN = re.compile(r"^(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$")
 _result_lock = threading.Lock()
 
 
@@ -83,7 +87,12 @@ def _apply_command(command):
     payload = command.get("payload") or {}
 
     if command_type == "settings":
-        _apply_settings(payload)
+        mac_changed = _apply_settings(payload)
+        if mac_changed:
+            return (
+                "Configurações aplicadas. O novo MAC será usado após reinicialização.",
+                False,
+            )
         return "Configurações aplicadas.", False
     if command_type == "update":
         tag = str(payload.get("tag", "")).strip()
@@ -100,6 +109,11 @@ def _apply_settings(payload):
     system_name = str(payload.get("system_name", "")).strip()
     prices = payload.get("prices")
     payment_methods = payload.get("payment_methods")
+    moderninha_mac = str(payload.get("moderninha_mac", "")).strip().upper()
+    pulse_value = payload.get("pulse_value")
+    pulse_duration_ms = payload.get("pulse_duration_ms")
+    pulse_interval_ms = payload.get("pulse_interval_ms")
+    hello_screen_enabled = payload.get("hello_screen_enabled")
 
     if not system_name or len(system_name) > 120:
         raise ValueError("Nome do sistema inválido")
@@ -117,10 +131,49 @@ def _apply_settings(payload):
         method: "enabled" if payment_methods[method] is True else "disabled"
         for method in SUPPORTED_PAYMENT_METHODS
     }
+    if not MAC_ADDRESS_PATTERN.fullmatch(moderninha_mac):
+        raise ValueError("Endereço MAC Moderninha inválido")
+    normalized_pulse_value = float(pulse_value)
+    if not math.isfinite(normalized_pulse_value) or normalized_pulse_value <= 0:
+        raise ValueError("Valor do pulso inválido")
+    normalized_pulse_duration = _positive_integer(
+        pulse_duration_ms,
+        "Duração do pulso",
+    )
+    normalized_pulse_interval = _positive_integer(
+        pulse_interval_ms,
+        "Intervalo entre pulsos",
+    )
+    if not isinstance(hello_screen_enabled, bool):
+        raise ValueError("Configuração da tela inicial inválida")
 
+    mac_changed = rwMACAddress.readMACAddress().upper() != moderninha_mac
     rwSystemName.writeSystemName(system_name)
     rwPricesList.writeListSettings(normalized_prices)
     rwPaymentMethodsList.writeListSettings(normalized_methods)
+    rwMACAddress.writeMACAddress(moderninha_mac)
+    rwPulseCoinValue.writePulseCharacteristics(
+        [
+            normalized_pulse_value,
+            normalized_pulse_duration,
+            normalized_pulse_interval,
+        ]
+    )
+    rwHelloSettingFile.writeListSettings(
+        {
+            "Tela inicial": (
+                "enabled" if hello_screen_enabled else "disabled"
+            )
+        }
+    )
+    return mac_changed
+
+
+def _positive_integer(value, label):
+    number = float(value)
+    if not math.isfinite(number) or number <= 0 or not number.is_integer():
+        raise ValueError(f"{label} inválido")
+    return int(number)
 
 
 def _request_reboot():

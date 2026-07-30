@@ -9,6 +9,8 @@ import tkinter_frames.tkPMethodSettingFrame as tkPMethodSettingFrame
 import tkinter_frames.tkMACSettingFrame as tkMACSettingFrame
 import tkinter_frames.tkSystemNameSettingFrame as tkSystemNameSettingFrame
 import tkinter_frames.tkSettingsMainFrame as tkSettingsMainFrame
+import tkinter_frames.tkSettingsAdvancedFrame as tkSettingsAdvancedFrame
+import tkinter_frames.tkFactoryResetFrame as tkFactoryResetFrame
 import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
@@ -653,6 +655,20 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
     elif settingPageSelection == "Pareamento com servidor":
         pairingSettingFrame = tkServerPairingSettingFrame.createServerPairingSettingFrame(settingsContainer)
         pairingSettingFrame.pack(side="top", fill="both", expand=True)
+
+    elif settingPageSelection == "Configurações avançadas":
+        advancedSettingsFrame = tkSettingsAdvancedFrame.createAdvancedSettingSelectionFrame(
+            settingsContainer
+        )
+        advancedSettingsFrame.pack(side="top", fill="both", expand=True)
+
+    elif settingPageSelection == "Restaurar configurações de fábrica":
+        factoryResetFrame = tkFactoryResetFrame.createFactoryResetFrame(settingsContainer)
+        factoryResetFrame.pack(side="top", fill="both", expand=True)
+
+    elif settingPageSelection == "Voltar configurações":
+        settingsFrame = tkSettingsMainFrame.createSettingSelectionFrame(settingsContainer)
+        settingsFrame.pack(side="top", fill="both", expand=True)
 
     else:
         ## Ver se isso é suficiente para voltar ao início - TESTE PENDENTE
