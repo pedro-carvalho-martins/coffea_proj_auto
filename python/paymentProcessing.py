@@ -2,6 +2,7 @@ import subprocess
 import time
 
 import rwLogCSV
+import diagnosticLog
 
 def launchPaymentProcessing(price, paymentMethod):
 #TEST
@@ -63,7 +64,12 @@ def launchPaymentProcessing(price, paymentMethod):
         except Exception as e:
             print("except payment processing")
 
-            rwLogCSV.writeCSV("venda_erro", str(price), paymentMethod, "launchPaymentProcessing_Moderninha", str(e.__class__), str(e))
+            diagnosticLog.record_exception(
+                "payment.moderninha_exception",
+                "paymentProcessing",
+                e,
+                context={"valor_venda": price, "metodo_pagamento": paymentMethod},
+            )
 
             payment_output = -1
 

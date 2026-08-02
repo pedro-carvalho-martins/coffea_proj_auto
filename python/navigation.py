@@ -35,6 +35,7 @@ import connCheckProcess
 import kill_shell_loop
 
 import serverPairingProcess
+import diagnosticLog
 
 import rwUltimoPag
 import rwHelloSettingFile
@@ -95,6 +96,7 @@ def navigate_startupFrame(session_number):
     shared_resource.set_customer_interaction_active(False)
 
     mainContainer = tk.Tk()
+    mainContainer.report_callback_exception = diagnosticLog.report_tkinter_exception
     mainContainer.title("sistema_pagamento_plugpag")
 
     mainContainer.geometry('320x480')
@@ -422,8 +424,15 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
     except Exception as e:
 
-        rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest",
-                          str(e.__class__), str(e))
+        diagnosticLog.record_exception(
+            "payment.pix_request_exception",
+            "navigation",
+            e,
+            context={
+                "valor_venda": price_selected,
+                "metodo_pagamento": payment_method_selected,
+            },
+        )
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -506,8 +515,15 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
     except Exception as e:
 
-        rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
-                          str(e))
+        diagnosticLog.record_exception(
+            "payment.processing_exception",
+            "navigation",
+            e,
+            context={
+                "valor_venda": price_selected,
+                "metodo_pagamento": payment_method_selected,
+            },
+        )
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -576,9 +592,6 @@ def signalListener(dummyVar1, dummyVar2):
                 print('launch inhibit')
                 navigate_InhibitFrame()
                 break
-
-            else:
-                print('not defined')
 
         time.sleep(0.2)
 
@@ -709,8 +722,12 @@ def launchSendSignal(price, dummyVar):
     try:
         sendSignalGPIO.sendOutputSignal(price)
     except Exception as e:
-        rwLogCSV.writeCSV("erro_outros", str(price), "Undefined", "launchSendSignal_sendSignalGPIO", str(e.__class__),
-                          str(e))
+        diagnosticLog.record_exception(
+            "gpio.output_signal_exception",
+            "navigation",
+            e,
+            context={"valor_venda": price},
+        )
 
 
 def quitProgramAfterSettings():
