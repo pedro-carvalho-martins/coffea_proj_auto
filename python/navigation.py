@@ -40,6 +40,7 @@ import rwUltimoPag
 import rwHelloSettingFile
 import rwLogCSV
 import shared_resource
+import localRecordQueue
 
 
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner
@@ -450,6 +451,7 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
     global disableInterrupt
     disableInterrupt = 1
+    moderninha_result_recorded = False
 
     try:
         # pay_output_code == 0 => Success ; else: Failure
@@ -474,6 +476,22 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
         else:
             pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
+            moderninha_result_recorded = True
+            try:
+                localRecordQueue.record_transaction(
+                    price_selected,
+                    payment_method_selected,
+                    "concluida" if pay_output_code == 0 else "falha",
+                )
+            except (OSError, ValueError) as exc:
+                rwLogCSV.writeCSV(
+                    "erro_outros",
+                    str(price_selected),
+                    payment_method_selected,
+                    "recordModerninhaTransaction",
+                    exc.__class__.__name__,
+                    str(exc),
+                )
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -505,6 +523,16 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
             ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
     except Exception as e:
+
+        if payment_method_selected != "QR Code (Pix)" and not moderninha_result_recorded:
+            try:
+                localRecordQueue.record_transaction(
+                    price_selected,
+                    payment_method_selected,
+                    "falha",
+                )
+            except (OSError, ValueError):
+                pass
 
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
                           str(e))

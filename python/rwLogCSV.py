@@ -16,6 +16,7 @@ from app_paths import (
 
 import rwSystemName
 import rwSystemVersion
+import localRecordQueue
 
 
 def delete_old_csv_backup_files():
@@ -75,6 +76,18 @@ def prepare_and_check_current_year_week_backup_csv_path():
 def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro, descricao_erro):
     ensure_runtime_layout()
 
+    is_error = "erro" in tipo_registro.lower()
+    is_transmitted_event = is_error or tipo_registro == "conexao_restaurada"
+    event_component = etapa_erro or tipo_registro
+    event_code = classe_erro or tipo_registro
+    event_message = descricao_erro or tipo_registro
+    if is_error and not localRecordQueue.should_record_error(
+        event_component,
+        event_code,
+        event_message,
+    ):
+        return
+
     classe_erro = classe_erro.replace('"','-')
     classe_erro = classe_erro.replace("'", "-")
     descricao_erro = descricao_erro.replace('"','-')
@@ -120,6 +133,17 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerow([datetime_register_str, nome_sistema, tipo_registro, valor_venda_str,
                                 metodo_pag, etapa_erro, classe_erro, descricao_erro, versao_sistema])
+
+    if is_transmitted_event:
+        try:
+            localRecordQueue.record_event(
+                event_component,
+                event_code,
+                event_message,
+                versao_sistema,
+            )
+        except (OSError, ValueError) as exc:
+            print("Could not queue diagnostic event: " + str(exc))
 
 
 def remove_corrupted_characters(file_path, temp_file_path):

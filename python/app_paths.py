@@ -29,6 +29,8 @@ UPDATE_INPUT_FILE = os.path.join(SETTINGS_DIR, "update_input.txt")
 ULTIMO_PAGAMENTO_FILE = os.path.join(SETTINGS_DIR, "ultimoPagamento.txt")
 
 TMP_LOG_FILE = os.path.join(LOGS_DIR, "tmp_log_client.csv")
+PENDING_TRANSACTIONS_FILE = os.path.join(LOGS_DIR, "pending_transactions.csv")
+PENDING_EVENTS_FILE = os.path.join(LOGS_DIR, "pending_events.csv")
 PIX_QRCODE_FILE = os.path.join(RUNTIME_DIR, "qrCodePix.png")
 
 

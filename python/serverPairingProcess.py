@@ -14,7 +14,10 @@ import rwSystemId
 import rwSystemName
 import rwSystemVersion
 import remoteCommandProcess
+import recordTransmissionProcess
 import shared_resource
+import localRecordQueue
+import rwLogCSV
 from server_api_client import DeviceApiError, post_json
 
 
@@ -89,18 +92,50 @@ def sync_once():
             response = post_json("/sync", payload, token)
         except DeviceApiError as exc:
             _update_state("connection_error", str(exc))
+            if localRecordQueue.note_connection_failure():
+                rwLogCSV.writeCSV(
+                    "erro_conexao",
+                    "",
+                    "",
+                    "serverPairingProcess",
+                    exc.__class__.__name__,
+                    str(exc),
+                )
             return False
         except Exception as exc:
             _update_state("connection_error", str(exc))
+            if localRecordQueue.note_connection_failure():
+                rwLogCSV.writeCSV(
+                    "erro_conexao",
+                    "",
+                    "",
+                    "serverPairingProcess",
+                    exc.__class__.__name__,
+                    str(exc),
+                )
             return False
         finally:
             _initial_sync_done.set()
 
         status = response.get("status", "connection_error")
         _update_state(status, contacted=True)
+        recovery = localRecordQueue.note_connection_restored()
+        if recovery:
+            rwLogCSV.writeCSV(
+                "conexao_restaurada",
+                "",
+                "",
+                "serverPairingProcess",
+                "server_connection_restored",
+                "duration_seconds={duration_seconds}; failed_attempts={failed_attempts}".format(
+                    **recovery
+                ),
+            )
         if status == "paired":
             if pending_result:
                 remoteCommandProcess.clear_pending_result(pending_result["command_id"])
+            if not shared_resource.customer_interaction_active.is_set():
+                recordTransmissionProcess.transmit_pending_records()
             for command in response.get("commands", []):
                 remoteCommandProcess.process_command_if_safe(command)
         return status == "paired"
