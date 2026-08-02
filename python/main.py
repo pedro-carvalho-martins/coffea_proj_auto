@@ -1,8 +1,10 @@
 import tkinter as tk
 
 import diagnosticLog
+import paymentOutbox
 
 diagnosticLog.install_exception_hooks()
+paymentOutbox.mark_interrupted_transactions_unknown()
 
 #import tkinter_frames.tkHelloFrame as tkHelloFrame
 
