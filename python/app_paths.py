@@ -26,7 +26,6 @@ UPDATE_INPUT_FILE = os.path.join(SETTINGS_DIR, "update_input.txt")
 ULTIMO_PAGAMENTO_FILE = os.path.join(SETTINGS_DIR, "ultimoPagamento.txt")
 
 DIAGNOSTIC_OUTBOX_FILE = os.path.join(LOGS_DIR, "diagnostic_outbox.sqlite3")
-PAYMENT_OUTBOX_FILE = os.path.join(LOGS_DIR, "payment_outbox.sqlite3")
 PIX_QRCODE_FILE = os.path.join(RUNTIME_DIR, "qrCodePix.png")
 
 

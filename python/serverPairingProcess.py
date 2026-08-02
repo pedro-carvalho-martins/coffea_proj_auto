@@ -5,7 +5,6 @@ import time
 from datetime import datetime
 
 import diagnosticLog
-import paymentOutbox
 import rwServerPairingSettings
 import rwHelloSettingFile
 import rwMACAddress
@@ -21,7 +20,6 @@ from server_api_client import DeviceApiError, post_json
 
 
 SYNC_INTERVAL_SECONDS = 300
-REMOTE_DIAGNOSTIC_UPLOAD_ENABLED = False
 
 _state_lock = threading.Lock()
 _sync_lock = shared_resource.server_sync_lock
@@ -64,16 +62,8 @@ def sync_once():
             )
             pending_events = (
                 []
-                if (
-                    not REMOTE_DIAGNOSTIC_UPLOAD_ENABLED
-                    or shared_resource.customer_interaction_active.is_set()
-                )
-                else diagnosticLog.get_pending_events()
-            )
-            pending_transactions = (
-                []
                 if shared_resource.customer_interaction_active.is_set()
-                else paymentOutbox.get_pending_transactions()
+                else diagnosticLog.get_pending_events()
             )
             payload = {
                 "sistema_pag_id": rwSystemId.readSystemId(),
@@ -93,7 +83,6 @@ def sync_once():
                 },
                 "command_results": [],
                 "events": pending_events,
-                "moderninha_transactions": pending_transactions,
             }
             current_methods = rwPaymentMethodsList.readListSettings()
             payload["settings"]["payment_methods"] = {
@@ -132,9 +121,6 @@ def sync_once():
         if status == "paired":
             acknowledged_event_ids = response.get("acknowledged_event_ids", [])
             diagnosticLog.acknowledge_events(acknowledged_event_ids)
-            paymentOutbox.acknowledge_transactions(
-                response.get("acknowledged_transaction_ids", [])
-            )
             acknowledged_ids = {str(event_id) for event_id in acknowledged_event_ids}
             sync_failure = next(
                 (

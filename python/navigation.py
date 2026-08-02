@@ -503,6 +503,8 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
 
             rwUltimoPag.writeValue(price_selected)
 
+            rwLogCSV.writeCSV("venda_sucesso", str(price_selected), payment_method_selected, "", "", "")
+
             threadSignal = Thread(target=launchSendSignal, args=(price_selected, 0))
             threadSignal.start()
         else:
