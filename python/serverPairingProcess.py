@@ -4,7 +4,6 @@ import threading
 import time
 from datetime import datetime
 
-import diagnosticLog
 import rwServerPairingSettings
 import rwHelloSettingFile
 import rwMACAddress
@@ -60,11 +59,6 @@ def sync_once():
             pulse_value, pulse_duration_ms, pulse_interval_ms = (
                 rwPulseCoinValue.readPulseCharacteristics()
             )
-            pending_events = (
-                []
-                if shared_resource.customer_interaction_active.is_set()
-                else diagnosticLog.get_pending_events()
-            )
             payload = {
                 "sistema_pag_id": rwSystemId.readSystemId(),
                 "sistema_pag_nome": rwSystemName.readSystemName(),
@@ -82,7 +76,6 @@ def sync_once():
                     ),
                 },
                 "command_results": [],
-                "events": pending_events,
             }
             current_methods = rwPaymentMethodsList.readListSettings()
             payload["settings"]["payment_methods"] = {
@@ -95,22 +88,9 @@ def sync_once():
             token = rwServerPairingSettings.read_pairing_token()
             response = post_json("/sync", payload, token)
         except DeviceApiError as exc:
-            diagnosticLog.record_event(
-                "warning",
-                "server.sync_failed",
-                "serverPairingProcess",
-                str(exc),
-                dedupe_key="server.sync_failed",
-            )
             _update_state("connection_error", str(exc))
             return False
         except Exception as exc:
-            diagnosticLog.record_exception(
-                "server.sync_exception",
-                "serverPairingProcess",
-                exc,
-                dedupe_key="server.sync_exception",
-            )
             _update_state("connection_error", str(exc))
             return False
         finally:
@@ -119,30 +99,6 @@ def sync_once():
         status = response.get("status", "connection_error")
         _update_state(status, contacted=True)
         if status == "paired":
-            acknowledged_event_ids = response.get("acknowledged_event_ids", [])
-            diagnosticLog.acknowledge_events(acknowledged_event_ids)
-            acknowledged_ids = {str(event_id) for event_id in acknowledged_event_ids}
-            sync_failure = next(
-                (
-                    event
-                    for event in pending_events
-                    if event["code"] == "server.sync_failed"
-                    and event["event_id"] in acknowledged_ids
-                ),
-                None,
-            )
-            if sync_failure:
-                diagnosticLog.record_event(
-                    "info",
-                    "server.sync_restored",
-                    "serverPairingProcess",
-                    "Server connection restored",
-                    context={
-                        "failure_count": sync_failure["occurrence_count"],
-                        "first_failure": sync_failure["first_seen"],
-                        "last_failure": sync_failure["last_seen"],
-                    },
-                )
             if pending_result:
                 remoteCommandProcess.clear_pending_result(pending_result["command_id"])
             for command in response.get("commands", []):

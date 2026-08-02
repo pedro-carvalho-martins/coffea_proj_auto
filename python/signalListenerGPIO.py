@@ -59,6 +59,7 @@ def listenGPIO():
             print(listener_outcome)
             return listener_outcome
 
+        print('no signal detected')
         time.sleep(1)
 
 

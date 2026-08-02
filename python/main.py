@@ -1,9 +1,5 @@
 import tkinter as tk
 
-import diagnosticLog
-
-diagnosticLog.install_exception_hooks()
-
 #import tkinter_frames.tkHelloFrame as tkHelloFrame
 
 import navigation

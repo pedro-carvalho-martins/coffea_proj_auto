@@ -6,7 +6,6 @@ import rwMACAddress
 import rwPaymentMethodsList
 import rwConnCheckFile
 import rwLogCSV
-import diagnosticLog
 import serverPairingProcess
 
 import threading
@@ -163,25 +162,15 @@ def checkConnModerninha(dict_paymentMethods_settings):
             else:
                 status_conn_moderninha = "error"
 
-        except subprocess.TimeoutExpired as exc:
+        except subprocess.TimeoutExpired:
 
             print("Subprocess timed out.")
-            diagnosticLog.record_exception(
-                "connection.moderninha_timeout",
-                "connCheckProcess",
-                exc,
-                dedupe_key="connection.moderninha_timeout",
-            )
+            rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "TimeoutExpired", "Subprocess timed out")
             status_conn_moderninha = "error"
 
         except Exception as e:
             print(f"An error occurred: {e}")
-            diagnosticLog.record_exception(
-                "connection.moderninha_exception",
-                "connCheckProcess",
-                e,
-                dedupe_key="connection.moderninha_exception",
-            )
+            rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", str(e.__class__), str(e))
             status_conn_moderninha = "error"
 
         attempt += 1
