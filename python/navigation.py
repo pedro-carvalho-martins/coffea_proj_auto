@@ -43,6 +43,9 @@ import shared_resource
 import localRecordQueue
 
 
+NO_PAYMENT_METHODS_RETRY_SECONDS = 60
+
+
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner
 
 def hide_and_destroy_frame(currentFrame):
@@ -135,8 +138,6 @@ def navigate_startupFrame(session_number):
 
 
 def navigate_connCheckFrame(currentFrame):
-    print('navConnCheck')
-
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
     #currentFrame.pack_forget()
@@ -152,12 +153,6 @@ def navigate_connCheckFrame(currentFrame):
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
-    print('launch connection check function')
-
-    print("NUMBER OF ACTIVE THREADS")
-    print(threading.active_count())
-    print("ENDS PRINT ACTIVE THREADS")
-
     ## launch other thread
     threadConnCheck = Thread(target=launchConnCheck, args=(connCheckFrame, 0))
     threadConnCheck.daemon = True
@@ -165,9 +160,6 @@ def navigate_connCheckFrame(currentFrame):
 
 
 def launchConnCheck(connCheckFrame, dummyVariable):
-    print('starting conn check process')
-    # time.sleep(3) ##################### TEMPORARY JUST TO TEST CONCEPT
-
     conn_check_output_code = connCheckProcess.launchStartupConnCheckProcess()
 
     if conn_check_output_code == 0:  # Sucesso no teste de conexÃ£o: mostra checks por 3s e segue a execuÃ§Ã£o do programa
@@ -218,7 +210,7 @@ def launchConnCheck(connCheckFrame, dummyVariable):
 
 
     else:  # Falha completa de conexÃ£o - Faz o teste novamente.
-        time.sleep(10)
+        time.sleep(NO_PAYMENT_METHODS_RETRY_SECONDS)
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 

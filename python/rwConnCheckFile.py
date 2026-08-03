@@ -19,8 +19,6 @@ def createConnCheckFile():
 
 def readConnCheckStatus():
     with file_lock:  # Ensure exclusive access
-        print("readList BEGINS")
-
         if not os.path.exists(conn_check_filename):
             createConnCheckFile()
 
@@ -40,9 +38,6 @@ def readConnCheckStatus():
             else:
                 connCheckDict[line[2:]] = "error"
 
-        print(connCheckDict)
-        print("readList ENDS")
-
         return connCheckDict
 
 def writeConnCheckStatus(connCheckDict):
@@ -54,8 +49,6 @@ def writeConnCheckStatus(connCheckDict):
             outString += "D-" + item[0] + '\n'
         else:
             outString += "X-" + item[0] + '\n'
-
-    print(outString)
 
     with file_lock:  # Ensure exclusive access
         ensure_parent_dir(conn_check_filename)

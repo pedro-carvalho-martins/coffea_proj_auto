@@ -17,8 +17,6 @@ def createNewFile():
     print(f"{filename} created with default content.")
 
 def readListDisplay():
-    print("readList BEGINS")
-
     if not os.path.exists(filename):
         createNewFile()
 
@@ -31,13 +29,9 @@ def readListDisplay():
         if pMethods[lineIndex][0] == '#':
             del pMethods[lineIndex]
 
-    print(pMethods)
-    print("readList ENDS")
     return pMethods
 
 def readListSettings():
-    print("readList BEGINS")
-
     if not os.path.exists(filename):
         createNewFile()
 
@@ -53,8 +47,6 @@ def readListSettings():
         else:
             pMethodsDict[line] = "enabled"
 
-    print(pMethodsDict)
-    print("readList ENDS")
     return pMethodsDict
 
 def writeListSettings(pMethodsDict):
@@ -64,8 +56,6 @@ def writeListSettings(pMethodsDict):
             outString += item + '\n'
         else:
             outString += "#" + item + '\n'
-
-    print(outString)
 
     ensure_parent_dir(filename)
     with open(filename, "w", encoding='utf-8') as pMethodsFile:

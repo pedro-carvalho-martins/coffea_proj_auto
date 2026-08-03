@@ -1,4 +1,3 @@
-import random
 import subprocess
 import time
 
@@ -7,8 +6,7 @@ import rwPaymentMethodsList
 import rwConnCheckFile
 import rwLogCSV
 import serverPairingProcess
-
-import threading
+from connectionAvailability import evaluate_connection_outcome
 
 import tkinter_frames.tkConnCheckFrame
 
@@ -130,6 +128,7 @@ def checkConnModerninha(dict_paymentMethods_settings):
 
     attempt = 0
     retries = 1
+    failure_already_logged = False
 
     while attempt < retries:
 
@@ -141,20 +140,10 @@ def checkConnModerninha(dict_paymentMethods_settings):
                 timeout=5  # Set the timeout in seconds
             )
 
-            print("debugTest")
-
-            print("stdout PRINT DEBUG")
             connCheck_stdout_str = connCheck_moderninha_output.stdout.decode("ISO-8859-1")
             list_connCheck_stdout_str = connCheck_stdout_str.split("\n")
-            print(list_connCheck_stdout_str)
-
-            print("stderr PRINT DEBUG")
-            connCheck_stderr_str = connCheck_moderninha_output.stderr.decode("ISO-8859-1")
-            list_connCheck_stderr_str = connCheck_stderr_str.split("\n")
-            print(list_connCheck_stderr_str)
 
             connCheck_moderninha_output = int(list_connCheck_stdout_str[2].split('RETORNO: ', 1)[1])
-            print(connCheck_moderninha_output)
 
             if connCheck_moderninha_output == 0:
                 status_conn_moderninha = "check"
@@ -164,23 +153,27 @@ def checkConnModerninha(dict_paymentMethods_settings):
 
         except subprocess.TimeoutExpired:
 
-            print("Subprocess timed out.")
             rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "TimeoutExpired", "Subprocess timed out")
+            failure_already_logged = True
             status_conn_moderninha = "error"
 
         except Exception as e:
-            print(f"An error occurred: {e}")
             rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", str(e.__class__), str(e))
+            failure_already_logged = True
             status_conn_moderninha = "error"
 
         attempt += 1
         time.sleep(0)
 
-    if attempt == retries:
-        rwLogCSV.writeCSV("erro_outros", "", "", "checkConnModerninha", "",
-                          "maximum number of attempts to connect to Moderninha exceeded")
-
-    print("status conn moderninha: "+status_conn_moderninha)
+    if attempt == retries and not failure_already_logged:
+        rwLogCSV.writeCSV(
+            "erro_outros",
+            "",
+            "",
+            "checkConnModerninha",
+            "ModerninhaReturnCode",
+            "Return code " + str(connCheck_moderninha_output),
+        )
 
     return status_conn_moderninha
 
@@ -212,8 +205,6 @@ def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
     else:
         status_conn_servidor_pix = "error"
 
-    print("status conn servidor pix: " + status_conn_servidor_pix)
-
     return status_conn_servidor_pix
 
 
@@ -224,8 +215,6 @@ def launchStartupConnCheckProcess():
     # #1: Puxar do rw de payment methods o dictionary com o estado enabled/disabled dos métodos de pagemento
     # #2: Se Moderninha/QR Code estiver disabled, já coloca o status disabled
     # #3: Para o que estiver enabled, chama a função respectiva em um novo thread para verificar a conexão
-
-    print('debugNewConnCheck')
 
     # Simula um teste de conexão com outcome aleatório e tempo de retorno aleatório
     # Na implementação real, o ideal é chamar duas funções em threads diferentes aqui nessa função; definir cada função de check de conexão nesse arquivo.
@@ -268,37 +257,14 @@ def launchStartupConnCheckProcess():
         {"Moderninha": checkConnModerninha_result,
          "QR Code (Pix)": checkConnPixServer_result})
 
-    # If there are no errors (e.g. only check or disable), send success output (=0); otherwise, send fail output (=1)
-    if (
-        (tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "check"
-        or tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "disabled")
-        and (tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "check"
-        or tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "disabled")
-    ):
-        connCheck_output = 0 # Success
-
-    # If both fail, send output -1 indicating that the connCheck should be restarted
-    elif (
-        tkinter_frames.tkConnCheckFrame.status_conn_moderninha == "error"
-        and tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix == "error"
-    ):
-        connCheck_output = -1  # Complete fail
-
-    else:
-        connCheck_output = 1 # Partial fail
-
-        # Feature de exibição dos botões "Reconectar" e "Continuar" no Frame de ConnCheck.
-        # Código comentado - feature abandonada para facilitar a experiência do usuário.
-        # No lugar de mostrar os botões, mostra o resultado dos testes com um sleep e segue adiante
-        # Show buttons to reconnect or continue anyway after connection fails or partially fails
-        #tkinter_frames.tkConnCheckFrame.display_buttons = "yes"
-
-    return connCheck_output
+    return evaluate_connection_outcome(
+        dict_paymentMethods_settings,
+        checkConnModerninha_result,
+        checkConnPixServer_result,
+    )
 
 
 def launchBackgroundConnCheckProcess(arg1, arg2):
-
-    print("background connCheck starts")
 
     # Gets dictionary of payment method settings to check what is enabled and disabled
     dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()

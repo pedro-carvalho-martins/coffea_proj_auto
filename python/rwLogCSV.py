@@ -74,8 +74,6 @@ def prepare_and_check_current_year_week_backup_csv_path():
 
 
 def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro, descricao_erro):
-    ensure_runtime_layout()
-
     is_error = "erro" in tipo_registro.lower()
     is_transmitted_event = is_error or tipo_registro == "conexao_restaurada"
     event_component = etapa_erro or tipo_registro
@@ -87,6 +85,8 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
         event_message,
     ):
         return
+
+    ensure_runtime_layout()
 
     classe_erro = classe_erro.replace('"','-')
     classe_erro = classe_erro.replace("'", "-")
