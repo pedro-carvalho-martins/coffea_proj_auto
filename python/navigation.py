@@ -43,7 +43,7 @@ import shared_resource
 import localRecordQueue
 
 
-NO_PAYMENT_METHODS_RETRY_SECONDS = 60
+NO_PAYMENT_METHODS_RETRY_SECONDS = 15
 
 
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner

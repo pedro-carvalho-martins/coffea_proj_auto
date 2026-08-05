@@ -6,7 +6,7 @@ import rwPaymentMethodsList
 import rwConnCheckFile
 import rwLogCSV
 import serverPairingProcess
-from connectionAvailability import evaluate_connection_outcome
+from connectionAvailability import classify_server_connection, evaluate_connection_outcome
 
 import tkinter_frames.tkConnCheckFrame
 
@@ -200,10 +200,7 @@ def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
     #     status_conn_servidor_pix = "erro"
 
     pairing_state = serverPairingProcess.wait_for_initial_sync()
-    if pairing_state["status"] == "paired":
-        status_conn_servidor_pix = "check"
-    else:
-        status_conn_servidor_pix = "error"
+    status_conn_servidor_pix = classify_server_connection(pairing_state)
 
     return status_conn_servidor_pix
 

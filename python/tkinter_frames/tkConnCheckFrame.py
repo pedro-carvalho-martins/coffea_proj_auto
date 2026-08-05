@@ -14,6 +14,11 @@ status_conn_servidor_pix = None
 display_buttons = None
 flag_reconectar = "none"
 flag_continuar = "none"
+SERVER_FAILURE_MESSAGES = {
+    "pending": "Pareamento pendente",
+    "no_internet": "Sem conexão com a internet",
+    "connection_problem": "Problema de conexão",
+}
 
 
 
@@ -91,6 +96,10 @@ def createNewConnCheckFrame(mainContainer):
         else:
             imgLabel2.configure(image=connCheckFrame.crossImg)
 
+        server_message = SERVER_FAILURE_MESSAGES.get(status_conn_servidor_pix, "")
+        if serverFailureLabel.cget("text") != server_message:
+            serverFailureLabel.configure(text=server_message)
+
         if display_buttons == "yes":
             if not hasattr(connCheckFrame, 'button1'):
                 connCheckFrame.button1 = tk.Button(connCheckFrame, text="Reconectar", command=button_click_1, width=20, font=('Ubuntu', 14))
@@ -132,6 +141,13 @@ def createNewConnCheckFrame(mainContainer):
 
     imgLabel2.configure(image=connCheckFrame.checkImg)
     #imgLabel3.configure(image=connCheckFrame.crossImg)
+
+    serverFailureLabel = tk.Label(
+        connCheckFrame,
+        text="",
+        font=('SegoeUI', 14),
+        wraplength=300)
+    serverFailureLabel.grid(row=7, column=0, ipadx=10, ipady=0)
 
 
     connCheckFrame.pack(side="top", fill="both", expand=True)

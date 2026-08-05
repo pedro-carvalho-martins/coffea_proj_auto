@@ -7,10 +7,46 @@ PYTHON_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "pyth
 if PYTHON_DIR not in sys.path:
     sys.path.insert(0, PYTHON_DIR)
 
-from connectionAvailability import evaluate_connection_outcome
+from connectionAvailability import classify_server_connection, evaluate_connection_outcome
 
 
 class ConnectionAvailabilityTests(unittest.TestCase):
+    def test_pending_pairing_has_specific_status(self):
+        self.assertEqual(
+            "pending",
+            classify_server_connection({"status": "pending", "last_error": ""}),
+        )
+
+    def test_explicit_unreachable_network_is_no_internet(self):
+        self.assertEqual(
+            "no_internet",
+            classify_server_connection(
+                {
+                    "status": "connection_error",
+                    "last_error": "<urlopen error [Errno 101] Network is unreachable>",
+                }
+            ),
+        )
+
+    def test_ambiguous_timeout_is_generic_connection_problem(self):
+        self.assertEqual(
+            "connection_problem",
+            classify_server_connection(
+                {"status": "connection_error", "last_error": "<urlopen error timed out>"}
+            ),
+        )
+
+    def test_no_route_to_host_is_kept_generic(self):
+        self.assertEqual(
+            "connection_problem",
+            classify_server_connection(
+                {
+                    "status": "connection_error",
+                    "last_error": "<urlopen error [Errno 113] No route to host>",
+                }
+            ),
+        )
+
     def test_pix_failure_with_cards_disabled_retries(self):
         settings = self._settings(cards="disabled", pix="enabled")
         self.assertEqual(-1, evaluate_connection_outcome(settings, "disabled", "error"))

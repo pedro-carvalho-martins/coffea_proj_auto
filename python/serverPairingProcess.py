@@ -51,94 +51,113 @@ def _update_state(status, last_error="", contacted=False):
 def sync_once():
     """Send one pairing heartbeat unless offline operation is enabled."""
     with _sync_lock:
-        try:
-            if shared_resource.factory_reset_in_progress.is_set():
-                _update_state("offline")
-                return False
-            if not rwServerPairingSettings.is_online_mode_enabled():
-                _update_state("offline")
-                return False
+        transmit_records = True
+        while True:
+            paired, needs_confirmation = _sync_cycle(transmit_records)
+            if not needs_confirmation:
+                return paired
+            transmit_records = False
 
-            pulse_value, pulse_duration_ms, pulse_interval_ms = (
-                rwPulseCoinValue.readPulseCharacteristics()
-            )
-            payload = {
-                "sistema_pag_id": rwSystemId.readSystemId(),
-                "sistema_pag_nome": rwSystemName.readSystemName(),
-                "versao_sistema_pag": rwSystemVersion.readVersion(),
-                "pairing_code": rwServerPairingSettings.get_pairing_code(),
-                "settings": {
-                    "prices": rwPricesList.readList(),
-                    "payment_methods": {},
-                    "moderninha_mac": rwMACAddress.readMACAddress(),
-                    "pulse_value": pulse_value,
-                    "pulse_duration_ms": pulse_duration_ms,
-                    "pulse_interval_ms": pulse_interval_ms,
-                    "hello_screen_enabled": bool(
-                        rwHelloSettingFile.readListCheckHello()
-                    ),
-                },
-                "command_results": [],
-            }
-            current_methods = rwPaymentMethodsList.readListSettings()
-            payload["settings"]["payment_methods"] = {
-                method: current_methods.get(method) == "enabled"
-                for method in remoteCommandProcess.SUPPORTED_PAYMENT_METHODS
-            }
-            pending_result = remoteCommandProcess.read_pending_result()
-            if pending_result:
-                payload["command_results"].append(pending_result)
-            token = rwServerPairingSettings.read_pairing_token()
-            response = post_json("/sync", payload, token)
-        except DeviceApiError as exc:
-            _update_state("connection_error", str(exc))
-            if localRecordQueue.note_connection_failure():
-                rwLogCSV.writeCSV(
-                    "erro_conexao",
-                    "",
-                    "",
-                    "serverPairingProcess",
-                    exc.__class__.__name__,
-                    str(exc),
-                )
-            return False
-        except Exception as exc:
-            _update_state("connection_error", str(exc))
-            if localRecordQueue.note_connection_failure():
-                rwLogCSV.writeCSV(
-                    "erro_conexao",
-                    "",
-                    "",
-                    "serverPairingProcess",
-                    exc.__class__.__name__,
-                    str(exc),
-                )
-            return False
-        finally:
-            _initial_sync_done.set()
 
-        status = response.get("status", "connection_error")
-        _update_state(status, contacted=True)
-        recovery = localRecordQueue.note_connection_restored()
-        if recovery:
-            rwLogCSV.writeCSV(
-                "conexao_restaurada",
-                "",
-                "",
-                "serverPairingProcess",
-                "server_connection_restored",
-                "duration_seconds={duration_seconds}; failed_attempts={failed_attempts}".format(
-                    **recovery
+def _sync_cycle(transmit_records):
+    try:
+        if shared_resource.factory_reset_in_progress.is_set():
+            _update_state("offline")
+            return False, False
+        if not rwServerPairingSettings.is_online_mode_enabled():
+            _update_state("offline")
+            return False, False
+
+        pulse_value, pulse_duration_ms, pulse_interval_ms = (
+            rwPulseCoinValue.readPulseCharacteristics()
+        )
+        payload = {
+            "sistema_pag_id": rwSystemId.readSystemId(),
+            "sistema_pag_nome": rwSystemName.readSystemName(),
+            "versao_sistema_pag": rwSystemVersion.readVersion(),
+            "pairing_code": rwServerPairingSettings.get_pairing_code(),
+            "settings": {
+                "prices": rwPricesList.readList(),
+                "payment_methods": {},
+                "moderninha_mac": rwMACAddress.readMACAddress(),
+                "pulse_value": pulse_value,
+                "pulse_duration_ms": pulse_duration_ms,
+                "pulse_interval_ms": pulse_interval_ms,
+                "hello_screen_enabled": bool(
+                    rwHelloSettingFile.readListCheckHello()
                 ),
+            },
+            "command_results": [],
+            "capabilities": ["command_batch_v1"],
+        }
+        current_methods = rwPaymentMethodsList.readListSettings()
+        payload["settings"]["payment_methods"] = {
+            method: current_methods.get(method) == "enabled"
+            for method in remoteCommandProcess.SUPPORTED_PAYMENT_METHODS
+        }
+        pending_results = remoteCommandProcess.read_pending_results()
+        payload["command_results"].extend(pending_results)
+        token = rwServerPairingSettings.read_pairing_token()
+        response = post_json("/sync", payload, token)
+    except DeviceApiError as exc:
+        _record_connection_failure(exc)
+        return False, False
+    except Exception as exc:
+        _record_connection_failure(exc)
+        return False, False
+    finally:
+        _initial_sync_done.set()
+
+    status = response.get("status", "connection_error")
+    _update_state(status, contacted=True)
+    recovery = localRecordQueue.note_connection_restored()
+    if recovery:
+        rwLogCSV.writeCSV(
+            "conexao_restaurada",
+            "",
+            "",
+            "serverPairingProcess",
+            "server_connection_restored",
+            "duration_seconds={duration_seconds}; failed_attempts={failed_attempts}".format(
+                **recovery
+            ),
+        )
+
+    handled_commands = []
+    if status == "paired":
+        if pending_results:
+            remoteCommandProcess.clear_pending_results(
+                result["command_id"] for result in pending_results
             )
-        if status == "paired":
-            if pending_result:
-                remoteCommandProcess.clear_pending_result(pending_result["command_id"])
-            if not shared_resource.customer_interaction_active.is_set():
-                recordTransmissionProcess.transmit_pending_records()
-            for command in response.get("commands", []):
-                remoteCommandProcess.process_command_if_safe(command)
-        return status == "paired"
+        if transmit_records and not shared_resource.customer_interaction_active.is_set():
+            recordTransmissionProcess.transmit_pending_records()
+        commands = response.get("commands", [])
+        handled_count = remoteCommandProcess.process_commands_if_safe(commands)
+        handled_commands = commands[:handled_count]
+
+    needs_confirmation = _commands_need_confirmation(handled_commands)
+    return status == "paired", needs_confirmation
+
+
+def _commands_need_confirmation(handled_commands):
+    if not handled_commands:
+        return False
+    return not any(
+        command.get("type") == "reboot" for command in handled_commands
+    )
+
+
+def _record_connection_failure(error):
+    _update_state("connection_error", str(error))
+    if localRecordQueue.note_connection_failure():
+        rwLogCSV.writeCSV(
+            "erro_conexao",
+            "",
+            "",
+            "serverPairingProcess",
+            error.__class__.__name__,
+            str(error),
+        )
 
 
 def wait_for_initial_sync(timeout=12):

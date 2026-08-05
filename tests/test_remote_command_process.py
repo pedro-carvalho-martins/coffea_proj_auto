@@ -140,6 +140,39 @@ class RemoteCommandProcessTests(unittest.TestCase):
         result = remoteCommandProcess.read_pending_result()
         self.assertEqual(result["status"], "completed")
 
+    def test_update_and_reboot_results_are_both_persisted(self):
+        commands = [
+            {
+                "command_id": "12dcd41c-210d-45e2-b63d-ab67b4b4ee8e",
+                "type": "update",
+                "payload": {"tag": "v1.6.0"},
+            },
+            {
+                "command_id": "d20dbcc0-c92b-4fbd-b97b-62f8d78600e1",
+                "type": "reboot",
+                "payload": {},
+            },
+        ]
+
+        with patch.object(remoteCommandProcess, "_request_reboot") as reboot:
+            handled_count = remoteCommandProcess.process_commands_if_safe(commands)
+
+        self.assertEqual(handled_count, 2)
+        self.assertEqual(len(remoteCommandProcess.read_pending_results()), 2)
+        reboot.assert_called_once_with()
+
+    def test_legacy_single_result_file_is_still_read(self):
+        with open(self.result_file, "w", encoding="utf-8") as file:
+            file.write(
+                '{"command_id":"12dcd41c-210d-45e2-b63d-ab67b4b4ee8e",'
+                '"status":"completed","message":"ok"}'
+            )
+
+        results = remoteCommandProcess.read_pending_results()
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["message"], "ok")
+
     def test_invalid_update_tag_is_recorded_as_failure(self):
         remoteCommandProcess.process_command_if_safe(
             {

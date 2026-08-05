@@ -4,6 +4,19 @@
 CARD_METHODS = ("Débito", "Crédito", "Voucher")
 
 
+def classify_server_connection(pairing_state):
+    status = pairing_state.get("status")
+    if status == "paired":
+        return "check"
+    if status == "pending":
+        return "pending"
+
+    error_message = str(pairing_state.get("last_error", "")).casefold()
+    if "network is unreachable" in error_message:
+        return "no_internet"
+    return "connection_problem"
+
+
 def evaluate_connection_outcome(settings, moderninha_status, pix_status):
     cards_enabled = any(
         settings.get(payment_method) == "enabled"

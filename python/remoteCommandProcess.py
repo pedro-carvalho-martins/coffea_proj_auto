@@ -24,33 +24,45 @@ _result_lock = threading.Lock()
 
 
 def read_pending_result():
+    results = read_pending_results()
+    return results[0] if results else None
+
+
+def read_pending_results():
     with _result_lock:
-        if not os.path.exists(REMOTE_COMMAND_RESULT_FILE):
-            return None
-        try:
-            with open(REMOTE_COMMAND_RESULT_FILE, "r", encoding="utf-8") as file:
-                result = json.load(file)
-        except (OSError, ValueError):
-            return None
-        if not isinstance(result, dict) or not result.get("command_id"):
-            return None
-        return result
+        return _read_pending_results_unlocked()
 
 
 def clear_pending_result(command_id):
+    clear_pending_results([command_id])
+
+
+def clear_pending_results(command_ids):
+    acknowledged_ids = {str(command_id) for command_id in command_ids}
     with _result_lock:
-        if not os.path.exists(REMOTE_COMMAND_RESULT_FILE):
-            return
-        try:
-            with open(REMOTE_COMMAND_RESULT_FILE, "r", encoding="utf-8") as file:
-                current = json.load(file)
-        except (OSError, ValueError):
-            return
-        if current.get("command_id") == command_id:
+        remaining = [
+            result
+            for result in _read_pending_results_unlocked()
+            if str(result["command_id"]) not in acknowledged_ids
+        ]
+        if remaining:
+            _write_json_atomic(REMOTE_COMMAND_RESULT_FILE, remaining)
+        elif os.path.exists(REMOTE_COMMAND_RESULT_FILE):
             try:
                 os.remove(REMOTE_COMMAND_RESULT_FILE)
             except OSError:
                 return
+
+
+def process_commands_if_safe(commands):
+    handled_count = 0
+    for command in commands:
+        if not process_command_if_safe(command):
+            break
+        handled_count += 1
+        if command.get("type") == "reboot":
+            break
+    return handled_count
 
 
 def process_command_if_safe(command):
@@ -69,7 +81,7 @@ def process_command_if_safe(command):
                 "status": "completed",
                 "message": message,
             }
-            _write_json_atomic(REMOTE_COMMAND_RESULT_FILE, result)
+            _store_result(result)
             if should_reboot:
                 _request_reboot()
         except Exception as exc:
@@ -78,8 +90,41 @@ def process_command_if_safe(command):
                 "status": "failed",
                 "message": str(exc)[:500],
             }
-            _write_json_atomic(REMOTE_COMMAND_RESULT_FILE, result)
+            _store_result(result)
     return True
+
+
+def _read_pending_results_unlocked():
+    if not os.path.exists(REMOTE_COMMAND_RESULT_FILE):
+        return []
+    try:
+        with open(REMOTE_COMMAND_RESULT_FILE, "r", encoding="utf-8") as file:
+            stored = json.load(file)
+    except (OSError, ValueError):
+        return []
+
+    # Releases before batching stored one result as a JSON object.
+    if isinstance(stored, dict):
+        stored = [stored]
+    if not isinstance(stored, list):
+        return []
+    return [
+        result
+        for result in stored
+        if isinstance(result, dict) and result.get("command_id")
+    ]
+
+
+def _store_result(result):
+    with _result_lock:
+        command_id = str(result["command_id"])
+        results = [
+            stored_result
+            for stored_result in _read_pending_results_unlocked()
+            if str(stored_result["command_id"]) != command_id
+        ]
+        results.append(result)
+        _write_json_atomic(REMOTE_COMMAND_RESULT_FILE, results)
 
 
 def _apply_command(command):
