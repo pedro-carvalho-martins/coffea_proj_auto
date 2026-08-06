@@ -17,6 +17,12 @@ class ConnectionAvailabilityTests(unittest.TestCase):
             classify_server_connection({"status": "pending", "last_error": ""}),
         )
 
+    def test_offline_operation_disables_server_connection(self):
+        self.assertEqual(
+            "disabled",
+            classify_server_connection({"status": "offline", "last_error": ""}),
+        )
+
     def test_explicit_unreachable_network_is_no_internet(self):
         self.assertEqual(
             "no_internet",

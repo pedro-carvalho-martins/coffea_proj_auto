@@ -15,7 +15,6 @@ import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
 import tkinter_frames.tkPulseValueSettingFrame as tkPulseValueSettingFrame
-import tkinter_frames.tkServerPairingSettingFrame as tkServerPairingSettingFrame
 
 import queue
 import time
@@ -33,8 +32,6 @@ import signalListenerGPIO
 
 import connCheckProcess
 import kill_shell_loop
-
-import serverPairingProcess
 
 import rwUltimoPag
 import rwHelloSettingFile
@@ -109,8 +106,6 @@ def navigate_startupFrame(session_number):
     mainContainer.attributes('-fullscreen', True)
     # mainContainer.attributes('-fullscreen', False)
     ## End of block for Windows testing
-
-    serverPairingProcess.start_pairing_worker()
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -671,10 +666,6 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
     elif settingPageSelection == "Config. tela inicial":
         HelloSettingFrame = tkHelloSettingFrame.createHelloSettingFrame(settingsContainer)
         HelloSettingFrame.pack(side="top", fill="both", expand=True)
-
-    elif settingPageSelection == "Pareamento com servidor":
-        pairingSettingFrame = tkServerPairingSettingFrame.createServerPairingSettingFrame(settingsContainer)
-        pairingSettingFrame.pack(side="top", fill="both", expand=True)
 
     elif settingPageSelection == "Configurações avançadas":
         advancedSettingsFrame = tkSettingsAdvancedFrame.createAdvancedSettingSelectionFrame(

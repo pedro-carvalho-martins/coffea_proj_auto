@@ -1,7 +1,6 @@
-"""Background server pairing worker, independent from payment and GPIO code."""
+"""Perform one synchronized server heartbeat when requested by connection checks."""
 
 import threading
-import time
 from datetime import datetime
 
 import rwServerPairingSettings
@@ -21,13 +20,8 @@ import rwLogCSV
 from server_api_client import DeviceApiError, post_json
 
 
-SYNC_INTERVAL_SECONDS = 300
-
 _state_lock = threading.Lock()
 _sync_lock = shared_resource.server_sync_lock
-_worker_lock = threading.Lock()
-_initial_sync_done = threading.Event()
-_worker_started = False
 _state = {
     "status": "not_checked",
     "last_contact": "Ainda não conectado",
@@ -105,9 +99,6 @@ def _sync_cycle(transmit_records):
     except Exception as exc:
         _record_connection_failure(exc)
         return False, False
-    finally:
-        _initial_sync_done.set()
-
     status = response.get("status", "connection_error")
     _update_state(status, contacted=True)
     recovery = localRecordQueue.note_connection_restored()
@@ -158,32 +149,3 @@ def _record_connection_failure(error):
             error.__class__.__name__,
             str(error),
         )
-
-
-def wait_for_initial_sync(timeout=12):
-    """Wait briefly for the startup heartbeat used by the connection screen."""
-    _initial_sync_done.wait(timeout)
-    return get_pairing_state()
-
-
-def run_pairing_loop():
-    """Synchronize immediately on startup, then every five minutes."""
-    while True:
-        try:
-            sync_once()
-        except Exception as exc:
-            _update_state("connection_error", str(exc))
-        time.sleep(SYNC_INTERVAL_SECONDS)
-
-
-def start_pairing_worker():
-    """Start a single daemon worker even if startup navigation is retried."""
-    global _worker_started
-
-    with _worker_lock:
-        if _worker_started:
-            return
-
-        worker = threading.Thread(target=run_pairing_loop, daemon=True)
-        worker.start()
-        _worker_started = True

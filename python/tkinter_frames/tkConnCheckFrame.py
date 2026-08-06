@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import navigation
+import rwServerPairingSettings
 
 # Initializing the global variables
 global status_conn_moderninha
@@ -39,6 +40,7 @@ def createNewConnCheckFrame(mainContainer):
     status_conn_moderninha = "loading"
     status_conn_servidor_pix = "loading"
     display_buttons = "no"
+    pairing_code = rwServerPairingSettings.get_pairing_code()
 
     connCheckFrame = tk.Frame(mainContainer, height=480, width=320)
 
@@ -97,6 +99,8 @@ def createNewConnCheckFrame(mainContainer):
             imgLabel2.configure(image=connCheckFrame.crossImg)
 
         server_message = SERVER_FAILURE_MESSAGES.get(status_conn_servidor_pix, "")
+        if status_conn_servidor_pix == "pending":
+            server_message += f"\nCódigo de pareamento: {pairing_code}"
         if serverFailureLabel.cget("text") != server_message:
             serverFailureLabel.configure(text=server_message)
 
@@ -126,7 +130,7 @@ def createNewConnCheckFrame(mainContainer):
 
     textLabel2 = tk.Label(
         connCheckFrame,
-        text="Status de conexão com servidor Pix",
+        text="Status de conexão com servidor",
         font=('SegoeUI', 16),
         wraplength=300)
     textLabel2.grid(column=0, row=4, ipadx=10, ipady=0)

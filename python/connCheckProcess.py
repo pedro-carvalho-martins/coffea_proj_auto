@@ -178,103 +178,43 @@ def checkConnModerninha(dict_paymentMethods_settings):
     return status_conn_moderninha
 
 
-def checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result):
+def checkConnServer():
 
     global status_conn_servidor_pix
 
-    # If QR Code payment option is disabled, status_conn_servidor_pix is disabled. Otherwise, do connection check
-    if dict_paymentMethods_settings['QR Code (Pix)'] == 'disabled':
-        status_conn_servidor_pix = "disabled"
-        return status_conn_servidor_pix
-
-    # Função provisória para teste
-
-    # randint2 = random.randint(1, 2)
-    # time.sleep(random.randint(1, 2))  # tempo randomizado simula tempo de processamento dos testes
-    #
-    # print("randint2: " + str(randint2))
-    #
-    # if randint2 == 1:
-    #     status_conn_servidor_pix = "check"
-    # else:
-    #     status_conn_servidor_pix = "erro"
-
-    pairing_state = serverPairingProcess.wait_for_initial_sync()
+    serverPairingProcess.sync_once()
+    pairing_state = serverPairingProcess.get_pairing_state()
     status_conn_servidor_pix = classify_server_connection(pairing_state)
 
     return status_conn_servidor_pix
 
 
 def launchStartupConnCheckProcess():
-    # TEST
-
-    # na implementação final, essa função deve
-    # #1: Puxar do rw de payment methods o dictionary com o estado enabled/disabled dos métodos de pagemento
-    # #2: Se Moderninha/QR Code estiver disabled, já coloca o status disabled
-    # #3: Para o que estiver enabled, chama a função respectiva em um novo thread para verificar a conexão
-
-    # Simula um teste de conexão com outcome aleatório e tempo de retorno aleatório
-    # Na implementação real, o ideal é chamar duas funções em threads diferentes aqui nessa função; definir cada função de check de conexão nesse arquivo.
-
-    # Gets dictionary of payment method settings to check what is enabled and disabled
-    dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()
-
-    # Call the functions that will retrieve the status of each connection
-    # Old implementation without threading - connection checks were not in parallel
-    checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
-
-    # 08.08.2024 - Using old implementation again
-    # There is suspicion that the new implementation was causing some problems in RPi Wi-Fi and BT capabilities by trying to use both simultaneously.
-
-    # Call the functions that will retrieve the status of each connection
-    # New implementation with threading - connection checks in parallel
-    # Create threads for each function, passing the necessary arguments
-    # thread_checkConnModerninha = threading.Thread(target=checkConnModerninha, args=(dict_paymentMethods_settings,))
-    # thread_checkConnPixServer = threading.Thread(target=checkConnPixServer, args=(dict_paymentMethods_settings,))
-    #
-    # # Start the threads
-    # thread_checkConnModerninha.start()
-    # thread_checkConnPixServer.start()
-    #
-    # # Wait for both threads to complete
-    # thread_checkConnModerninha.join()
-    # thread_checkConnPixServer.join()
-    #
-    # # Assign the value of the global variables to the variables that will be passed on to the next functions
-    # checkConnModerninha_result = status_conn_moderninha
-    # checkConnPixServer_result = status_conn_servidor_pix
-
-    # Assign the connection status to the variables that will define the images displayed on the connCheck frame
-    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
-    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
-
-    # Update the connCheck file that will be updated over the execution of the program
-    rwConnCheckFile.writeConnCheckStatus(
-        {"Moderninha": checkConnModerninha_result,
-         "QR Code (Pix)": checkConnPixServer_result})
+    settings, moderninha_status, server_status = _run_connection_checks()
 
     return evaluate_connection_outcome(
-        dict_paymentMethods_settings,
-        checkConnModerninha_result,
-        checkConnPixServer_result,
+        settings,
+        moderninha_status,
+        server_status,
     )
 
 
 def launchBackgroundConnCheckProcess(arg1, arg2):
+    _run_connection_checks()
 
-    # Gets dictionary of payment method settings to check what is enabled and disabled
-    dict_paymentMethods_settings = rwPaymentMethodsList.readListSettings()
 
-    # Call the functions that will retrieve the status of each connection
-    checkConnModerninha_result = checkConnModerninha(dict_paymentMethods_settings)
-    checkConnPixServer_result = checkConnPixServer(dict_paymentMethods_settings, checkConnModerninha_result)
+def _run_connection_checks():
+    settings = rwPaymentMethodsList.readListSettings()
+    moderninha_status = checkConnModerninha(settings)
+    server_status = checkConnServer()
+    settings = rwPaymentMethodsList.readListSettings()
 
-    # Assign the connection status to the variables that will define the images displayed on the connCheck frame
-    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = checkConnModerninha_result
-    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = checkConnPixServer_result
-
-    # Update the connCheck file that will be updated over the execution of the program
+    tkinter_frames.tkConnCheckFrame.status_conn_moderninha = moderninha_status
+    tkinter_frames.tkConnCheckFrame.status_conn_servidor_pix = server_status
     rwConnCheckFile.writeConnCheckStatus(
-        {"Moderninha": checkConnModerninha_result,
-         "QR Code (Pix)": checkConnPixServer_result})
+        {
+            "Moderninha": moderninha_status,
+            "QR Code (Pix)": server_status,
+        }
+    )
+    return settings, moderninha_status, server_status

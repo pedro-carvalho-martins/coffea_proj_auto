@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import navigation
+import rwServerPairingSettings
 
 
 def _open_setting(action, frame):
@@ -15,7 +16,26 @@ def createAdvancedSettingSelectionFrame(settingsContainer):
         frame,
         text="Configurações avançadas",
         font=("SegoeUI", 14),
-    ).grid(column=0, row=0, pady=(30, 20), padx=20)
+    ).grid(column=0, row=0, pady=(18, 10), padx=20)
+
+    tk.Label(
+        frame,
+        text=f"Código de pareamento: {rwServerPairingSettings.get_pairing_code()}",
+        font=("SegoeUI", 10, "bold"),
+    ).grid(column=0, row=1, pady=4, padx=20)
+
+    online_mode_var = tk.BooleanVar(
+        value=rwServerPairingSettings.is_online_mode_enabled()
+    )
+    tk.Checkbutton(
+        frame,
+        text="Operação on-line",
+        variable=online_mode_var,
+        command=lambda: rwServerPairingSettings.set_online_mode_enabled(
+            online_mode_var.get()
+        ),
+        font=("SegoeUI", 10),
+    ).grid(column=0, row=2, pady=(4, 8), padx=20)
 
     actions = [
         ("Config. valor pulso", "Config. valor pulso"),
@@ -23,7 +43,7 @@ def createAdvancedSettingSelectionFrame(settingsContainer):
         ("Restaurar configurações de fábrica", "Restaurar configurações de fábrica"),
         ("Voltar configurações", "Voltar"),
     ]
-    for row, (action, label) in enumerate(actions, start=1):
+    for row, (action, label) in enumerate(actions, start=3):
         tk.Button(
             frame,
             text=label,

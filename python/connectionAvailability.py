@@ -10,6 +10,8 @@ def classify_server_connection(pairing_state):
         return "check"
     if status == "pending":
         return "pending"
+    if status == "offline":
+        return "disabled"
 
     error_message = str(pairing_state.get("last_error", "")).casefold()
     if "network is unreachable" in error_message:

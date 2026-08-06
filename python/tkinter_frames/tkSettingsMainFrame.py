@@ -17,7 +17,6 @@ def createSettingSelectionFrame(settingsContainer):
         "Nome sistema",
         "Endereço MAC Moderninha",
         "Config. de rede - Encerrar app",
-        "Pareamento com servidor",
         "Configurações avançadas",
         "Voltar",
     ]
