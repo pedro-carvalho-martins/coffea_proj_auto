@@ -250,7 +250,6 @@ def navigate_helloFrame(currentFrame):
 
 def navigate_priceFrame(currentFrame):
     print('navPrice')
-    shared_resource.set_customer_interaction_active(True)
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -270,8 +269,16 @@ def navigate_priceFrame(currentFrame):
 
 def navigate_payment_method_Frame(price_selected, currentFrame):
 
+    global disableInterrupt
     global disableBgConnCheck
+
+    # From this screen onward, payment has exclusive use of the Moderninha,
+    # server communication, and GPIO until the application restarts.
+    shared_resource.set_customer_interaction_active(True)
+    disableInterrupt = 1
     disableBgConnCheck = 1
+    with shared_resource.background_connection_check_lock:
+        pass
 
     print('navpMethod')
     print('price selected was:' + str(price_selected))
@@ -581,6 +588,20 @@ def signalListener(dummyVar1, dummyVar2):
     while True:
         if disableInterrupt == 0:
             listener_outcome = signalListenerGPIO.pollListenerSignal()
+
+            # A poll that started just before payment mode was selected must
+            # not navigate after the customer-interaction gate has closed.
+            with shared_resource.remote_command_gate_lock:
+                listener_is_active = (
+                    disableInterrupt == 0
+                    and not shared_resource.customer_interaction_active.is_set()
+                )
+                if listener_is_active and listener_outcome in ("settings", "inhibit"):
+                    shared_resource.customer_interaction_active.set()
+
+            if not listener_is_active:
+                time.sleep(0.2)
+                continue
 
             if listener_outcome == "settings":
                 print('navigate to settings main frame')

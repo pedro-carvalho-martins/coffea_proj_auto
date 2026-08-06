@@ -6,6 +6,7 @@ import rwPaymentMethodsList
 import rwConnCheckFile
 import rwLogCSV
 import serverPairingProcess
+import shared_resource
 from connectionAvailability import classify_server_connection, evaluate_connection_outcome
 
 import tkinter_frames.tkConnCheckFrame
@@ -200,12 +201,22 @@ def launchStartupConnCheckProcess():
 
 
 def launchBackgroundConnCheckProcess(arg1, arg2):
-    _run_connection_checks()
+    with shared_resource.background_connection_check_lock:
+        return _run_connection_checks(stop_if_customer_active=True)
 
 
-def _run_connection_checks():
+def _run_connection_checks(stop_if_customer_active=False):
+    if stop_if_customer_active and shared_resource.customer_interaction_active.is_set():
+        return None
+
     settings = rwPaymentMethodsList.readListSettings()
     moderninha_status = checkConnModerninha(settings)
+
+    # Do not start a server request when the customer selected a price while
+    # the Moderninha check was running.
+    if stop_if_customer_active and shared_resource.customer_interaction_active.is_set():
+        return None
+
     server_status = checkConnServer()
     settings = rwPaymentMethodsList.readListSettings()
 
