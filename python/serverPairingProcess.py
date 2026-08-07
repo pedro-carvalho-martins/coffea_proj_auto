@@ -12,6 +12,7 @@ import rwPricesList
 import rwSystemId
 import rwSystemName
 import rwSystemVersion
+import kill_shell_loop
 import remoteCommandProcess
 import recordTransmissionProcess
 import shared_resource
@@ -46,21 +47,30 @@ def sync_once():
     """Send one pairing heartbeat unless offline operation is enabled."""
     with _sync_lock:
         transmit_records = True
+        close_app_after_confirmation = False
         while True:
-            paired, needs_confirmation = _sync_cycle(transmit_records)
+            paired, needs_confirmation, close_app_requested = _sync_cycle(
+                transmit_records,
+                accept_commands=not close_app_after_confirmation,
+            )
+            close_app_after_confirmation = (
+                close_app_after_confirmation or close_app_requested
+            )
             if not needs_confirmation:
+                if close_app_after_confirmation:
+                    kill_shell_loop.close_application()
                 return paired
             transmit_records = False
 
 
-def _sync_cycle(transmit_records):
+def _sync_cycle(transmit_records, accept_commands=True):
     try:
         if shared_resource.factory_reset_in_progress.is_set():
             _update_state("offline")
-            return False, False
+            return False, False, False
         if not rwServerPairingSettings.is_online_mode_enabled():
             _update_state("offline")
-            return False, False
+            return False, False, False
 
         pulse_value, pulse_duration_ms, pulse_interval_ms = (
             rwPulseCoinValue.readPulseCharacteristics()
@@ -82,7 +92,7 @@ def _sync_cycle(transmit_records):
                 ),
             },
             "command_results": [],
-            "capabilities": ["command_batch_v1"],
+            "capabilities": ["command_batch_v1", "close_app_v1"],
         }
         current_methods = rwPaymentMethodsList.readListSettings()
         payload["settings"]["payment_methods"] = {
@@ -95,10 +105,10 @@ def _sync_cycle(transmit_records):
         response = post_json("/sync", payload, token)
     except DeviceApiError as exc:
         _record_connection_failure(exc)
-        return False, False
+        return False, False, False
     except Exception as exc:
         _record_connection_failure(exc)
-        return False, False
+        return False, False, False
     status = response.get("status", "connection_error")
     _update_state(status, contacted=True)
     recovery = localRecordQueue.note_connection_restored()
@@ -122,12 +132,16 @@ def _sync_cycle(transmit_records):
             )
         if transmit_records and not shared_resource.customer_interaction_active.is_set():
             recordTransmissionProcess.transmit_pending_records()
-        commands = response.get("commands", [])
-        handled_count = remoteCommandProcess.process_commands_if_safe(commands)
-        handled_commands = commands[:handled_count]
+        if accept_commands:
+            commands = response.get("commands", [])
+            handled_count = remoteCommandProcess.process_commands_if_safe(commands)
+            handled_commands = commands[:handled_count]
 
     needs_confirmation = _commands_need_confirmation(handled_commands)
-    return status == "paired", needs_confirmation
+    close_app_requested = any(
+        command.get("type") == "close_app" for command in handled_commands
+    )
+    return status == "paired", needs_confirmation, close_app_requested
 
 
 def _commands_need_confirmation(handled_commands):

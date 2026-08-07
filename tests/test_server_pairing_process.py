@@ -17,12 +17,29 @@ class ServerPairingProcessTests(unittest.TestCase):
         with patch.object(
             serverPairingProcess,
             "_sync_cycle",
-            side_effect=[(True, True), (True, False)],
+            side_effect=[(True, True, False), (True, False, False)],
         ) as sync_cycle:
             paired = serverPairingProcess.sync_once()
 
         self.assertTrue(paired)
-        self.assertEqual(sync_cycle.call_args_list, [call(True), call(False)])
+        self.assertEqual(
+            sync_cycle.call_args_list,
+            [
+                call(True, accept_commands=True),
+                call(False, accept_commands=True),
+            ],
+        )
+
+    def test_close_app_happens_after_confirmation_cycle(self):
+        with patch.object(
+            serverPairingProcess,
+            "_sync_cycle",
+            side_effect=[(True, True, True), (True, False, False)],
+        ), patch.object(serverPairingProcess.kill_shell_loop, "close_application") as close:
+            paired = serverPairingProcess.sync_once()
+
+        self.assertTrue(paired)
+        close.assert_called_once_with()
 
     def test_reboot_command_does_not_request_pre_reboot_confirmation(self):
         self.assertFalse(

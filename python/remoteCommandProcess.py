@@ -60,7 +60,7 @@ def process_commands_if_safe(commands):
         if not process_command_if_safe(command):
             break
         handled_count += 1
-        if command.get("type") == "reboot":
+        if command.get("type") in {"reboot", "close_app"}:
             break
     return handled_count
 
@@ -147,6 +147,8 @@ def _apply_command(command):
         return f"Atualização {tag} preparada para a próxima reinicialização.", False
     if command_type == "reboot":
         return "Reinicialização solicitada.", True
+    if command_type == "close_app":
+        return "Encerramento da aplicação solicitado.", False
     raise ValueError(f"Tipo de comando desconhecido: {command_type}")
 
 

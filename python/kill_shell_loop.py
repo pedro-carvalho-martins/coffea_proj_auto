@@ -2,29 +2,49 @@ import subprocess
 import os
 import signal
 
+
+def _processes():
+    result = subprocess.run(
+        ["ps", "-eo", "pid=,args="],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        check=False,
+    )
+    for line in result.stdout.splitlines():
+        fields = line.strip().split(maxsplit=1)
+        if len(fields) != 2:
+            continue
+        try:
+            yield int(fields[0]), fields[1]
+        except ValueError:
+            continue
+
+
+def _terminate_matching(process_name):
+    current_pid = os.getpid()
+    for pid, command in _processes():
+        if pid == current_pid or process_name not in command:
+            continue
+        try:
+            os.kill(pid, signal.SIGTERM)
+            print(f"Terminated process {pid} for {process_name}")
+        except ProcessLookupError:
+            continue
+        except Exception as error:
+            print(f"Failed to terminate process {pid}: {error}")
+
+
 def kill_pid_executar():
+    _terminate_matching("run_coffeapag_loop.sh")
 
-    # Find the PID(s) of the running script
-    result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
-    processes = result.stdout.splitlines()
-
-    for process in processes:
-        if 'run_coffeapag_loop.sh' in process:
-            # Extract the PID (second column)
-            pid = int(process.split()[1])
-            try:
-                # Kill the process
-                os.kill(pid, signal.SIGTERM)
-                print(f"Terminated process {pid} for run_coffeapag_loop.sh")
-            except ProcessLookupError:
-                print(f"Process {pid} not found")
-            except PermissionError:
-                print(f"Permission denied to kill process {pid}")
-            except Exception as e:
-                print(f"Failed to terminate process {pid}: {e}")
 
 def kill_python():
-    try:
-        subprocess.run(['pkill', 'python'], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred: {e}")
+    _terminate_matching("launch_background.py")
+    os.kill(os.getpid(), signal.SIGTERM)
+
+
+def close_application():
+    """Stop only the CoffeaPag loop, helper, and current app process."""
+    kill_pid_executar()
+    kill_python()

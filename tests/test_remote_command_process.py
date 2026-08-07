@@ -161,6 +161,30 @@ class RemoteCommandProcessTests(unittest.TestCase):
         self.assertEqual(len(remoteCommandProcess.read_pending_results()), 2)
         reboot.assert_called_once_with()
 
+    def test_close_app_is_persisted_and_stops_later_commands(self):
+        commands = [
+            {
+                "command_id": "98a52da9-6627-4143-871a-1c83bbc0c72b",
+                "type": "close_app",
+                "payload": {},
+            },
+            {
+                "command_id": "12dcd41c-210d-45e2-b63d-ab67b4b4ee8e",
+                "type": "update",
+                "payload": {"tag": "v1.6.0"},
+            },
+        ]
+
+        handled_count = remoteCommandProcess.process_commands_if_safe(commands)
+
+        self.assertEqual(handled_count, 1)
+        self.assertEqual(len(remoteCommandProcess.read_pending_results()), 1)
+        self.assertFalse(os.path.exists(self.update_file))
+        self.assertIn(
+            "Encerramento",
+            remoteCommandProcess.read_pending_result()["message"],
+        )
+
     def test_legacy_single_result_file_is_still_read(self):
         with open(self.result_file, "w", encoding="utf-8") as file:
             file.write(
