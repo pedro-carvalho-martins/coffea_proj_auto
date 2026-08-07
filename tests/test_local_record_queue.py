@@ -1,4 +1,5 @@
 import os
+import csv
 import sys
 import tempfile
 import unittest
@@ -69,6 +70,65 @@ class LocalRecordQueueTests(unittest.TestCase):
             localRecordQueue.TRANSACTION_FIELDS,
         )
         self.assertEqual([row["record_id"] for row in remaining], [second_id])
+
+    def test_pending_transaction_is_updated_in_place(self):
+        record_id = localRecordQueue.record_transaction(
+            "1.00",
+            "Credito",
+            "pendente",
+            self.transactions_file,
+            moderninha_reference="ABC1234567",
+        )
+
+        updated = localRecordQueue.update_transaction(
+            record_id,
+            "concluida",
+            self.transactions_file,
+            identificador_pagamento="TRANSACTION-CODE",
+            cartao_ultimos_quatro="7379",
+            moderninha_return_code=0,
+        )
+
+        self.assertTrue(updated)
+        records = localRecordQueue.read_batch(
+            self.transactions_file,
+            localRecordQueue.TRANSACTION_FIELDS,
+        )
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["status"], "concluida")
+        self.assertEqual(records[0]["identificador_pagamento"], "TRANSACTION-CODE")
+        self.assertEqual(records[0]["cartao_ultimos_quatro"], "7379")
+        self.assertTrue(records[0]["datetime_conclusao"])
+
+    def test_legacy_transaction_queue_is_migrated_in_place(self):
+        with open(self.transactions_file, "w", newline="", encoding="utf-8") as csv_file:
+            writer = csv.DictWriter(
+                csv_file,
+                fieldnames=localRecordQueue.LEGACY_TRANSACTION_FIELDS,
+            )
+            writer.writeheader()
+            writer.writerow(
+                {
+                    "record_id": "legacy-id",
+                    "datetime": "2026-08-06T10:00:00-03:00",
+                    "valor_centavos": "100",
+                    "metodo_pag": "Credito",
+                    "status": "concluida",
+                }
+            )
+
+        records = localRecordQueue.read_batch(
+            self.transactions_file,
+            localRecordQueue.TRANSACTION_FIELDS,
+        )
+
+        self.assertEqual(records[0]["record_id"], "legacy-id")
+        self.assertEqual(records[0]["identificador_pagamento"], "")
+        with open(self.transactions_file, "r", newline="", encoding="utf-8") as csv_file:
+            self.assertEqual(
+                tuple(csv.DictReader(csv_file).fieldnames),
+                localRecordQueue.TRANSACTION_FIELDS,
+            )
 
     def test_identical_error_is_suppressed_during_cooldown(self):
         self.assertTrue(localRecordQueue.should_record_error("sync", "timeout", "offline", now=10))
