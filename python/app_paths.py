@@ -20,6 +20,7 @@ PAYMENT_METHODS_FILE = os.path.join(SETTINGS_DIR, "paymentMethods.txt")
 MAC_ADDRESS_FILE = os.path.join(SETTINGS_DIR, "enderecoMAC.txt")
 CONN_CHECK_FILE = os.path.join(SETTINGS_DIR, "connCheck.txt")
 PULSE_COIN_FILE = os.path.join(SETTINGS_DIR, "pulseCoinValue.txt")
+COMMUNICATION_TYPE_FILE = os.path.join(SETTINGS_DIR, "communicationType.txt")
 SYSTEM_ID_FILE = os.path.join(SETTINGS_DIR, "systemId.txt")
 SYSTEM_NAME_FILE = os.path.join(SETTINGS_DIR, "systemName.txt")
 SERVER_PAIRING_TOKEN_FILE = os.path.join(SETTINGS_DIR, "serverPairingToken.txt")
@@ -32,6 +33,8 @@ TMP_LOG_FILE = os.path.join(LOGS_DIR, "tmp_log_client.csv")
 PENDING_TRANSACTIONS_FILE = os.path.join(LOGS_DIR, "pending_transactions.csv")
 PENDING_EVENTS_FILE = os.path.join(LOGS_DIR, "pending_events.csv")
 PIX_QRCODE_FILE = os.path.join(RUNTIME_DIR, "qrCodePix.png")
+MDB_OWNER_LOCK_FILE = os.path.join(RUNTIME_DIR, "mdb_serial0.lock")
+MDB_ACTIVE_STATE_FILE = os.path.join(LOGS_DIR, "mdb_active_session.json")
 
 
 def ensure_directory(path):

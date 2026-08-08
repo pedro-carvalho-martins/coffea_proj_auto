@@ -38,6 +38,7 @@ def createAdvancedSettingSelectionFrame(settingsContainer):
     ).grid(column=0, row=2, pady=(4, 8), padx=20)
 
     actions = [
+        ("Tipo de comunicação", "Tipo de comunicação"),
         ("Config. valor pulso", "Config. valor pulso"),
         ("Config. tela inicial", "Config. tela inicial"),
         ("Restaurar configurações de fábrica", "Restaurar configurações de fábrica"),

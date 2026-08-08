@@ -146,9 +146,10 @@ def update_transaction(record_id, status, file_path=None, **metadata):
             return False
 
         target["status"] = str(status)[:20]
-        target["datetime_conclusao"] = str(
-            metadata.get("datetime_conclusao") or _now_iso()
-        )[:40]
+        if "datetime_conclusao" in metadata:
+            target["datetime_conclusao"] = str(metadata["datetime_conclusao"])[:40]
+        elif str(status) != "pendente":
+            target["datetime_conclusao"] = _now_iso()[:40]
         for field, limit in (
             ("identificador_pagamento", 100),
             ("moderninha_reference", 10),

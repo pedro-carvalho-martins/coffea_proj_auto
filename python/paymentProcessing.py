@@ -62,8 +62,7 @@ def _finish_payment_record(record_id, price, payment_method, status, metadata):
         # Diagnostic persistence must never alter the payment result.
         pass
 
-def launchPaymentProcessing(price, paymentMethod):
-#TEST
+def launchPaymentProcessingDetailed(price, paymentMethod, defer_success=False):
     
     if paymentMethod == "Crédito":
         paymentMethodInput = "1"
@@ -125,14 +124,33 @@ def launchPaymentProcessing(price, paymentMethod):
         except Exception:
             pass
 
-    _finish_payment_record(
-        record_id,
-        price,
-        paymentMethod,
-        "concluida" if payment_output == 0 else "falha",
-        metadata,
+    status = "concluida" if payment_output == 0 else "falha"
+    if defer_success and payment_output == 0:
+        status = "pendente"
+    _finish_payment_record(record_id, price, paymentMethod, status, metadata)
+    return {
+        "return_code": payment_output,
+        "record_id": record_id,
+        "price": price,
+        "payment_method": paymentMethod,
+        "metadata": metadata,
+        "deferred": bool(defer_success and payment_output == 0),
+    }
+
+
+def finalizePaymentProcessing(result, status):
+    """Finalize a deferred Moderninha result after the MDB vend outcome."""
+    if not result or not result.get("record_id"):
+        return False
+    return localRecordQueue.update_transaction(
+        result["record_id"],
+        status,
+        **result.get("metadata", {}),
     )
-    return payment_output
+
+
+def launchPaymentProcessing(price, paymentMethod):
+    return launchPaymentProcessingDetailed(price, paymentMethod)["return_code"]
     
 
 

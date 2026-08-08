@@ -150,7 +150,7 @@ def createPayProcessFrame_Pix(mainContainer):
     return payProcessFrame
 
 
-def createPixDisplayFrame(mainContainer, price_selected, filename_img_QR_Code_Pix):
+def createPixDisplayFrame(mainContainer, price_selected, filename_img_QR_Code_Pix, cancel_command=None):
 
     pixDisplayFrame = tk.Frame(mainContainer, height=480, width=320)
 
@@ -204,7 +204,7 @@ def createPixDisplayFrame(mainContainer, price_selected, filename_img_QR_Code_Pi
            bg='#871313',
            fg='white',
            # command=button_clicked(button_index),
-           command=mainContainer.destroy,
+           command=cancel_command or mainContainer.destroy,
 
            # change behaviour on hover
            activebackground=pixDisplayFrame.cget(

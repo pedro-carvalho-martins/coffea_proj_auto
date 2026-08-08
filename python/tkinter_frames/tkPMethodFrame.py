@@ -39,7 +39,7 @@ def getPaymentMethodList():
 
 ## Função de criação do Frame de método de pagamento
 
-def createPaymentMethodFrame(mainContainer, price_selected):
+def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None):
 
     # Antiga lista de métodos de pagamento sem configuração no app
     # lista_metodos_pag = ["Crédito", "Débito", "Voucher", "QR Code (Pix)"]
@@ -138,7 +138,7 @@ def createPaymentMethodFrame(mainContainer, price_selected):
               bg='#871313',
               fg='white',
               # command=button_clicked(button_index),
-              command=mainContainer.destroy,
+              command=cancel_command or mainContainer.destroy,
 
               # change behaviour on hover
               activebackground=button_frame.cget(

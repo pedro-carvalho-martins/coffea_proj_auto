@@ -78,11 +78,15 @@ def get_status_cobranca(txid):
     raise last_error
 
 
-def verify_payment_pix(txid):
+def verify_payment_pix(txid, should_cancel=None):
     elapsed = 0
     while elapsed < PIX_STATUS_TIMEOUT_SECONDS:
+        if should_cancel is not None and should_cancel():
+            return -2
         time.sleep(PIX_STATUS_INTERVAL_SECONDS)
         elapsed += PIX_STATUS_INTERVAL_SECONDS
+        if should_cancel is not None and should_cancel():
+            return -2
         payment_status = get_status_cobranca(txid)["status"]
         if payment_status == "pendente":
             continue
