@@ -12,6 +12,35 @@ import paymentProcessing_Pix
 
 
 class PaymentProcessingPixTests(unittest.TestCase):
+    def test_charge_creation_reports_communication_mode(self):
+        with patch.object(
+            paymentProcessing_Pix.rwServerPairingSettings,
+            "is_online_mode_enabled",
+            return_value=True,
+        ), patch.object(
+            paymentProcessing_Pix.rwServerPairingSettings,
+            "read_pairing_token",
+            return_value="token",
+        ), patch.object(
+            paymentProcessing_Pix.rwSystemId,
+            "readSystemId",
+            return_value="system-id",
+        ), patch.object(
+            paymentProcessing_Pix.rwCommunicationType,
+            "readCommunicationType",
+            return_value="mdb",
+        ), patch.object(
+            paymentProcessing_Pix,
+            "post_json",
+            return_value={"pix_copia_cola": "code", "txid": "txid"},
+        ) as post_json:
+            paymentProcessing_Pix.PixRequest("1.00")
+
+        self.assertEqual(
+            post_json.call_args.args[1]["modo_comunicacao"],
+            "mdb",
+        )
+
     def test_status_request_declares_delivery_confirmation(self):
         with patch.object(
             paymentProcessing_Pix.rwSystemId,

@@ -12,8 +12,24 @@ from server_api_client import post_json
 BATCH_SIZE = 50
 
 
-def _send_batch(endpoint, records, id_field, file_path, fieldnames):
-    if not records or shared_resource.customer_interaction_active.is_set():
+def _customer_interaction_blocks(allow_during_customer_interaction):
+    return (
+        shared_resource.customer_interaction_active.is_set()
+        and not allow_during_customer_interaction
+    )
+
+
+def _send_batch(
+    endpoint,
+    records,
+    id_field,
+    file_path,
+    fieldnames,
+    allow_during_customer_interaction=False,
+):
+    if not records or _customer_interaction_blocks(
+        allow_during_customer_interaction
+    ):
         return 0
 
     response = post_json(
@@ -33,15 +49,19 @@ def _send_batch(endpoint, records, id_field, file_path, fieldnames):
     )
 
 
-def transmit_pending_records():
+def transmit_pending_records(
+    allow_during_customer_interaction=False,
+    include_pix=True,
+):
     """Send one bounded batch of each record type without affecting heartbeat state."""
-    if shared_resource.customer_interaction_active.is_set():
+    if _customer_interaction_blocks(allow_during_customer_interaction):
         return False
 
     try:
-        pixDeliveryConfirmation.transmit_pending()
+        if include_pix:
+            pixDeliveryConfirmation.transmit_pending()
 
-        if shared_resource.customer_interaction_active.is_set():
+        if _customer_interaction_blocks(allow_during_customer_interaction):
             return True
 
         transactions = localRecordQueue.read_batch(
@@ -55,9 +75,10 @@ def transmit_pending_records():
             "record_id",
             PENDING_TRANSACTIONS_FILE,
             localRecordQueue.TRANSACTION_FIELDS,
+            allow_during_customer_interaction,
         )
 
-        if shared_resource.customer_interaction_active.is_set():
+        if _customer_interaction_blocks(allow_during_customer_interaction):
             return True
 
         events = localRecordQueue.read_batch(
@@ -71,6 +92,7 @@ def transmit_pending_records():
             "event_id",
             PENDING_EVENTS_FILE,
             localRecordQueue.EVENT_FIELDS,
+            allow_during_customer_interaction,
         )
         return True
     except Exception:

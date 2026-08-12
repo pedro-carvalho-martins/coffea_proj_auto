@@ -4,6 +4,7 @@ import uuid
 
 import localRecordQueue
 import rwLogCSV
+import rwCommunicationType
 
 
 PAYMENT_EXECUTABLE = "../plugpag_integration/rpi_plugpag_dev/output/payment_request_plugpag"
@@ -39,20 +40,21 @@ def _record_pending_payment(price, payment_method, reference):
             payment_method,
             "pendente",
             moderninha_reference=reference,
+            modo_comunicacao=rwCommunicationType.readCommunicationType(),
         )
     except Exception:
         return None
 
 
-def _finish_payment_record(record_id, price, payment_method, status, metadata):
+def _persist_payment_record(record_id, price, payment_method, status, metadata):
     try:
         if record_id and localRecordQueue.update_transaction(
             record_id,
             status,
             **metadata,
         ):
-            return
-        localRecordQueue.record_transaction(
+            return record_id
+        return localRecordQueue.record_transaction(
             price,
             payment_method,
             status,
@@ -60,19 +62,39 @@ def _finish_payment_record(record_id, price, payment_method, status, metadata):
         )
     except Exception:
         # Diagnostic persistence must never alter the payment result.
-        pass
+        return None
+
+
+def _finish_payment_record(record_id, price, payment_method, status, metadata):
+    return bool(
+        _persist_payment_record(
+            record_id,
+            price,
+            payment_method,
+            status,
+            metadata,
+        )
+    )
 
 
 def finish_delivery_record(record_id, price, payment_method, status, **metadata):
-    _finish_payment_record(
-        record_id,
-        price,
-        payment_method,
-        status,
-        metadata,
+    metadata.setdefault(
+        "modo_comunicacao",
+        rwCommunicationType.readCommunicationType(),
     )
+    for _attempt in range(2):
+        if _finish_payment_record(
+            record_id,
+            price,
+            payment_method,
+            status,
+            metadata,
+        ):
+            return True
+    return False
 
-def launchPaymentProcessing(price, paymentMethod):
+
+def launchPaymentProcessingDetailed(price, paymentMethod):
 #TEST
     
     if paymentMethod == "Crédito":
@@ -104,6 +126,7 @@ def launchPaymentProcessing(price, paymentMethod):
     metadata = {
         "moderninha_reference": reference,
         "moderninha_return_code": -1,
+        "modo_comunicacao": rwCommunicationType.readCommunicationType(),
     }
 
     try:
@@ -135,7 +158,7 @@ def launchPaymentProcessing(price, paymentMethod):
         except Exception:
             pass
 
-    _finish_payment_record(
+    persisted_record_id = _persist_payment_record(
         record_id,
         price,
         paymentMethod,
@@ -146,7 +169,20 @@ def launchPaymentProcessing(price, paymentMethod):
         ),
         metadata,
     )
-    return payment_output, record_id
+    if persisted_record_id:
+        record_id = persisted_record_id
+    return {
+        "return_code": payment_output,
+        "record_id": record_id,
+        "price": price,
+        "payment_method": paymentMethod,
+        "metadata": metadata,
+    }
+
+
+def launchPaymentProcessing(price, paymentMethod):
+    result = launchPaymentProcessingDetailed(price, paymentMethod)
+    return result["return_code"], result["record_id"]
     
 
 

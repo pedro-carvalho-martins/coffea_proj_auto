@@ -100,6 +100,27 @@ class LocalRecordQueueTests(unittest.TestCase):
         self.assertEqual(records[0]["cartao_ultimos_quatro"], "7379")
         self.assertTrue(records[0]["datetime_conclusao"])
 
+    def test_pending_update_does_not_set_completion_timestamp(self):
+        record_id = localRecordQueue.record_transaction(
+            "1.00",
+            "Credito",
+            "pendente",
+            self.transactions_file,
+        )
+
+        localRecordQueue.update_transaction(
+            record_id,
+            "pendente",
+            self.transactions_file,
+            moderninha_return_code=0,
+        )
+
+        record = localRecordQueue.read_batch(
+            self.transactions_file,
+            localRecordQueue.TRANSACTION_FIELDS,
+        )[0]
+        self.assertEqual(record["datetime_conclusao"], "")
+
     def test_delivery_result_is_kept_with_the_moderninha_transaction(self):
         record_id = localRecordQueue.record_transaction(
             "1.49",
@@ -126,6 +147,21 @@ class LocalRecordQueueTests(unittest.TestCase):
         self.assertEqual(record["pulsos_concluidos"], "6")
         self.assertEqual(record["pulsos_retentados"], "1")
 
+    def test_transaction_keeps_communication_mode(self):
+        localRecordQueue.record_transaction(
+            "1.49",
+            "Credito",
+            "pendente",
+            self.transactions_file,
+            modo_comunicacao="mdb",
+        )
+
+        record = localRecordQueue.read_batch(
+            self.transactions_file,
+            localRecordQueue.TRANSACTION_FIELDS,
+        )[0]
+        self.assertEqual(record["modo_comunicacao"], "mdb")
+
     def test_legacy_transaction_queue_is_migrated_in_place(self):
         with open(self.transactions_file, "w", newline="", encoding="utf-8") as csv_file:
             writer = csv.DictWriter(
@@ -150,6 +186,7 @@ class LocalRecordQueueTests(unittest.TestCase):
 
         self.assertEqual(records[0]["record_id"], "legacy-id")
         self.assertEqual(records[0]["identificador_pagamento"], "")
+        self.assertEqual(records[0]["modo_comunicacao"], "")
         with open(self.transactions_file, "r", newline="", encoding="utf-8") as csv_file:
             self.assertEqual(
                 tuple(csv.DictReader(csv_file).fieldnames),
@@ -231,6 +268,55 @@ class LocalRecordQueueTests(unittest.TestCase):
 
         self.assertFalse(transmitted)
         post_json.assert_not_called()
+
+    def test_recovery_upload_can_send_records_without_pix_or_heartbeat(self):
+        record_id = localRecordQueue.record_transaction(
+            "2.50",
+            "Debito",
+            "pago_entrega_nao_confirmada",
+            self.transactions_file,
+            modo_comunicacao="mdb",
+        )
+        shared_resource.customer_interaction_active.set()
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(
+                recordTransmissionProcess,
+                "PENDING_TRANSACTIONS_FILE",
+                self.transactions_file,
+            ))
+            stack.enter_context(patch.object(
+                recordTransmissionProcess,
+                "PENDING_EVENTS_FILE",
+                self.events_file,
+            ))
+            stack.enter_context(patch.object(
+                recordTransmissionProcess.rwSystemId,
+                "readSystemId",
+                return_value="38a486cd-a2af-42a4-a107-e6e467ef04aa",
+            ))
+            stack.enter_context(patch.object(
+                recordTransmissionProcess.rwServerPairingSettings,
+                "read_pairing_token",
+                return_value="token",
+            ))
+            pix = stack.enter_context(patch.object(
+                recordTransmissionProcess.pixDeliveryConfirmation,
+                "transmit_pending",
+            ))
+            post_json = stack.enter_context(patch.object(
+                recordTransmissionProcess,
+                "post_json",
+                return_value={"accepted_ids": [record_id]},
+            ))
+
+            transmitted = recordTransmissionProcess.transmit_pending_records(
+                allow_during_customer_interaction=True,
+                include_pix=False,
+            )
+
+        self.assertTrue(transmitted)
+        pix.assert_not_called()
+        post_json.assert_called_once()
 
 
 if __name__ == "__main__":

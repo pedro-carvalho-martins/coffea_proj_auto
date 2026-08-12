@@ -15,6 +15,8 @@ import tkinter_frames.tkInhibitFrame as tkInhibitFrame
 import tkinter_frames.tkConnCheckFrame as tkConnCheckFrame
 import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
 import tkinter_frames.tkPulseValueSettingFrame as tkPulseValueSettingFrame
+import tkinter_frames.tkCommunicationTypeSettingFrame as tkCommunicationTypeSettingFrame
+import tkinter_frames.tkMdbFrame as tkMdbFrame
 
 import queue
 import math
@@ -26,6 +28,10 @@ from threading import Thread
 import paymentProcessing
 import paymentProcessing_Pix
 import pixDeliveryConfirmation
+import recordTransmissionProcess
+import mdb_payment_delivery
+from mdb_coordinator import MdbSessionCoordinator
+from mdb_serial_transport import MdbSerialTransport
 
 ## Comment block for Windows testing
 import sendSignalGPIO
@@ -38,17 +44,27 @@ import kill_shell_loop
 import rwUltimoPag
 import rwHelloSettingFile
 import rwLogCSV
+import rwCommunicationType
 import shared_resource
 
 
 NO_PAYMENT_METHODS_RETRY_SECONDS = 15
+MDB_EXPECTED_DELIVERY_SECONDS = 30
+MDB_FINALIZATION_RETRY_SECONDS = 15
+
+mdbTransport = None
+mdbCoordinator = None
+mdbCurrentFrame = None
+mdbFinalizationKeys = set()
+mdbPaymentCancellationEvent = None
 
 
 ## 2024.08.29 New implementation to handle GUI updates in a thread-safe manner
 
 def hide_and_destroy_frame(currentFrame):
-    currentFrame.pack_forget()
-    currentFrame.destroy()
+    if currentFrame is not None and currentFrame.winfo_exists():
+        currentFrame.pack_forget()
+        currentFrame.destroy()
 
 
 def pack_new_frame(newFrame):
@@ -120,6 +136,12 @@ def cancel_pix_payment(cancellation_event):
     mainContainer.destroy()
 
 
+def cancel_mdb_pix_payment(cancellation_event):
+    cancellation_event.set()
+    if mdbCoordinator is not None:
+        mdbCoordinator.cancel_active("customer_cancel")
+
+
 ## 2024.08.29 New implementation ends
 
 
@@ -168,7 +190,10 @@ def navigate_startupFrame(session_number):
     # Start the process to check the UI update queue
     mainContainer.after(100, process_ui_queue)
 
-    mainContainer.mainloop()
+    try:
+        mainContainer.mainloop()
+    finally:
+        stopMdbRuntime()
 
 
 def navigate_connCheckFrame(currentFrame):
@@ -265,6 +290,10 @@ def check_helloScreen(currentFrame):
     threadBackgroundConnCheck.daemon = True
     threadBackgroundConnCheck.start()
 
+    if rwCommunicationType.isMdbEnabled():
+        navigate_mdb_waiting_frame(currentFrame)
+        return
+
     # helloScreenOn=1
     # Verifica se a tela de "toque aqui para iniciar" estÃ¡ habilitada ou nÃ£o
     helloScreenOn = rwHelloSettingFile.readListCheckHello()
@@ -273,6 +302,288 @@ def check_helloScreen(currentFrame):
         navigate_helloFrame(currentFrame)
     else:
         navigate_priceFrame(currentFrame)
+
+
+def startMdbRuntime():
+    global mdbTransport, mdbCoordinator
+    if mdbTransport is not None:
+        return
+
+    def on_message(message):
+        if mdbCoordinator is not None:
+            mdbCoordinator.handle(message)
+
+    def on_transport_state(state, detail):
+        if mdbCoordinator is not None:
+            mdbCoordinator.transport_state(state, detail)
+
+    mdbTransport = MdbSerialTransport(on_message, on_transport_state)
+    mdbCoordinator = MdbSessionCoordinator(
+        mdbTransport.send,
+        lambda event, data: enqueue_ui_update(handleMdbEvent, event, data),
+    )
+    mdbTransport.start()
+    mdbCoordinator.start()
+
+
+def stopMdbRuntime():
+    global mdbTransport, mdbCoordinator, mdbCurrentFrame
+    global mdbPaymentCancellationEvent
+    if mdbPaymentCancellationEvent is not None:
+        mdbPaymentCancellationEvent.set()
+    if mdbTransport is not None:
+        mdbTransport.stop()
+    mdbTransport = None
+    mdbCoordinator = None
+    mdbCurrentFrame = None
+    mdbPaymentCancellationEvent = None
+    mdbFinalizationKeys.clear()
+
+
+def navigate_mdb_waiting_frame(currentFrame=None):
+    global mdbCurrentFrame
+    if currentFrame is not None and currentFrame is not mdbCurrentFrame:
+        enqueue_hide_and_destroy_frame(currentFrame)
+    mdbCurrentFrame = tkMdbFrame.createWaitingFrame(mainContainer)
+    enqueue_pack_new_frame(mdbCurrentFrame)
+    startMdbRuntime()
+
+
+def replaceMdbFrame(newFrame):
+    global mdbCurrentFrame
+    old_frame = mdbCurrentFrame
+    mdbCurrentFrame = newFrame
+    if old_frame is not None and old_frame is not newFrame:
+        hide_and_destroy_frame(old_frame)
+    pack_new_frame(newFrame)
+
+
+def returnToMdbWaiting():
+    global disableInterrupt, disableBgConnCheck
+    if mdbCoordinator and mdbCoordinator.active:
+        mainContainer.after(500, returnToMdbWaiting)
+        return
+    shared_resource.set_customer_interaction_active(False)
+    disableInterrupt = 0
+    disableBgConnCheck = 0
+    waiting = tkMdbFrame.createWaitingFrame(mainContainer)
+    replaceMdbFrame(waiting)
+    if mdbCoordinator and mdbCoordinator.session_open:
+        tkMdbFrame.updateWaitingFrame(
+            waiting,
+            "Selecione um produto na maquina.",
+        )
+
+
+def cancelMdbPurchase():
+    if mdbCoordinator is not None:
+        mdbCoordinator.cancel_active("customer_cancel")
+
+
+def resolveMdbRecovery():
+    if mdbCoordinator is not None:
+        mdbCoordinator.resolve_recovery()
+
+
+def _mdb_vend_key(data):
+    return (str(data.get("boot")), int(data.get("vend", 0)))
+
+
+def startMdbVendFinalization(data):
+    key = _mdb_vend_key(data)
+    if key in mdbFinalizationKeys:
+        return
+    mdbFinalizationKeys.add(key)
+    worker = Thread(
+        target=finalizeMdbVend,
+        args=(dict(data), key),
+        name="mdb-vend-finalization",
+    )
+    worker.start()
+
+
+def finalizeMdbVend(data, key):
+    error = None
+    try:
+        price = data["price_units"] / 100.0
+        finalized = mdb_payment_delivery.finalize_vend_success(
+            data.get("payment", {}),
+            price,
+        )
+        if not finalized:
+            raise RuntimeError("Nao foi possivel persistir o resultado MDB")
+        if not mdbCoordinator or not mdbCoordinator.complete_vend_success(*key):
+            raise RuntimeError("Estado MDB mudou durante a finalizacao")
+    except Exception as exc:
+        error = exc
+        _write_payment_error(
+            data.get("price_units", 0) / 100.0,
+            data.get("payment", {}).get("payment_method", "N/A"),
+            "payment.mdb_vend_finalization",
+            exc,
+        )
+    enqueue_ui_update(finishMdbVendFinalization, data, key, error)
+
+
+def finishMdbVendFinalization(data, key, error):
+    mdbFinalizationKeys.discard(key)
+    if error is not None:
+        mainContainer.after(
+            MDB_FINALIZATION_RETRY_SECONDS * 1000,
+            lambda: startMdbVendFinalization(data),
+        )
+        return
+
+    price = data["price_units"] / 100.0
+    payment_method = data.get("payment", {}).get("payment_method", "N/A")
+    try:
+        rwUltimoPag.writeValue(price)
+        rwLogCSV.writeCSV(
+            "venda_sucesso",
+            str(price),
+            payment_method,
+            "",
+            "",
+            "",
+        )
+    except Exception as exc:
+        _write_payment_error(
+            price,
+            payment_method,
+            "payment.mdb_post_delivery_state",
+            exc,
+        )
+    replaceMdbFrame(tkMdbFrame.createDispensedFrame(mainContainer))
+    mdbCurrentFrame.after(5000, returnToMdbWaiting)
+
+
+def markMdbDeliveryUncertain(data):
+    payment = data.get("payment", {})
+    if not data.get("payment_approved") or not payment:
+        return
+    try:
+        marked = mdb_payment_delivery.mark_delivery_uncertain(
+            payment,
+            data.get("price_units", 0) / 100.0,
+            data.get("reason", "resultado_mdb_incerto"),
+        )
+        if not marked:
+            raise RuntimeError("Nao foi possivel persistir o resultado MDB incerto")
+        recordTransmissionProcess.transmit_pending_records(
+            allow_during_customer_interaction=True,
+            include_pix=False,
+        )
+    except Exception as exc:
+        _write_payment_error(
+            data.get("price_units", 0) / 100.0,
+            payment.get("payment_method", "N/A"),
+            "payment.mdb_delivery_uncertain",
+            exc,
+        )
+
+
+def _write_mdb_recovery_event(data):
+    payment = data.get("payment", {})
+    bridge_status = data.get("bridge_status", {})
+    message = (
+        f"reason={data.get('reason', 'unknown')}; "
+        f"boot={data.get('boot', '')}; session={data.get('session', '')}; "
+        f"vend={data.get('vend', '')}; bridge_state={bridge_status.get('state', '')}"
+    )
+    _write_payment_error(
+        data.get("price_units", 0) / 100.0,
+        payment.get("payment_method", "N/A"),
+        "payment.mdb_recovery",
+        RuntimeError(message),
+    )
+
+
+def _write_mdb_transport_event(state, detail):
+    try:
+        rwLogCSV.writeCSV(
+            "erro_mdb",
+            "",
+            "",
+            "mdb.transport",
+            str(state),
+            str(detail),
+        )
+    except Exception:
+        pass
+
+
+def handleMdbEvent(event, data):
+    global mdbCurrentFrame
+    if event == "transport":
+        if data.get("state") == "connected":
+            tkMdbFrame.updateWaitingFrame(
+                mdbCurrentFrame,
+                "Conectado ao MDB. Aguardando a maquina...",
+            )
+        elif data.get("state") == "disconnected":
+            _write_mdb_transport_event(
+                "disconnected",
+                data.get("detail", ""),
+            )
+            tkMdbFrame.updateWaitingFrame(
+                mdbCurrentFrame,
+                "Falha na conexao MDB. Reconectando...",
+            )
+        elif data.get("state") == "protocol_error":
+            _write_mdb_transport_event(
+                "protocol_error",
+                data.get("detail", ""),
+            )
+        return
+    if event == "ready":
+        tkMdbFrame.updateWaitingFrame(
+            mdbCurrentFrame,
+            "Selecione um produto na maquina.",
+        )
+        return
+    if event == "vend_request":
+        if mdbCoordinator is None or not mdbCoordinator.is_awaiting_payment():
+            return
+        navigate_payment_method_Frame(
+            data["price_units"] / 100.0,
+            mdbCurrentFrame,
+        )
+        return
+    if event == "awaiting_dispense":
+        replaceMdbFrame(tkMdbFrame.createAwaitingDispenseFrame(mainContainer))
+        return
+    if event in ("payment_failed", "cancelled"):
+        if event == "cancelled" and mdbPaymentCancellationEvent is not None:
+            mdbPaymentCancellationEvent.set()
+        replaceMdbFrame(tkMdbFrame.createFailureFrame(mainContainer))
+        mdbCurrentFrame.after(5000, returnToMdbWaiting)
+        return
+    if event == "cancelled_final":
+        returnToMdbWaiting()
+        return
+    if event == "vend_success":
+        replaceMdbFrame(
+            tkMdbFrame.createDispensedFrame(mainContainer)
+        )
+        startMdbVendFinalization(data)
+        return
+    if event in ("recovery", "vend_failure"):
+        _write_mdb_recovery_event(data)
+        worker = Thread(
+            target=markMdbDeliveryUncertain,
+            args=(dict(data),),
+            name="mdb-uncertain-delivery",
+        )
+        worker.start()
+        replaceMdbFrame(
+            tkMdbFrame.createRecoveryFrame(
+                mainContainer,
+                resolveMdbRecovery,
+            )
+        )
+        return
+    if event == "recovery_cleared":
+        returnToMdbWaiting()
 
 
 def navigate_helloFrame(currentFrame):
@@ -310,6 +621,7 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
 
     global disableInterrupt
     global disableBgConnCheck
+    global mdbCurrentFrame
 
     # From this screen onward, payment has exclusive use of the Moderninha,
     # server communication, and GPIO until the application restarts.
@@ -333,7 +645,15 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
     time.sleep(0.5)
     ##### FIM DO TESTE
 
-    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(mainContainer, price_selected)
+    pmethodFrame = tkPMethodFrame.createPaymentMethodFrame(
+        mainContainer,
+        price_selected,
+        cancel_command=(
+            cancelMdbPurchase if rwCommunicationType.isMdbEnabled() else None
+        ),
+    )
+    if rwCommunicationType.isMdbEnabled():
+        mdbCurrentFrame = pmethodFrame
 
     #pmethodFrame.pack(side="top", fill="both", expand=True)
 
@@ -343,21 +663,24 @@ def navigate_payment_method_Frame(price_selected, currentFrame):
 
 
 def navigate_payment_process(price_selected, payment_method_selected, currentFrame):
+    global mdbCurrentFrame
     print('navPayProcess')
     print(price_selected)
     print(payment_method_selected)
 
-    try:
-        pulse_plan = sendSignalGPIO.build_pulse_plan(price_selected)
-    except Exception as exc:
-        _write_payment_error(
-            price_selected,
-            payment_method_selected,
-            "payment.pulse_plan",
-            exc,
-        )
-        enqueue_payment_result(currentFrame, "payment_failure")
-        return
+    pulse_plan = None
+    if not rwCommunicationType.isMdbEnabled():
+        try:
+            pulse_plan = sendSignalGPIO.build_pulse_plan(price_selected)
+        except Exception as exc:
+            _write_payment_error(
+                price_selected,
+                payment_method_selected,
+                "payment.pulse_plan",
+                exc,
+            )
+            enqueue_payment_result(currentFrame, "payment_failure")
+            return
 
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -375,6 +698,8 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
         payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame_Pix(mainContainer)
+        if rwCommunicationType.isMdbEnabled():
+            mdbCurrentFrame = payprocessFrame
 
         print('payprocessFrame created')
 
@@ -407,6 +732,8 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
         payprocessFrame = tkPaymentProcessFrame.createPayProcessFrame(mainContainer)
+        if rwCommunicationType.isMdbEnabled():
+            mdbCurrentFrame = payprocessFrame
 
         #payprocessFrame.pack(side="top", fill="both", expand=True)
 
@@ -430,8 +757,13 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
 
         ## launch other thread
         # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+        payment_target = (
+            launchMdbPayment
+            if rwCommunicationType.isMdbEnabled()
+            else launchPayment
+        )
         threadPay = Thread(
-            target=launchPayment,
+            target=payment_target,
             args=(
                 payprocessFrame,
                 price_selected,
@@ -450,6 +782,7 @@ def launchPixRequest(
     payment_method_selected,
     pulse_plan,
 ):
+    global mdbCurrentFrame, mdbPaymentCancellationEvent
     # function must:
     #  - get auth token
     #  - get QR Code text from server
@@ -459,8 +792,30 @@ def launchPixRequest(
 
     print('start pix request')
 
+    mdb_mode = rwCommunicationType.isMdbEnabled()
+    cancellation_event = threading.Event()
+    if mdb_mode:
+        if mdbCoordinator is None or not mdbCoordinator.payment_started("pix"):
+            return
+        mdbPaymentCancellationEvent = cancellation_event
+
     try:
         pix_copiaecola, pix_txid = paymentProcessing_Pix.PixRequest(price_selected)
+
+        if mdb_mode:
+            mdbCoordinator.update_payment_context(
+                {
+                    "provider": "pix",
+                    "txid": pix_txid,
+                    "payment_method": payment_method_selected,
+                }
+            )
+            if not mdbCoordinator.is_awaiting_payment():
+                mdbCoordinator.payment_result(
+                    False,
+                    reason="mdb_cancel_during_pix_creation",
+                )
+                return
 
         directory_filename_qrcode_pix_img = paymentProcessing_Pix.generate_img_QR_Code_Pix(pix_copiaecola)
 
@@ -471,13 +826,18 @@ def launchPixRequest(
 
         enqueue_hide_and_destroy_frame(payprocessFrame)
 
-        cancellation_event = threading.Event()
+        if mdb_mode:
+            cancel_command = lambda: cancel_mdb_pix_payment(cancellation_event)
+        else:
+            cancel_command = lambda: cancel_pix_payment(cancellation_event)
         pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(
             mainContainer,
             price_selected,
             directory_filename_qrcode_pix_img,
-            lambda: cancel_pix_payment(cancellation_event),
+            cancel_command,
         )
+        if mdb_mode:
+            mdbCurrentFrame = pixDisplayFrame
         #pixDisplayFrame.pack(side="top", fill="both", expand=True)
 
         enqueue_pack_new_frame(pixDisplayFrame)
@@ -486,8 +846,9 @@ def launchPixRequest(
 
         ## launch new thread
         # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
+        payment_target = launchMdbPayment if mdb_mode else launchPayment
         threadPay = Thread(
-            target=launchPayment,
+            target=payment_target,
             args=(
                 pixDisplayFrame,
                 price_selected,
@@ -503,6 +864,14 @@ def launchPixRequest(
 
         rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPixRequest",
                           str(e.__class__), str(e))
+
+        if mdb_mode:
+            if mdbCoordinator is not None:
+                mdbCoordinator.payment_result(
+                    False,
+                    reason="pix_creation_failed",
+                )
+            return
 
         ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
@@ -578,8 +947,8 @@ def launchPayment(
                 plan=pulse_plan,
             )
             enqueue_payment_result(payprocessFrame, "success")
-            if moderninha_record_id:
-                paymentProcessing.finish_delivery_record(
+            if payment_method_selected != "QR Code (Pix)":
+                delivery_persisted = paymentProcessing.finish_delivery_record(
                     moderninha_record_id,
                     price_selected,
                     payment_method_selected,
@@ -588,6 +957,15 @@ def launchPayment(
                     pulsos_concluidos=pulse_result.completed_pulses,
                     pulsos_retentados=pulse_result.retried_pulses,
                 )
+                if not delivery_persisted:
+                    _write_payment_error(
+                        price_selected,
+                        payment_method_selected,
+                        "payment.moderninha_status_persistence",
+                        RuntimeError(
+                            "Nao foi possivel salvar a confirmacao da entrega"
+                        ),
+                    )
             if payment_method_selected == "QR Code (Pix)":
                 _report_pix_delivery(
                     pix_txid,
@@ -641,8 +1019,8 @@ def launchPayment(
             payprocessFrame,
             "delivery_failure" if payment_confirmed else "payment_failure",
         )
-        if payment_confirmed and moderninha_record_id:
-            paymentProcessing.finish_delivery_record(
+        if payment_confirmed and payment_method_selected != "QR Code (Pix)":
+            delivery_persisted = paymentProcessing.finish_delivery_record(
                 moderninha_record_id,
                 price_selected,
                 payment_method_selected,
@@ -652,6 +1030,15 @@ def launchPayment(
                 pulsos_retentados=getattr(e, "retried_pulses", ""),
                 erro_entrega=str(e),
             )
+            if not delivery_persisted:
+                _write_payment_error(
+                    price_selected,
+                    payment_method_selected,
+                    "payment.moderninha_status_persistence",
+                    RuntimeError(
+                        "Nao foi possivel salvar a falha de entrega"
+                    ),
+                )
         if payment_confirmed and payment_method_selected == "QR Code (Pix)":
             _report_pix_delivery(
                 pix_txid,
@@ -669,6 +1056,87 @@ def launchPayment(
             component,
             e,
         )
+
+
+def launchMdbPayment(
+    payprocessFrame,
+    price_selected,
+    payment_method_selected,
+    pix_txid,
+    _pulse_plan,
+    cancellation_event=None,
+):
+    global mdbPaymentCancellationEvent
+    payment = {
+        "payment_method": payment_method_selected,
+    }
+    try:
+        if mdbCoordinator is None:
+            return
+        if payment_method_selected == "QR Code (Pix)":
+            payment.update({"provider": "pix", "txid": pix_txid})
+            payment_output = paymentProcessing_Pix.verify_payment_pix(
+                pix_txid,
+                MDB_EXPECTED_DELIVERY_SECONDS,
+                cancellation_event,
+            )
+        else:
+            if not mdbCoordinator.payment_started("moderninha"):
+                return
+            execution = paymentProcessing.launchPaymentProcessingDetailed(
+                price_selected,
+                payment_method_selected,
+            )
+            payment_output = execution["return_code"]
+            payment.update(
+                {
+                    "provider": "moderninha",
+                    "record_id": execution.get("record_id"),
+                }
+            )
+
+        if payment_output == paymentProcessing_Pix.PIX_PAYMENT_CANCELLED:
+            mdbCoordinator.payment_result(
+                False,
+                payment=payment,
+                reason="customer_cancel",
+            )
+            return
+
+        accepted = mdbCoordinator.payment_result(
+            payment_output == 0,
+            payment=payment,
+            reason=(
+                "payment_timeout"
+                if payment_output == -1
+                else "payment_failed"
+            ),
+        )
+        if payment_output == 0 and not accepted:
+            _write_payment_error(
+                price_selected,
+                payment_method_selected,
+                "payment.mdb_late_payment",
+                RuntimeError(
+                    "Pagamento concluido depois do cancelamento MDB"
+                ),
+            )
+    except Exception as exc:
+        _write_payment_error(
+            price_selected,
+            payment_method_selected,
+            "payment.mdb_processing",
+            exc,
+        )
+        if mdbCoordinator is not None:
+            mdbCoordinator.payment_result(
+                False,
+                payment=payment,
+                reason="payment_exception",
+            )
+    finally:
+        if cancellation_event is mdbPaymentCancellationEvent:
+            mdbPaymentCancellationEvent = None
 
 
 def _write_payment_error(price, payment_method, component, error):
@@ -773,6 +1241,8 @@ def signalListener(dummyVar1, dummyVar2):
 def navigate_SettingsMainFrame():
     print('navSettingsMenu')
     shared_resource.set_customer_interaction_active(True)
+    if mdbCoordinator is not None:
+        mdbCoordinator.pause("settings_opened")
 
     global settingsContainer
 
@@ -820,6 +1290,14 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
         PulseValueSettingFrame = tkPulseValueSettingFrame.createPulseValueSettingFrame(settingsContainer)
         PulseValueSettingFrame.pack(side="top", fill="both", expand=True)
 
+    elif settingPageSelection == "Tipo de comunicacao":
+        communicationFrame = (
+            tkCommunicationTypeSettingFrame.createCommunicationTypeSettingFrame(
+                settingsContainer
+            )
+        )
+        communicationFrame.pack(side="top", fill="both", expand=True)
+
     elif settingPageSelection == "Config. de rede - Encerrar app":
         kill_shell_loop.kill_pid_executar()
         kill_shell_loop.kill_python()
@@ -861,6 +1339,8 @@ def navigate_selected_setting_menu(settingPageSelection, currentFrame):
 def navigate_InhibitFrame():
     global inhibitContainer
     shared_resource.set_customer_interaction_active(True)
+    if mdbCoordinator is not None:
+        mdbCoordinator.pause("inhibit")
 
     rwLogCSV.writeCSV("alerta_inhibit", "0", "N/A", "navigate_InhibitFrame", "", "")
 

@@ -6,6 +6,7 @@ import qrcode
 
 import rwServerPairingSettings
 import rwSystemId
+import rwCommunicationType
 from app_paths import PIX_QRCODE_FILE, ensure_parent_dir
 from server_api_client import DeviceApiError, get_json, post_json
 
@@ -52,6 +53,7 @@ def PixRequest(price_selected):
         "sistema_pag_id": system_id,
         "request_id": request_id,
         "valor_centavos": _price_to_centavos(price_selected),
+        "modo_comunicacao": rwCommunicationType.readCommunicationType(),
     }
 
     last_error = None

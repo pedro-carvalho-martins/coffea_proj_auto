@@ -35,6 +35,53 @@ Transaction Result
 
 
 class PaymentProcessingTests(unittest.TestCase):
+    def test_delivery_status_write_is_retried_once(self):
+        with patch.object(
+            paymentProcessing.rwCommunicationType,
+            "readCommunicationType",
+            return_value="pulso",
+        ), patch.object(
+            paymentProcessing.localRecordQueue,
+            "update_transaction",
+            side_effect=(OSError("temporary failure"), True),
+        ) as update:
+            persisted = paymentProcessing.finish_delivery_record(
+                "record-id",
+                1,
+                "Voucher",
+                "concluida",
+            )
+
+        self.assertTrue(persisted)
+        self.assertEqual(update.call_count, 2)
+
+    def test_recreated_pending_record_id_is_retained(self):
+        completed = subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout=SUCCESS_OUTPUT.encode("ISO-8859-1"),
+            stderr=b"",
+        )
+        with patch.object(
+            paymentProcessing.rwCommunicationType,
+            "readCommunicationType",
+            return_value="mdb",
+        ), patch.object(
+            paymentProcessing.localRecordQueue,
+            "record_transaction",
+            side_effect=(OSError("initial failure"), "replacement-id"),
+        ), patch.object(
+            paymentProcessing.subprocess,
+            "run",
+            return_value=completed,
+        ):
+            result = paymentProcessing.launchPaymentProcessingDetailed(
+                1,
+                "Voucher",
+            )
+
+        self.assertEqual(result["record_id"], "replacement-id")
+
     def test_parser_extracts_reconciliation_fields(self):
         return_code, metadata = paymentProcessing.parse_payment_output(SUCCESS_OUTPUT)
 
@@ -116,6 +163,38 @@ class PaymentProcessingTests(unittest.TestCase):
         )
         self.assertEqual(
             update.call_args.kwargs["identificador_pagamento"],
+            "3742D61768C8486D8ABA20A36C5A369A",
+        )
+
+    def test_detailed_result_keeps_metadata_for_mdb_finalization(self):
+        completed = subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout=SUCCESS_OUTPUT.encode("ISO-8859-1"),
+            stderr=b"",
+        )
+        with patch.object(
+            paymentProcessing.localRecordQueue,
+            "record_transaction",
+            return_value="record-id",
+        ), patch.object(
+            paymentProcessing.localRecordQueue,
+            "update_transaction",
+            return_value=True,
+        ), patch.object(
+            paymentProcessing.subprocess,
+            "run",
+            return_value=completed,
+        ):
+            result = paymentProcessing.launchPaymentProcessingDetailed(
+                1,
+                "Voucher",
+            )
+
+        self.assertEqual(result["return_code"], 0)
+        self.assertEqual(result["record_id"], "record-id")
+        self.assertEqual(
+            result["metadata"]["identificador_pagamento"],
             "3742D61768C8486D8ABA20A36C5A369A",
         )
 

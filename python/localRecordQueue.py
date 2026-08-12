@@ -30,11 +30,14 @@ PRE_DELIVERY_TRANSACTION_FIELDS = LEGACY_TRANSACTION_FIELDS + (
     "moderninha_return_code",
     "moderninha_message",
 )
-TRANSACTION_FIELDS = PRE_DELIVERY_TRANSACTION_FIELDS + (
+DELIVERY_TRANSACTION_FIELDS = PRE_DELIVERY_TRANSACTION_FIELDS + (
     "pulsos_esperados",
     "pulsos_concluidos",
     "pulsos_retentados",
     "erro_entrega",
+)
+TRANSACTION_FIELDS = DELIVERY_TRANSACTION_FIELDS + (
+    "modo_comunicacao",
 )
 EVENT_FIELDS = (
     "event_id",
@@ -92,6 +95,7 @@ def _migrate_transaction_file_locked(file_path):
         if existing_fields not in (
             LEGACY_TRANSACTION_FIELDS,
             PRE_DELIVERY_TRANSACTION_FIELDS,
+            DELIVERY_TRANSACTION_FIELDS,
         ):
             return
         rows = list(reader)
@@ -133,6 +137,9 @@ def record_transaction(value, payment_method, status, file_path=None, **metadata
             "pulsos_concluidos": str(metadata.get("pulsos_concluidos", ""))[:10],
             "pulsos_retentados": str(metadata.get("pulsos_retentados", ""))[:10],
             "erro_entrega": str(metadata.get("erro_entrega", ""))[:300],
+            "modo_comunicacao": str(
+                metadata.get("modo_comunicacao", "")
+            )[:10],
         },
     )
     return record_id
@@ -159,9 +166,12 @@ def update_transaction(record_id, status, file_path=None, **metadata):
             return False
 
         target["status"] = str(status)[:60]
-        target["datetime_conclusao"] = str(
-            metadata.get("datetime_conclusao") or _now_iso()
-        )[:40]
+        if "datetime_conclusao" in metadata:
+            target["datetime_conclusao"] = str(
+                metadata["datetime_conclusao"]
+            )[:40]
+        elif str(status) != "pendente":
+            target["datetime_conclusao"] = _now_iso()[:40]
         for field, limit in (
             ("identificador_pagamento", 100),
             ("moderninha_reference", 10),
@@ -174,6 +184,7 @@ def update_transaction(record_id, status, file_path=None, **metadata):
             ("pulsos_concluidos", 10),
             ("pulsos_retentados", 10),
             ("erro_entrega", 300),
+            ("modo_comunicacao", 10),
         ):
             if field in metadata and metadata[field] is not None:
                 target[field] = str(metadata[field])[:limit]
