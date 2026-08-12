@@ -1,4 +1,5 @@
 import sys
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -44,6 +45,68 @@ class PaymentProcessingPixTests(unittest.TestCase):
             return_value={"status": "pago_aguardando_confirmacao_entrega"},
         ):
             result = paymentProcessing_Pix.verify_payment_pix("txid", 4)
+
+        self.assertEqual(result, 0)
+
+    def test_cancellation_interrupts_status_wait_without_request(self):
+        cancellation_event = threading.Event()
+        cancellation_event.set()
+
+        with patch.object(paymentProcessing_Pix, "get_status_cobranca") as status:
+            result = paymentProcessing_Pix.verify_payment_pix(
+                "txid",
+                4,
+                cancellation_event,
+            )
+
+        self.assertEqual(result, paymentProcessing_Pix.PIX_PAYMENT_CANCELLED)
+        status.assert_not_called()
+
+    def test_pending_response_honors_cancellation_requested_in_flight(self):
+        cancellation_event = threading.Event()
+
+        def pending_response(*_args):
+            cancellation_event.set()
+            return {"status": "pendente"}
+
+        with patch.object(
+            paymentProcessing_Pix,
+            "_wait_or_cancel",
+            return_value=False,
+        ), patch.object(
+            paymentProcessing_Pix,
+            "get_status_cobranca",
+            side_effect=pending_response,
+        ):
+            result = paymentProcessing_Pix.verify_payment_pix(
+                "txid",
+                4,
+                cancellation_event,
+            )
+
+        self.assertEqual(result, paymentProcessing_Pix.PIX_PAYMENT_CANCELLED)
+
+    def test_paid_response_wins_over_cancellation_requested_in_flight(self):
+        cancellation_event = threading.Event()
+
+        def paid_response(*_args):
+            cancellation_event.set()
+            return {"status": "pago_aguardando_confirmacao_entrega"}
+
+        with patch.object(
+            paymentProcessing_Pix,
+            "_wait_or_cancel",
+            return_value=False,
+        ), patch.object(
+            paymentProcessing_Pix,
+            "get_status_cobranca",
+            side_effect=paid_response,
+        ):
+            result = paymentProcessing_Pix.verify_payment_pix(
+                "txid",
+                4,
+                cancellation_event,
+            )
 
         self.assertEqual(result, 0)
 

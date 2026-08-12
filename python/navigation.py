@@ -115,6 +115,11 @@ def enqueue_payment_result(current_frame, result_type):
     enqueue_ui_update(show_payment_result, current_frame, result_type)
 
 
+def cancel_pix_payment(cancellation_event):
+    cancellation_event.set()
+    mainContainer.destroy()
+
+
 ## 2024.08.29 New implementation ends
 
 
@@ -466,8 +471,13 @@ def launchPixRequest(
 
         enqueue_hide_and_destroy_frame(payprocessFrame)
 
-        pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(mainContainer, price_selected,
-                                                                      directory_filename_qrcode_pix_img)
+        cancellation_event = threading.Event()
+        pixDisplayFrame = tkPaymentProcessFrame.createPixDisplayFrame(
+            mainContainer,
+            price_selected,
+            directory_filename_qrcode_pix_img,
+            lambda: cancel_pix_payment(cancellation_event),
+        )
         #pixDisplayFrame.pack(side="top", fill="both", expand=True)
 
         enqueue_pack_new_frame(pixDisplayFrame)
@@ -484,6 +494,7 @@ def launchPixRequest(
                 payment_method_selected,
                 pix_txid,
                 pulse_plan,
+                cancellation_event,
             ),
         )
         threadPay.start()
@@ -519,6 +530,7 @@ def launchPayment(
     payment_method_selected,
     pix_txid,
     pulse_plan,
+    cancellation_event=None,
 ):
     print('starting process')
 
@@ -535,6 +547,7 @@ def launchPayment(
             pay_output_code = paymentProcessing_Pix.verify_payment_pix(
                 pix_txid,
                 math.ceil(pulse_plan.expected_duration_seconds),
+                cancellation_event,
             )
 
             # launch payment processing pix -> return qr code text
@@ -617,6 +630,8 @@ def launchPayment(
                         f"retentados={pulse_result.retried_pulses}"
                     ),
                 )
+        elif pay_output_code == paymentProcessing_Pix.PIX_PAYMENT_CANCELLED:
+            return
         else:
             enqueue_payment_result(payprocessFrame, "payment_failure")
 

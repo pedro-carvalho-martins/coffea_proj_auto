@@ -16,6 +16,18 @@ PIX_STATUS_RETRIES = 3
 PIX_STATUS_RETRY_DELAY_SECONDS = 1
 PIX_STATUS_INTERVAL_SECONDS = 5
 PIX_STATUS_TIMEOUT_SECONDS = 300
+PIX_PAYMENT_CANCELLED = -2
+
+
+class PixPaymentCancelled(RuntimeError):
+    pass
+
+
+def _wait_or_cancel(seconds, cancellation_event):
+    if cancellation_event is None:
+        time.sleep(seconds)
+        return False
+    return cancellation_event.wait(seconds)
 
 
 def _price_to_centavos(price):
@@ -62,9 +74,15 @@ def generate_img_QR_Code_Pix(pixCopiaECola):
     return directory_filename_pix_img
 
 
-def get_status_cobranca(txid, expected_delivery_seconds):
+def get_status_cobranca(
+    txid,
+    expected_delivery_seconds,
+    cancellation_event=None,
+):
     last_error = None
     for attempt in range(PIX_STATUS_RETRIES):
+        if cancellation_event is not None and cancellation_event.is_set():
+            raise PixPaymentCancelled("Pagamento Pix cancelado pelo cliente")
         try:
             return get_json(
                 f"/pix/charges/{txid}",
@@ -80,21 +98,42 @@ def get_status_cobranca(txid, expected_delivery_seconds):
             )
         except DeviceApiError as exc:
             last_error = exc
+            if cancellation_event is not None and cancellation_event.is_set():
+                raise PixPaymentCancelled(
+                    "Pagamento Pix cancelado pelo cliente"
+                ) from exc
             if attempt + 1 < PIX_STATUS_RETRIES:
-                time.sleep(PIX_STATUS_RETRY_DELAY_SECONDS)
+                if _wait_or_cancel(
+                    PIX_STATUS_RETRY_DELAY_SECONDS,
+                    cancellation_event,
+                ):
+                    raise PixPaymentCancelled(
+                        "Pagamento Pix cancelado pelo cliente"
+                    ) from exc
     raise last_error
 
 
-def verify_payment_pix(txid, expected_delivery_seconds):
+def verify_payment_pix(
+    txid,
+    expected_delivery_seconds,
+    cancellation_event=None,
+):
     elapsed = 0
     while elapsed < PIX_STATUS_TIMEOUT_SECONDS:
-        time.sleep(PIX_STATUS_INTERVAL_SECONDS)
+        if _wait_or_cancel(PIX_STATUS_INTERVAL_SECONDS, cancellation_event):
+            return PIX_PAYMENT_CANCELLED
         elapsed += PIX_STATUS_INTERVAL_SECONDS
-        payment_status = get_status_cobranca(
-            txid,
-            expected_delivery_seconds,
-        )["status"]
+        try:
+            payment_status = get_status_cobranca(
+                txid,
+                expected_delivery_seconds,
+                cancellation_event,
+            )["status"]
+        except PixPaymentCancelled:
+            return PIX_PAYMENT_CANCELLED
         if payment_status == "pendente":
+            if cancellation_event is not None and cancellation_event.is_set():
+                return PIX_PAYMENT_CANCELLED
             continue
         if payment_status in {
             "concluida",
