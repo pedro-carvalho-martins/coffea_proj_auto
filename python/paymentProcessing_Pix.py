@@ -62,13 +62,20 @@ def generate_img_QR_Code_Pix(pixCopiaECola):
     return directory_filename_pix_img
 
 
-def get_status_cobranca(txid):
+def get_status_cobranca(txid, expected_delivery_seconds):
     last_error = None
     for attempt in range(PIX_STATUS_RETRIES):
         try:
             return get_json(
                 f"/pix/charges/{txid}",
-                {"sistema_pag_id": rwSystemId.readSystemId()},
+                {
+                    "sistema_pag_id": rwSystemId.readSystemId(),
+                    "delivery_confirmation": "v1",
+                    "expected_delivery_seconds": max(
+                        0,
+                        int(expected_delivery_seconds),
+                    ),
+                },
                 rwServerPairingSettings.read_pairing_token(),
             )
         except DeviceApiError as exc:
@@ -78,15 +85,21 @@ def get_status_cobranca(txid):
     raise last_error
 
 
-def verify_payment_pix(txid):
+def verify_payment_pix(txid, expected_delivery_seconds):
     elapsed = 0
     while elapsed < PIX_STATUS_TIMEOUT_SECONDS:
         time.sleep(PIX_STATUS_INTERVAL_SECONDS)
         elapsed += PIX_STATUS_INTERVAL_SECONDS
-        payment_status = get_status_cobranca(txid)["status"]
+        payment_status = get_status_cobranca(
+            txid,
+            expected_delivery_seconds,
+        )["status"]
         if payment_status == "pendente":
             continue
-        if payment_status == "concluida":
+        if payment_status in {
+            "concluida",
+            "pago_aguardando_confirmacao_entrega",
+        }:
             return 0
         return -1
     return -1

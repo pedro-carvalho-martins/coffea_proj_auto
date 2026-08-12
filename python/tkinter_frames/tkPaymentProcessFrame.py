@@ -108,6 +108,27 @@ def createPayFailureFrame(mainContainer):
     return payFailureFrame
 
 
+def createDeliveryFailureFrame(mainContainer):
+    deliveryFailureFrame = tk.Frame(mainContainer, height=480, width=320)
+    deliveryFailureFrame.configure(bg='#9A5A00')
+    deliveryFailureFrame.rowconfigure(0, weight=1)
+    deliveryFailureFrame.columnconfigure(0, weight=1)
+
+    label = tk.Label(
+        deliveryFailureFrame,
+        text=(
+            "Pagamento aprovado, mas n\u00e3o foi poss\u00edvel confirmar a "
+            "libera\u00e7\u00e3o do cr\u00e9dito. Procure o respons\u00e1vel pelo local."
+        ),
+        font=('SegoeUI', 18),
+        fg='white',
+        bg='#9A5A00',
+        wraplength=300,
+    )
+    label.grid(column=0, row=0, ipadx=10, ipady=150)
+    return deliveryFailureFrame
+
+
 
 
 def createPayProcessFrame_Pix(mainContainer):

@@ -74,9 +74,10 @@ class PaymentProcessingTests(unittest.TestCase):
             "run",
             return_value=completed,
         ) as run, patch.object(paymentProcessing.rwLogCSV, "writeCSV"):
-            result = paymentProcessing.launchPaymentProcessing(1, "Voucher")
+            result, record_id = paymentProcessing.launchPaymentProcessing(1, "Voucher")
 
         self.assertEqual(result, -1)
+        self.assertEqual(record_id, "record-id")
         run.assert_called_once()
 
     def test_success_updates_the_pending_record_without_changing_return_code(self):
@@ -103,12 +104,16 @@ class PaymentProcessingTests(unittest.TestCase):
             return_value=completed,
         ) as run:
             uuid4.return_value.hex = "07dc96155abcdef"
-            result = paymentProcessing.launchPaymentProcessing(1, "Voucher")
+            result, record_id = paymentProcessing.launchPaymentProcessing(1, "Voucher")
 
         self.assertEqual(result, 0)
+        self.assertEqual(record_id, "record-id")
         self.assertEqual(run.call_args.args[0][-1], "07DC96155A")
         update.assert_called_once()
-        self.assertEqual(update.call_args.args[:2], ("record-id", "concluida"))
+        self.assertEqual(
+            update.call_args.args[:2],
+            ("record-id", "pago_aguardando_confirmacao_entrega"),
+        )
         self.assertEqual(
             update.call_args.kwargs["identificador_pagamento"],
             "3742D61768C8486D8ABA20A36C5A369A",

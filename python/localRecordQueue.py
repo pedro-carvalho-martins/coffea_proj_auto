@@ -19,7 +19,7 @@ LEGACY_TRANSACTION_FIELDS = (
     "metodo_pag",
     "status",
 )
-TRANSACTION_FIELDS = LEGACY_TRANSACTION_FIELDS + (
+PRE_DELIVERY_TRANSACTION_FIELDS = LEGACY_TRANSACTION_FIELDS + (
     "datetime_conclusao",
     "identificador_pagamento",
     "cartao_ultimos_quatro",
@@ -29,6 +29,12 @@ TRANSACTION_FIELDS = LEGACY_TRANSACTION_FIELDS + (
     "card_bin",
     "moderninha_return_code",
     "moderninha_message",
+)
+TRANSACTION_FIELDS = PRE_DELIVERY_TRANSACTION_FIELDS + (
+    "pulsos_esperados",
+    "pulsos_concluidos",
+    "pulsos_retentados",
+    "erro_entrega",
 )
 EVENT_FIELDS = (
     "event_id",
@@ -83,7 +89,10 @@ def _migrate_transaction_file_locked(file_path):
         existing_fields = tuple(reader.fieldnames or ())
         if existing_fields == TRANSACTION_FIELDS:
             return
-        if existing_fields != LEGACY_TRANSACTION_FIELDS:
+        if existing_fields not in (
+            LEGACY_TRANSACTION_FIELDS,
+            PRE_DELIVERY_TRANSACTION_FIELDS,
+        ):
             return
         rows = list(reader)
 
@@ -110,7 +119,7 @@ def record_transaction(value, payment_method, status, file_path=None, **metadata
             "datetime": _now_iso(),
             "valor_centavos": _value_to_centavos(value),
             "metodo_pag": str(payment_method)[:40],
-            "status": str(status)[:20],
+            "status": str(status)[:60],
             "datetime_conclusao": str(metadata.get("datetime_conclusao", ""))[:40],
             "identificador_pagamento": str(metadata.get("identificador_pagamento", ""))[:100],
             "cartao_ultimos_quatro": str(metadata.get("cartao_ultimos_quatro", ""))[-4:],
@@ -120,6 +129,10 @@ def record_transaction(value, payment_method, status, file_path=None, **metadata
             "card_bin": str(metadata.get("card_bin", ""))[:6],
             "moderninha_return_code": str(metadata.get("moderninha_return_code", ""))[:20],
             "moderninha_message": str(metadata.get("moderninha_message", ""))[:200],
+            "pulsos_esperados": str(metadata.get("pulsos_esperados", ""))[:10],
+            "pulsos_concluidos": str(metadata.get("pulsos_concluidos", ""))[:10],
+            "pulsos_retentados": str(metadata.get("pulsos_retentados", ""))[:10],
+            "erro_entrega": str(metadata.get("erro_entrega", ""))[:300],
         },
     )
     return record_id
@@ -145,7 +158,7 @@ def update_transaction(record_id, status, file_path=None, **metadata):
         if target is None:
             return False
 
-        target["status"] = str(status)[:20]
+        target["status"] = str(status)[:60]
         target["datetime_conclusao"] = str(
             metadata.get("datetime_conclusao") or _now_iso()
         )[:40]
@@ -157,6 +170,10 @@ def update_transaction(record_id, status, file_path=None, **metadata):
             ("card_bin", 6),
             ("moderninha_return_code", 20),
             ("moderninha_message", 200),
+            ("pulsos_esperados", 10),
+            ("pulsos_concluidos", 10),
+            ("pulsos_retentados", 10),
+            ("erro_entrega", 300),
         ):
             if field in metadata and metadata[field] is not None:
                 target[field] = str(metadata[field])[:limit]

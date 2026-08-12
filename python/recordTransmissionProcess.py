@@ -1,6 +1,7 @@
 """Transmit queued Pi records after a safe, paired heartbeat."""
 
 import localRecordQueue
+import pixDeliveryConfirmation
 import rwServerPairingSettings
 import rwSystemId
 import shared_resource
@@ -38,6 +39,11 @@ def transmit_pending_records():
         return False
 
     try:
+        pixDeliveryConfirmation.transmit_pending()
+
+        if shared_resource.customer_interaction_active.is_set():
+            return True
+
         transactions = localRecordQueue.read_batch(
             PENDING_TRANSACTIONS_FILE,
             localRecordQueue.TRANSACTION_FIELDS,

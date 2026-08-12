@@ -17,6 +17,7 @@ import tkinter_frames.tkHelloSettingFrame as tkHelloSettingFrame
 import tkinter_frames.tkPulseValueSettingFrame as tkPulseValueSettingFrame
 
 import queue
+import math
 import time
 
 import threading
@@ -24,6 +25,7 @@ from threading import Thread
 
 import paymentProcessing
 import paymentProcessing_Pix
+import pixDeliveryConfirmation
 
 ## Comment block for Windows testing
 import sendSignalGPIO
@@ -64,7 +66,10 @@ def enqueue_ui_update(function, *args):
 def process_ui_queue():
     while not ui_update_queue.empty():
         function, args = ui_update_queue.get()
-        function(*args)
+        try:
+            function(*args)
+        except Exception as exc:
+            print("UI update failed: " + str(exc))
     mainContainer.after(100, process_ui_queue)
 
 
@@ -76,8 +81,38 @@ def enqueue_pack_new_frame(newFrame):
     enqueue_ui_update(pack_new_frame, newFrame)
 
 
-def enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
-    enqueue_ui_update(launchPixRequest, payprocessFrame, price_selected, payment_method_selected)
+def enqueue_launchPixRequest(
+    payprocessFrame,
+    price_selected,
+    payment_method_selected,
+    pulse_plan,
+):
+    enqueue_ui_update(
+        launchPixRequest,
+        payprocessFrame,
+        price_selected,
+        payment_method_selected,
+        pulse_plan,
+    )
+
+
+def show_payment_result(current_frame, result_type):
+    hide_and_destroy_frame(current_frame)
+    if result_type == "success":
+        result_frame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
+        display_seconds = 20
+    elif result_type == "delivery_failure":
+        result_frame = tkPaymentProcessFrame.createDeliveryFailureFrame(mainContainer)
+        display_seconds = 20
+    else:
+        result_frame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
+        display_seconds = 5
+    pack_new_frame(result_frame)
+    result_frame.after(display_seconds * 1000, lambda: mainContainer.destroy())
+
+
+def enqueue_payment_result(current_frame, result_type):
+    enqueue_ui_update(show_payment_result, current_frame, result_type)
 
 
 ## 2024.08.29 New implementation ends
@@ -307,6 +342,18 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
     print(price_selected)
     print(payment_method_selected)
 
+    try:
+        pulse_plan = sendSignalGPIO.build_pulse_plan(price_selected)
+    except Exception as exc:
+        _write_payment_error(
+            price_selected,
+            payment_method_selected,
+            "payment.pulse_plan",
+            exc,
+        )
+        enqueue_payment_result(currentFrame, "payment_failure")
+        return
+
     ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
 
     #currentFrame.pack_forget()
@@ -340,7 +387,12 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
         #threadPixRequest.start()
         # thread.join()
 
-        enqueue_launchPixRequest(payprocessFrame, price_selected, payment_method_selected)
+        enqueue_launchPixRequest(
+            payprocessFrame,
+            price_selected,
+            payment_method_selected,
+            pulse_plan,
+        )
 
 
     # Se o pagamento for atravÃ©s da moderninha, por cartÃ£o:
@@ -373,12 +425,26 @@ def navigate_payment_process(price_selected, payment_method_selected, currentFra
 
         ## launch other thread
         # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-        threadPay = Thread(target=launchPayment, args=(payprocessFrame, price_selected, payment_method_selected, 0))
+        threadPay = Thread(
+            target=launchPayment,
+            args=(
+                payprocessFrame,
+                price_selected,
+                payment_method_selected,
+                0,
+                pulse_plan,
+            ),
+        )
         threadPay.start()
         # thread.join()
 
 
-def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
+def launchPixRequest(
+    payprocessFrame,
+    price_selected,
+    payment_method_selected,
+    pulse_plan,
+):
     # function must:
     #  - get auth token
     #  - get QR Code text from server
@@ -410,8 +476,16 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
 
         ## launch new thread
         # Ãšltimo argumento Ã© zero para pagamento pela maquininha; se aplica apenas para o pagamento por Pix
-        threadPay = Thread(target=launchPayment,
-                           args=(pixDisplayFrame, price_selected, payment_method_selected, pix_txid), daemon=True)
+        threadPay = Thread(
+            target=launchPayment,
+            args=(
+                pixDisplayFrame,
+                price_selected,
+                payment_method_selected,
+                pix_txid,
+                pulse_plan,
+            ),
+        )
         threadPay.start()
 
     except Exception as e:
@@ -439,18 +513,29 @@ def launchPixRequest(payprocessFrame, price_selected, payment_method_selected):
         paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy())
 
 
-def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_txid):
+def launchPayment(
+    payprocessFrame,
+    price_selected,
+    payment_method_selected,
+    pix_txid,
+    pulse_plan,
+):
     print('starting process')
 
     global disableInterrupt
     disableInterrupt = 1
+    payment_confirmed = False
+    moderninha_record_id = None
     try:
         # pay_output_code == 0 => Success ; else: Failure
 
         if payment_method_selected == "QR Code (Pix)":
 
             # Verifica status do pagamento
-            pay_output_code = paymentProcessing_Pix.verify_payment_pix(pix_txid)
+            pay_output_code = paymentProcessing_Pix.verify_payment_pix(
+                pix_txid,
+                math.ceil(pulse_plan.expected_duration_seconds),
+            )
 
             # launch payment processing pix -> return qr code text
             # pass qr code text to tk function -> display QR Code on screen
@@ -466,79 +551,158 @@ def launchPayment(payprocessFrame, price_selected, payment_method_selected, pix_
             # Assim que o pagamento for confirmado, dar pay_output_code = 0
 
         else:
-            pay_output_code = paymentProcessing.launchPaymentProcessing(price_selected, payment_method_selected)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(payprocessFrame)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+            pay_output_code, moderninha_record_id = (
+                paymentProcessing.launchPaymentProcessing(
+                    price_selected,
+                    payment_method_selected,
+                )
+            )
 
         if pay_output_code == 0:
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-            paycompleteFrame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-            rwUltimoPag.writeValue(price_selected)
-
-            rwLogCSV.writeCSV("venda_sucesso", str(price_selected), payment_method_selected, "", "", "")
-
-            threadSignal = Thread(target=launchSendSignal, args=(price_selected, 0))
-            threadSignal.start()
+            payment_confirmed = True
+            pulse_result = sendSignalGPIO.sendOutputSignal(
+                price_selected,
+                plan=pulse_plan,
+            )
+            enqueue_payment_result(payprocessFrame, "success")
+            if moderninha_record_id:
+                paymentProcessing.finish_delivery_record(
+                    moderninha_record_id,
+                    price_selected,
+                    payment_method_selected,
+                    "concluida",
+                    pulsos_esperados=pulse_result.expected_pulses,
+                    pulsos_concluidos=pulse_result.completed_pulses,
+                    pulsos_retentados=pulse_result.retried_pulses,
+                )
+            if payment_method_selected == "QR Code (Pix)":
+                _report_pix_delivery(
+                    pix_txid,
+                    "concluida",
+                    pulse_result.expected_pulses,
+                    pulse_result.completed_pulses,
+                    pulse_result.retried_pulses,
+                    "",
+                    price_selected,
+                    payment_method_selected,
+                )
+            try:
+                rwUltimoPag.writeValue(price_selected)
+            except Exception as exc:
+                _write_payment_error(
+                    price_selected,
+                    payment_method_selected,
+                    "payment.post_delivery_state",
+                    exc,
+                )
+            try:
+                rwLogCSV.writeCSV(
+                    "venda_sucesso",
+                    str(price_selected),
+                    payment_method_selected,
+                    "",
+                    "",
+                    "",
+                )
+            except Exception:
+                pass
+            if pulse_result.retried_pulses:
+                _write_payment_error(
+                    price_selected,
+                    payment_method_selected,
+                    "payment.pulse_retry_recovered",
+                    RuntimeError(
+                        f"Pulsos esperados={pulse_result.expected_pulses}; "
+                        f"concluidos={pulse_result.completed_pulses}; "
+                        f"retentados={pulse_result.retried_pulses}"
+                    ),
+                )
         else:
-
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-            paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
-            ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
+            enqueue_payment_result(payprocessFrame, "payment_failure")
 
     except Exception as e:
+        component = "payment.delivery" if payment_confirmed else "payment.processing"
+        enqueue_payment_result(
+            payprocessFrame,
+            "delivery_failure" if payment_confirmed else "payment_failure",
+        )
+        if payment_confirmed and moderninha_record_id:
+            paymentProcessing.finish_delivery_record(
+                moderninha_record_id,
+                price_selected,
+                payment_method_selected,
+                "pago_entrega_nao_confirmada",
+                pulsos_esperados=getattr(e, "expected_pulses", ""),
+                pulsos_concluidos=getattr(e, "completed_pulses", ""),
+                pulsos_retentados=getattr(e, "retried_pulses", ""),
+                erro_entrega=str(e),
+            )
+        if payment_confirmed and payment_method_selected == "QR Code (Pix)":
+            _report_pix_delivery(
+                pix_txid,
+                "incerta",
+                getattr(e, "expected_pulses", pulse_plan.number_of_pulses),
+                getattr(e, "completed_pulses", 0),
+                getattr(e, "retried_pulses", 0),
+                str(e),
+                price_selected,
+                payment_method_selected,
+            )
+        _write_payment_error(
+            price_selected,
+            payment_method_selected,
+            component,
+            e,
+        )
 
-        rwLogCSV.writeCSV("venda_erro", str(price_selected), payment_method_selected, "launchPayment", str(e.__class__),
-                          str(e))
 
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-        #payprocessFrame.pack_forget()
-        #payprocessFrame.destroy()
-
-        enqueue_hide_and_destroy_frame(payprocessFrame)
-
-        paycompleteFrame = tkPaymentProcessFrame.createPayFailureFrame(mainContainer)
-
-        ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    #paycompleteFrame.pack(side="top", fill="both", expand=True)
-
-    enqueue_pack_new_frame(paycompleteFrame)
-
-    ### FRAME MODIFICATION CODE BETWEEN THESE COMMENTS
-
-    print('paymentCompleteOK')
-    print('process ends')
-
-    ## TEST
-    # paycompleteFrame.after(5000, print('ok'))#nav_restart(paycompleteFrame) )
-    # paycompleteFrame.after(5000, paycompleteFrame.destroy() )
-
-    time_buffer = 5000
+def _write_payment_error(price, payment_method, component, error):
     try:
-        if pay_output_code == 0:  # If payment is successful, display successful payment screen for 20s
-            time_buffer = 20000
-    except:
+        rwLogCSV.writeCSV(
+            "venda_erro",
+            str(price),
+            payment_method,
+            component,
+            error.__class__.__name__,
+            str(error),
+        )
+    except Exception:
         pass
 
-    paycompleteFrame.after(time_buffer, lambda: mainContainer.destroy())
 
-    ## TEST ENDS
-    print('debug1')
+def _report_pix_delivery(
+    txid,
+    outcome,
+    expected_pulses,
+    completed_pulses,
+    retried_pulses,
+    error_message,
+    price,
+    payment_method,
+):
+    try:
+        confirmed = pixDeliveryConfirmation.report_delivery(
+            txid,
+            outcome,
+            expected_pulses,
+            completed_pulses,
+            retried_pulses,
+            error_message,
+        )
+    except Exception as exc:
+        confirmed = False
+        error = exc
+    else:
+        error = RuntimeError(
+            "A confirmacao da entrega Pix permaneceu pendente apos as tentativas imediatas"
+        )
+    if not confirmed:
+        _write_payment_error(
+            price,
+            payment_method,
+            "payment.pix_delivery_confirmation",
+            error,
+        )
 
 
 def loopConnCheckBackground(dummyVar1, dummyVar2):
@@ -706,14 +870,6 @@ def inhibitEndListener(dummyVar1, dummyVar2):
 
     mainContainer.destroy()
     settingsContainer.destroy()
-
-
-def launchSendSignal(price, dummyVar):
-    try:
-        sendSignalGPIO.sendOutputSignal(price)
-    except Exception as e:
-        rwLogCSV.writeCSV("erro_outros", str(price), "Undefined", "launchSendSignal_sendSignalGPIO", str(e.__class__),
-                          str(e))
 
 
 def quitProgramAfterSettings():

@@ -62,6 +62,16 @@ def _finish_payment_record(record_id, price, payment_method, status, metadata):
         # Diagnostic persistence must never alter the payment result.
         pass
 
+
+def finish_delivery_record(record_id, price, payment_method, status, **metadata):
+    _finish_payment_record(
+        record_id,
+        price,
+        payment_method,
+        status,
+        metadata,
+    )
+
 def launchPaymentProcessing(price, paymentMethod):
 #TEST
     
@@ -129,10 +139,14 @@ def launchPaymentProcessing(price, paymentMethod):
         record_id,
         price,
         paymentMethod,
-        "concluida" if payment_output == 0 else "falha",
+        (
+            "pago_aguardando_confirmacao_entrega"
+            if payment_output == 0
+            else "falha"
+        ),
         metadata,
     )
-    return payment_output
+    return payment_output, record_id
     
 
 

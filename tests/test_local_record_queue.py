@@ -100,6 +100,32 @@ class LocalRecordQueueTests(unittest.TestCase):
         self.assertEqual(records[0]["cartao_ultimos_quatro"], "7379")
         self.assertTrue(records[0]["datetime_conclusao"])
 
+    def test_delivery_result_is_kept_with_the_moderninha_transaction(self):
+        record_id = localRecordQueue.record_transaction(
+            "1.49",
+            "Credito",
+            "pago_aguardando_confirmacao_entrega",
+            self.transactions_file,
+        )
+
+        localRecordQueue.update_transaction(
+            record_id,
+            "concluida",
+            self.transactions_file,
+            pulsos_esperados=6,
+            pulsos_concluidos=6,
+            pulsos_retentados=1,
+        )
+
+        record = localRecordQueue.read_batch(
+            self.transactions_file,
+            localRecordQueue.TRANSACTION_FIELDS,
+        )[0]
+        self.assertEqual(record["status"], "concluida")
+        self.assertEqual(record["pulsos_esperados"], "6")
+        self.assertEqual(record["pulsos_concluidos"], "6")
+        self.assertEqual(record["pulsos_retentados"], "1")
+
     def test_legacy_transaction_queue_is_migrated_in_place(self):
         with open(self.transactions_file, "w", newline="", encoding="utf-8") as csv_file:
             writer = csv.DictWriter(
