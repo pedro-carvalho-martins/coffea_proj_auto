@@ -112,7 +112,20 @@ def enqueue_launchPixRequest(
     )
 
 
-def show_payment_result(current_frame, result_type):
+def show_delivery_progress(current_frame, frame_holder):
+    hide_and_destroy_frame(current_frame)
+    progress_frame = tkPaymentProcessFrame.createDeliveryProgressFrame(mainContainer)
+    frame_holder["frame"] = progress_frame
+    pack_new_frame(progress_frame)
+
+
+def enqueue_delivery_progress(current_frame, frame_holder):
+    enqueue_ui_update(show_delivery_progress, current_frame, frame_holder)
+
+
+def show_payment_result(current_frame, result_type, frame_holder=None):
+    if frame_holder and frame_holder.get("frame") is not None:
+        current_frame = frame_holder["frame"]
     hide_and_destroy_frame(current_frame)
     if result_type == "success":
         result_frame = tkPaymentProcessFrame.createPaySuccessFrame(mainContainer)
@@ -127,8 +140,13 @@ def show_payment_result(current_frame, result_type):
     result_frame.after(display_seconds * 1000, lambda: mainContainer.destroy())
 
 
-def enqueue_payment_result(current_frame, result_type):
-    enqueue_ui_update(show_payment_result, current_frame, result_type)
+def enqueue_payment_result(current_frame, result_type, frame_holder=None):
+    enqueue_ui_update(
+        show_payment_result,
+        current_frame,
+        result_type,
+        frame_holder,
+    )
 
 
 def cancel_pix_payment(cancellation_event):
@@ -907,6 +925,7 @@ def launchPayment(
     disableInterrupt = 1
     payment_confirmed = False
     moderninha_record_id = None
+    delivery_frame_holder = {}
     try:
         # pay_output_code == 0 => Success ; else: Failure
 
@@ -942,11 +961,16 @@ def launchPayment(
 
         if pay_output_code == 0:
             payment_confirmed = True
+            enqueue_delivery_progress(payprocessFrame, delivery_frame_holder)
             pulse_result = sendSignalGPIO.sendOutputSignal(
                 price_selected,
                 plan=pulse_plan,
             )
-            enqueue_payment_result(payprocessFrame, "success")
+            enqueue_payment_result(
+                payprocessFrame,
+                "success",
+                delivery_frame_holder,
+            )
             if payment_method_selected != "QR Code (Pix)":
                 delivery_persisted = paymentProcessing.finish_delivery_record(
                     moderninha_record_id,
@@ -1018,6 +1042,7 @@ def launchPayment(
         enqueue_payment_result(
             payprocessFrame,
             "delivery_failure" if payment_confirmed else "payment_failure",
+            delivery_frame_holder if payment_confirmed else None,
         )
         if payment_confirmed and payment_method_selected != "QR Code (Pix)":
             delivery_persisted = paymentProcessing.finish_delivery_record(

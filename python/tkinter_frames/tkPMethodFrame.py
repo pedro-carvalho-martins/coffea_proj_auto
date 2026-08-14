@@ -5,6 +5,15 @@ import rwPaymentMethodsList
 import rwConnCheckFile
 
 
+PAYMENT_METHOD_DISPLAY_NAMES = {
+    "QR Code (Pix)": "Pix (QR Code)",
+}
+
+
+def display_payment_method_name(payment_method):
+    return PAYMENT_METHOD_DISPLAY_NAMES.get(payment_method, payment_method)
+
+
 ## Ação de clique em botão
 
 def button_clicked(index_button, lista_metodos_pag, price_selected, pmethodFrame):
@@ -70,12 +79,18 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
 
     preco_selecionado_str = ("R$ {:.2f}".format(price_selected)).replace(".",",")
 
-    label = tk.Label(
-       pmethodFrame,
-       text="Valor selecionado:\n" + preco_selecionado_str,
-       font=('SegoeUI', 18),
-       wraplength=250)
-    label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
+    selected_price_frame = tk.Frame(pmethodFrame)
+    selected_price_frame.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
+    tk.Label(
+        selected_price_frame,
+        text="Valor selecionado:",
+        font=('SegoeUI', 18),
+    ).pack()
+    tk.Label(
+        selected_price_frame,
+        text=preco_selecionado_str,
+        font=('SegoeUI', 22, 'bold'),
+    ).pack()
 
 
     ## Crio o Frame dos botões
@@ -91,7 +106,9 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
     for button_index in range(len(lista_metodos_pag)):
        buttons_list.append(
           tk.Button(button_frame,
-                    text=lista_metodos_pag[button_index],
+                    text=display_payment_method_name(
+                        lista_metodos_pag[button_index]
+                    ),
                     #font=('SegoeUI', 20, 'bold'),
                     font=('Ubuntu', 20),
                     wraplength=200,
@@ -141,8 +158,8 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
               command=cancel_command or mainContainer.destroy,
 
               # change behaviour on hover
-              activebackground=button_frame.cget(
-                   "background")
+              activebackground='#871313',
+              activeforeground='white'
               # Set the active background color to the regular background color
 
     )

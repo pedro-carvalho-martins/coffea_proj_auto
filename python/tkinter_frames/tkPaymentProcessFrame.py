@@ -82,6 +82,27 @@ def createPaySuccessFrame(mainContainer):
     return payCompleteFrame
 
 
+def createDeliveryProgressFrame(mainContainer):
+    deliveryProgressFrame = tk.Frame(mainContainer, height=480, width=320)
+    deliveryProgressFrame.configure(bg='#1f5f7a')
+    deliveryProgressFrame.rowconfigure(0, weight=1)
+    deliveryProgressFrame.columnconfigure(0, weight=1)
+
+    label = tk.Label(
+        deliveryProgressFrame,
+        text=(
+            "Pagamento recebido.\n\n"
+            "Transmissão de créditos à máquina em andamento."
+        ),
+        font=('SegoeUI', 20),
+        fg='white',
+        bg='#1f5f7a',
+        wraplength=300,
+    )
+    label.grid(column=0, row=0, ipadx=10, ipady=150)
+    return deliveryProgressFrame
+
+
 
 def createPayFailureFrame(mainContainer):
 
@@ -193,19 +214,30 @@ def createPixDisplayFrame(
 
     preco_selecionado_str = ("R$ {:.2f}".format(price_selected)).replace(".", ",")
 
-    label0 = tk.Label(
-        pixDisplayFrame,
-        text="Valor do Pix: "+preco_selecionado_str +"\n"+
-             "Escaneie o QR Code abaixo no aplicativo do seu banco",#. ADICIONAR BOTAO DE CANCELAMENTO DE COMPRA E TIMER PARA TIMEOUT APARECER APÓS UM TEMPO",
+    header_frame = tk.Frame(pixDisplayFrame)
+    header_frame.grid(column=0, row=0, ipadx=5, ipady=5)
+    tk.Label(
+        header_frame,
+        text="Valor do Pix:",
         font=('SegoeUI', 14),
-        wraplength=250)
-    label0.grid(column=0, row=0, ipadx=5, ipady=5)
+    ).pack()
+    tk.Label(
+        header_frame,
+        text=preco_selecionado_str,
+        font=('SegoeUI', 18, 'bold'),
+    ).pack()
+    tk.Label(
+        header_frame,
+        text="Escaneie o QR Code abaixo no aplicativo do seu banco",
+        font=('SegoeUI', 12),
+        wraplength=270,
+    ).pack()
 
 
 
     try:
         img_QR_Code = Image.open(filename_img_QR_Code_Pix)
-        img_QR_Code = img_QR_Code.resize((300, 300), Image.ANTIALIAS)
+        img_QR_Code = img_QR_Code.resize((280, 280), Image.ANTIALIAS)
         img_QR_Code = ImageTk.PhotoImage(img_QR_Code)
 
         imgLabel = tk.Label(pixDisplayFrame, image=img_QR_Code)
@@ -233,8 +265,8 @@ def createPixDisplayFrame(
            command=cancel_command,
 
            # change behaviour on hover
-           activebackground=pixDisplayFrame.cget(
-               "background")
+           activebackground='#871313',
+           activeforeground='white'
            # Set the active background color to the regular background color
            )
 

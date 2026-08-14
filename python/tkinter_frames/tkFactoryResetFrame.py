@@ -53,7 +53,7 @@ def createFactoryResetFrame(settingsContainer):
         font=("Ubuntu", 12, "bold"),
         bg="#b71c1c",
         fg="white",
-        activebackground="#8e0000",
+        activebackground="#b71c1c",
         activeforeground="white",
         command=confirm_reset,
     )
