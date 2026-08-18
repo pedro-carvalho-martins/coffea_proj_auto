@@ -1,195 +1,74 @@
-import os
 import tkinter as tk
 
-# temporary to test image implementation (but conncheck does not use it! why should we have it here?)
 from PIL import Image, ImageTk
 
-import navigation
+from tkinter_frames.ui_components import (
+    create_amount_display,
+    create_instruction_screen,
+    create_result_screen,
+    create_screen,
+    create_touch_button,
+)
+from tkinter_frames.ui_theme import COLORS, FONT_SECONDARY
 
-
-## Ação de clique em botão
-
-def button_clicked(index_button):
-   print('Button clicked')
-   print(index_button)
-
-
-## Função de criação do Frame de início
 
 def createPayProcessFrame(mainContainer):
-
-
-    payProcessFrame = tk.Frame(mainContainer, height=480, width=320)
-
-
-    ## Configurando o Grid
-
-    payProcessFrame.rowconfigure(0, weight=1)
-    payProcessFrame.columnconfigure(0, weight=1)
-
-
-    ## Adiciono os labels
-
-    label0 = tk.Label(
-        payProcessFrame,
-        text="\n ",
-        font=('SegoeUI', 20),
-        wraplength=300)
-    label0.grid(column=0, row=1, ipadx=10, ipady=10)
-
-    label1 = tk.Label(
-        payProcessFrame,
-        text="Aproxime ou insira seu cartão na máquina abaixo",
-        font=('SegoeUI', 20),
-        wraplength=300)
-    label1.grid(column=0, row=3, ipadx=10, ipady=100)
-
-    # label0.grid(column=0, row=4, ipadx=10, ipady=50)
-
-    label3 = tk.Label(
-        payProcessFrame,
-        text="Para cancelar, aperte no botão CANCELA na máquina abaixo",
-        font=('SegoeUI', 14),
-        wraplength=300)
-    label3.grid(column=0, row=6, ipadx=0, ipady=25)
-
-    return payProcessFrame
+    return create_instruction_screen(
+        mainContainer,
+        "Aproxime ou insira\nseu cartão na\nmáquina abaixo",
+        "Para cancelar, aperte no botão CANCELA na máquina abaixo.",
+    )
 
 
 def createPaySuccessFrame(mainContainer):
-
-    payCompleteFrame = tk.Frame(mainContainer, height=480, width=320)
-
-    payCompleteFrame.configure(bg='#138713')
-
-    ## Configurando o Grid
-
-    payCompleteFrame.rowconfigure(0, weight=1)
-    payCompleteFrame.columnconfigure(0, weight=1)
-
-
-    ## Adiciono o label
-
-    label = tk.Label(
-       payCompleteFrame,
-       text="Pagamento concluído. Favor escolher o seu produto.",
-       font=('SegoeUI', 20),
-       fg='white',
-       bg='#138713',
-       wraplength=300)
-    label.grid(column=0, row=0, ipadx=10, ipady=180)
-
-    return payCompleteFrame
+    return create_result_screen(
+        mainContainer,
+        "Pagamento concluído.",
+        "Favor escolher\no seu produto.",
+        background=COLORS["success"],
+        foreground=COLORS["white"],
+    )
 
 
 def createDeliveryProgressFrame(mainContainer):
-    deliveryProgressFrame = tk.Frame(mainContainer, height=480, width=320)
-    deliveryProgressFrame.configure(bg='#1f5f7a')
-    deliveryProgressFrame.rowconfigure(0, weight=1)
-    deliveryProgressFrame.columnconfigure(0, weight=1)
-
-    label = tk.Label(
-        deliveryProgressFrame,
-        text=(
-            "Pagamento recebido.\n\n"
-            "Transmissão de créditos à máquina em andamento."
-        ),
-        font=('SegoeUI', 20),
-        fg='white',
-        bg='#1f5f7a',
-        wraplength=300,
+    return create_result_screen(
+        mainContainer,
+        "Pagamento recebido.",
+        "Transmissão de créditos\nà máquina em andamento.",
+        background=COLORS["progress"],
+        foreground=COLORS["white"],
     )
-    label.grid(column=0, row=0, ipadx=10, ipady=150)
-    return deliveryProgressFrame
-
 
 
 def createPayFailureFrame(mainContainer):
-
-    payFailureFrame = tk.Frame(mainContainer, height=480, width=320)
-    payFailureFrame.configure(bg='#871313')
-
-    ## Configurando o Grid
-
-    payFailureFrame.rowconfigure(0, weight=1)
-    payFailureFrame.columnconfigure(0, weight=1)
-
-
-    ## Adiciono o label
-
-    label = tk.Label(
-       payFailureFrame,
-       text="Erro no pagamento. Favor recomeçar a compra.",
-       font=('SegoeUI', 20),
-       fg='white',
-       bg='#871313',
-       wraplength=300)
-    label.grid(column=0, row=0, ipadx=10, ipady=180)
-
-    return payFailureFrame
+    return create_result_screen(
+        mainContainer,
+        "Erro no pagamento.",
+        "Favor recomeçar\na compra.",
+        background=COLORS["danger"],
+        foreground=COLORS["white"],
+    )
 
 
 def createDeliveryFailureFrame(mainContainer):
-    deliveryFailureFrame = tk.Frame(mainContainer, height=480, width=320)
-    deliveryFailureFrame.configure(bg='#9A5A00')
-    deliveryFailureFrame.rowconfigure(0, weight=1)
-    deliveryFailureFrame.columnconfigure(0, weight=1)
-
-    label = tk.Label(
-        deliveryFailureFrame,
-        text=(
-            "Pagamento aprovado, mas n\u00e3o foi poss\u00edvel confirmar a "
-            "libera\u00e7\u00e3o do cr\u00e9dito. Procure o respons\u00e1vel pelo local."
+    return create_result_screen(
+        mainContainer,
+        "Pagamento aprovado",
+        (
+            "A entrega do crédito não pôde ser confirmada.\n\n"
+            "Procure o responsável pelo local."
         ),
-        font=('SegoeUI', 18),
-        fg='white',
-        bg='#9A5A00',
-        wraplength=300,
+        background=COLORS["warning"],
+        foreground=COLORS["white"],
     )
-    label.grid(column=0, row=0, ipadx=10, ipady=150)
-    return deliveryFailureFrame
-
-
 
 
 def createPayProcessFrame_Pix(mainContainer):
-
-
-    payProcessFrame = tk.Frame(mainContainer, height=480, width=320)
-
-
-    ## Configurando o Grid
-
-    payProcessFrame.rowconfigure(0, weight=1)
-    payProcessFrame.columnconfigure(0, weight=1)
-
-
-    ## Adiciono os labels
-
-    label0 = tk.Label(
-        payProcessFrame,
-        text="\n ",
-        font=('SegoeUI', 20),
-        wraplength=300)
-    label0.grid(column=0, row=1, ipadx=10, ipady=10)
-
-    label1 = tk.Label(
-        payProcessFrame,
-        text="Inicializando pagamento por Pix",
-        font=('SegoeUI', 20),
-        wraplength=300)
-    label1.grid(column=0, row=3, ipadx=10, ipady=100)
-
-    # label0.grid(column=0, row=4, ipadx=10, ipady=50)
-
-    label3 = tk.Label(
-        payProcessFrame,
-        text="Aguarde geração do QR Code",
-        font=('SegoeUI', 14),
-        wraplength=300)
-    label3.grid(column=0, row=6, ipadx=0, ipady=25)
-
-    return payProcessFrame
+    return create_instruction_screen(
+        mainContainer,
+        "Inicializando\npagamento por Pix",
+        "Aguarde a geração do QR Code.",
+    )
 
 
 def createPixDisplayFrame(
@@ -198,80 +77,56 @@ def createPixDisplayFrame(
     filename_img_QR_Code_Pix,
     cancel_command,
 ):
-
-    pixDisplayFrame = tk.Frame(mainContainer, height=480, width=320)
-
-
-    ## Configurando o Grid
-
-    pixDisplayFrame.rowconfigure(0, weight=1)
-    pixDisplayFrame.rowconfigure(1, weight=1)
-    pixDisplayFrame.rowconfigure(2, weight=1)
+    pixDisplayFrame = create_screen(mainContainer)
     pixDisplayFrame.columnconfigure(0, weight=1)
+    pixDisplayFrame.rowconfigure(1, weight=1)
 
-
-    ## Adiciono os labels
-
-    preco_selecionado_str = ("R$ {:.2f}".format(price_selected)).replace(".", ",")
-
-    header_frame = tk.Frame(pixDisplayFrame)
-    header_frame.grid(column=0, row=0, ipadx=5, ipady=5)
-    tk.Label(
-        header_frame,
-        text="Valor do Pix:",
-        font=('SegoeUI', 14),
-    ).pack()
-    tk.Label(
-        header_frame,
-        text=preco_selecionado_str,
-        font=('SegoeUI', 18, 'bold'),
-    ).pack()
+    header_frame = create_amount_display(
+        pixDisplayFrame,
+        price_selected,
+        label="Valor do Pix:",
+    )
+    header_frame.grid(column=0, row=0, sticky=tk.EW, padx=16, pady=(4, 0))
     tk.Label(
         header_frame,
         text="Escaneie o QR Code abaixo no aplicativo do seu banco",
-        font=('SegoeUI', 12),
-        wraplength=270,
+        font=FONT_SECONDARY,
+        bg=COLORS["background"],
+        fg=COLORS["text_secondary"],
+        wraplength=275,
+        justify=tk.CENTER,
     ).pack()
-
-
 
     try:
         img_QR_Code = Image.open(filename_img_QR_Code_Pix)
         img_QR_Code = img_QR_Code.resize((280, 280), Image.ANTIALIAS)
         img_QR_Code = ImageTk.PhotoImage(img_QR_Code)
 
-        imgLabel = tk.Label(pixDisplayFrame, image=img_QR_Code)
+        imgLabel = tk.Label(
+            pixDisplayFrame,
+            image=img_QR_Code,
+            bg=COLORS["surface"],
+            bd=0,
+        )
         imgLabel.image = img_QR_Code
+        imgLabel.grid(row=1, column=0, pady=2)
+    except Exception as error:
+        print("error:", error)
 
-        #img_QR_Code = tk.PhotoImage(file=filename_img_QR_Code_Pix)
-        #imgLabel.configure(image=img_QR_Code)
-
-        imgLabel.grid(row=1, column=0, ipadx=10, ipady=10)
-
-    ### RETRY THIS CODE WITHOUT USING PIL?
-    #HYPOTHESIS: THE PICTURE WAS JUST TOO BIG TO DISPLAY DIRECTLY ON TKINTER
-
-    except Exception as e:
-        print("error:",e)
-
-    cancelar_compra_button = tk.Button(pixDisplayFrame,
-           text="Cancelar",
-           # font=('SegoeUI', 20, 'bold'),
-           font=('Ubuntu', 14),
-           wraplength=150,
-           bg='#871313',
-           fg='white',
-           # command=button_clicked(button_index),
-           command=cancel_command,
-
-           # change behaviour on hover
-           activebackground='#871313',
-           activeforeground='white'
-           # Set the active background color to the regular background color
-           )
-
-    cancelar_compra_button.grid(column=0, row=2, ipadx=5, ipady=5)
-
-
+    cancelar_compra_button = create_touch_button(
+        pixDisplayFrame,
+        "Cancelar",
+        cancel_command,
+        variant="danger",
+        font=("Ubuntu", 15, "bold"),
+    )
+    cancelar_compra_button.grid(
+        column=0,
+        row=2,
+        sticky=tk.EW,
+        padx=16,
+        pady=(3, 9),
+        ipady=7,
+    )
 
     return pixDisplayFrame

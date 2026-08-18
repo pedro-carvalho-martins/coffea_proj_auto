@@ -1,30 +1,23 @@
-import tkinter as tk
+from tkinter_frames.ui_components import create_result_screen
+from tkinter_frames.ui_theme import COLORS
 
 
-def _message_frame(main_container, message, background=None, foreground="black"):
-    frame = tk.Frame(main_container, height=480, width=320)
-    if background is not None:
-        frame.configure(bg=background)
-    effective_background = frame.cget("background")
-    frame.rowconfigure(0, weight=1)
-    frame.columnconfigure(0, weight=1)
-    label = tk.Label(
-        frame,
-        text=message,
-        font=("SegoeUI", 20),
-        wraplength=285,
-        bg=effective_background,
-        fg=foreground,
+def _message_frame(main_container, message, background=None, foreground=None):
+    frame = create_result_screen(
+        main_container,
+        message,
+        background=background or COLORS["background"],
+        foreground=foreground or COLORS["text"],
     )
-    label.grid(column=0, row=0, padx=15, pady=120)
-    frame.mdb_status_label = label
+    # Navigation updates this label while the MDB connection state changes.
+    frame.mdb_status_label = frame.status_title_label
     return frame
 
 
 def createWaitingFrame(main_container):
     return _message_frame(
         main_container,
-        "Inicializando MDB...\nAguarde.",
+        "Inicializando MDB...\n\nAguarde.",
     )
 
 
@@ -36,39 +29,42 @@ def updateWaitingFrame(frame, message):
 def createAwaitingDispenseFrame(main_container):
     return _message_frame(
         main_container,
-        "Pagamento aceito.\nAguardando a maquina liberar o produto...",
-        "#b06b00",
-        "white",
+        "Pagamento aceito.\n\nAguardando a máquina\nliberar o produto...",
+        COLORS["warning"],
+        COLORS["white"],
     )
 
 
 def createDispensedFrame(main_container):
     return _message_frame(
         main_container,
-        "Produto liberado com sucesso.",
-        "#138713",
-        "white",
+        "Produto liberado\ncom sucesso.",
+        COLORS["success"],
+        COLORS["white"],
     )
 
 
 def createFailureFrame(main_container, message="Venda cancelada."):
-    return _message_frame(main_container, message, "#871313", "white")
+    return _message_frame(
+        main_container,
+        message,
+        COLORS["danger"],
+        COLORS["white"],
+    )
 
 
 def createRecoveryFrame(main_container, resolve_command):
-    frame = _message_frame(
+    frame = create_result_screen(
         main_container,
+        "Resultado da venda incerto",
         (
-            "Resultado da venda incerto. Verifique a maquininha de cartao "
-            "e a maquina antes de continuar."
+            "Verifique a máquina de cartão e a máquina vending antes de "
+            "continuar."
         ),
-        "#871313",
-        "white",
+        background=COLORS["danger"],
+        foreground=COLORS["white"],
+        button_text="Já verifiquei - encerrar sessão",
+        button_command=resolve_command,
     )
-    tk.Button(
-        frame,
-        text="Ja verifiquei - encerrar sessao",
-        font=("Ubuntu", 13),
-        command=resolve_command,
-    ).grid(column=0, row=1, padx=15, pady=(0, 35), ipadx=8, ipady=8)
+    frame.mdb_status_label = frame.status_title_label
     return frame

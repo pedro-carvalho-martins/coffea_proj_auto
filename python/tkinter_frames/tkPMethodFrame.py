@@ -3,6 +3,12 @@ import tkinter as tk
 import navigation
 import rwPaymentMethodsList
 import rwConnCheckFile
+from tkinter_frames.ui_components import (
+    create_amount_display,
+    create_screen,
+    create_touch_button,
+)
+from tkinter_frames.ui_theme import COLORS, FONT_BUTTON
 
 
 PAYMENT_METHOD_DISPLAY_NAMES = {
@@ -63,40 +69,37 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
     # END DEV 2023.04.07 - TESTAR NO RPI
 
 
-    pmethodFrame = tk.Frame(mainContainer, height=480, width=320)
+    pmethodFrame = create_screen(mainContainer)
 
 
     ## Configurando o Grid
 
-    pmethodFrame.rowconfigure(0, weight=3)
-    pmethodFrame.rowconfigure(1, weight=6)
-    pmethodFrame.rowconfigure(2, weight=1)
-    pmethodFrame.rowconfigure(3, weight=1)
+    pmethodFrame.rowconfigure(0, weight=0)
+    pmethodFrame.rowconfigure(1, weight=1)
+    pmethodFrame.rowconfigure(2, weight=0)
     pmethodFrame.columnconfigure(0, weight=1)
 
 
     ## Adiciono o label principal
 
-    preco_selecionado_str = ("R$ {:.2f}".format(price_selected)).replace(".",",")
+    selected_price_frame = create_amount_display(pmethodFrame, price_selected)
+    selected_price_frame.grid(
+        column=0,
+        row=0,
+        sticky=tk.EW,
+        pady=(12, 6),
+        padx=16,
+    )
 
-    selected_price_frame = tk.Frame(pmethodFrame)
-    selected_price_frame.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
-    tk.Label(
-        selected_price_frame,
-        text="Valor selecionado:",
-        font=('SegoeUI', 18),
-    ).pack()
-    tk.Label(
-        selected_price_frame,
-        text=preco_selecionado_str,
-        font=('SegoeUI', 22, 'bold'),
-    ).pack()
+    divider = tk.Frame(pmethodFrame, height=1, bg=COLORS["divider"])
+    divider.grid(column=0, row=0, sticky=tk.SEW, padx=22)
 
 
     ## Crio o Frame dos botões
 
-    button_frame = tk.Frame(pmethodFrame)
-    button_frame.grid(column=0, row=1, pady=10, padx=20)
+    button_frame = tk.Frame(pmethodFrame, bg=COLORS["background"])
+    button_frame.grid(column=0, row=1, sticky=tk.NSEW, pady=(8, 3), padx=16)
+    button_frame.columnconfigure(0, weight=1)
 
 
     ## Adiciono os botões
@@ -104,27 +107,26 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
     buttons_list=[]
 
     for button_index in range(len(lista_metodos_pag)):
-       buttons_list.append(
-          tk.Button(button_frame,
-                    text=display_payment_method_name(
-                        lista_metodos_pag[button_index]
-                    ),
-                    #font=('SegoeUI', 20, 'bold'),
-                    font=('Ubuntu', 20),
-                    wraplength=200,
-                    width=11,
-                    #command=button_clicked(button_index),
-                    command= lambda idx=button_index: button_clicked(idx, lista_metodos_pag, price_selected, pmethodFrame),
-                    # change behaviour on hover
-                    activebackground=button_frame.cget(
-                        "background")  # Set the active background color to the regular background color
-                    )
-                    #height=1,
-                    #width=1)
-       )
+       buttons_list.append(create_touch_button(
+           button_frame,
+           display_payment_method_name(lista_metodos_pag[button_index]),
+           lambda idx=button_index: button_clicked(
+               idx,
+               lista_metodos_pag,
+               price_selected,
+               pmethodFrame,
+           ),
+           font=FONT_BUTTON,
+       ))
 
     for button_index in range(len(buttons_list)):
-       buttons_list[button_index].grid(column=0, row=button_index+1, ipadx=25, ipady=10, pady=5, sticky=tk.EW)
+       buttons_list[button_index].grid(
+           column=0,
+           row=button_index,
+           ipady=8,
+           pady=4,
+           sticky=tk.EW,
+       )
 
 
     ## Adiciono o label de flag de eventuais falhas de conexão
@@ -132,7 +134,8 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
     label_flag_fail = tk.Label(
        pmethodFrame,
        text="Falha de conexão: "+str(conn_error_pMethods)+"\n" + "Entrar em contato com suporte técnico",
-       font=('SegoeUI', 10), fg='red',
+       font=('SegoeUI', 10), fg=COLORS["danger"],
+       bg=COLORS["background"],
        wraplength=250)
 
     # Feature de exibição dos métodos de pagamento cujo ConnCheck falhou.
@@ -144,27 +147,19 @@ def createPaymentMethodFrame(mainContainer, price_selected, cancel_command=None)
 
     ## Crio o Frame inferior
 
-    lower_frame = tk.Frame(pmethodFrame)
-    lower_frame.grid(column=0, row=3, sticky=tk.NS, pady=1, padx=20)
+    lower_frame = tk.Frame(pmethodFrame, bg=COLORS["background"])
+    lower_frame.grid(column=0, row=2, sticky=tk.EW, pady=(0, 10), padx=16)
+    lower_frame.columnconfigure(0, weight=1)
 
-    cancelar_compra_button = tk.Button(lower_frame,
-              text="Cancelar",
-              # font=('SegoeUI', 20, 'bold'),
-              font=('Ubuntu', 14),
-              wraplength=150,
-              bg='#871313',
-              fg='white',
-              # command=button_clicked(button_index),
-              command=cancel_command or mainContainer.destroy,
-
-              # change behaviour on hover
-              activebackground='#871313',
-              activeforeground='white'
-              # Set the active background color to the regular background color
-
+    cancelar_compra_button = create_touch_button(
+        lower_frame,
+        "Cancelar",
+        cancel_command or mainContainer.destroy,
+        variant="danger",
+        font=("Ubuntu", 15, "bold"),
     )
 
-    cancelar_compra_button.grid(column=0, row=0, ipadx=70, ipady=10, pady=5, sticky=tk.EW)
+    cancelar_compra_button.grid(column=0, row=0, ipady=8, pady=3, sticky=tk.EW)
 
     return pmethodFrame
 

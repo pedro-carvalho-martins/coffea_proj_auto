@@ -2,6 +2,8 @@ import tkinter as tk
 
 import navigation
 import rwPricesList
+from tkinter_frames.ui_components import create_screen, create_touch_button, format_brl
+from tkinter_frames.ui_theme import COLORS, FONT_PRICE_BUTTON, FONT_TITLE
 
 
 ## Ação de clique em botão
@@ -19,7 +21,7 @@ def button_clicked(buttons_list, index_button, lista_precos, priceFrame):
 ## Função de formatação dos textos dos botões de preço
 
 def display_button_text(input_price):
-    return ("R$ {:.2f}".format(input_price)).replace(".", ",")
+    return format_brl(input_price)
 
 
 ## Função de criação do Frame de preços
@@ -39,7 +41,7 @@ def createPriceFrame(mainContainer):
 
     ## FIM DA NOVA IMPLEMENTAÇÃO
 
-    priceFrame = tk.Frame(mainContainer, height=480, width=320)
+    priceFrame = create_screen(mainContainer)
 
     ## Configurando o Grid
 
@@ -53,35 +55,30 @@ def createPriceFrame(mainContainer):
     label = tk.Label(
         priceFrame,
         text="Selecione o valor\ndo produto:",
-        font=('SegoeUI', 22))
-    label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
+        font=FONT_TITLE,
+        bg=COLORS["background"],
+        fg=COLORS["text"],
+    )
+    label.grid(column=0, row=0, sticky=tk.S, pady=(18, 8), padx=20)
 
     ## Crio o Frame dos botões
 
-    button_frame = tk.Frame(priceFrame)
-    button_frame.grid(column=0, row=1, pady=5, padx=0)
+    button_frame = tk.Frame(priceFrame, bg=COLORS["background"])
+    button_frame.grid(column=0, row=1, sticky=tk.NSEW, pady=5, padx=16)
+    button_frame.columnconfigure(0, weight=1)
+    button_frame.columnconfigure(1, weight=1)
 
     ## Adiciono os botões
 
     buttons_list = []
 
     for button_index in range(len(lista_precos)):
-        button = tk.Button(
+        button = create_touch_button(
             button_frame,
-            text=display_button_text(lista_precos[button_index]),
-            # font=('SegoeUI', 20, 'bold'),
-            font=('Ubuntu', 20),
-            activebackground=button_frame.cget(
-              "background")  # Set the active background color to the regular background color
-            #### fim do teste de remoção da mudança de visual com hover
-            # Modificação OK. aplicar nos outros Frames
-            # )
-            # height=1,
-            # tmp test 2024.02.15
-            ,
-            width=7
+            display_button_text(lista_precos[button_index]),
+            None,
+            font=FONT_PRICE_BUTTON,
         )
-            # tmp test 2024.02.15
         buttons_list.append(button)
 
     # Now set the command for each button
@@ -107,19 +104,19 @@ def createPriceFrame(mainContainer):
             # Set a two-column structure
             column_input = button_index % 2
             row_input = button_index // 2
-            buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=ipady_buttons,
-                                            padx=4, pady=5, sticky=tk.EW)
+            buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipady=ipady_buttons,
+                                            padx=4, pady=4, sticky=tk.EW)
             # buttons_list[button_index].grid(column=column_input, row=row_input + 1, ipadx=0, ipady=10, padx=5, pady=5, sticky=tk.EW)
 
         else:
             # Set a single-column structure
-            buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=40, ipady=ipady_buttons, pady=5,
+            buttons_list[button_index].grid(column=0, row=button_index + 1, ipady=ipady_buttons, pady=4,
                                             sticky=tk.EW)
             # buttons_list[button_index].grid(column=0, row=button_index + 1, ipadx=80, ipady=10, pady=5, sticky=tk.EW)
 
     ## Crio o Frame inferior
 
-    lower_frame = tk.Frame(priceFrame)
+    lower_frame = tk.Frame(priceFrame, bg=COLORS["background"])
     lower_frame.grid(column=0, row=2, sticky=tk.NS, pady=1, padx=20)
 
     return priceFrame

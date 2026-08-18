@@ -8,11 +8,13 @@ PYTHON_DIR = Path(__file__).resolve().parents[1] / "python"
 sys.path.insert(0, str(PYTHON_DIR))
 
 import tkinter_frames.tkMdbFrame as tkMdbFrame
+import tkinter_frames.ui_components as ui_components
+from tkinter_frames.ui_theme import COLORS
 
 
 class FakeFrame:
     def __init__(self, *args, **kwargs):
-        self.background = "platform-default"
+        self.background = kwargs.get("bg", "platform-default")
 
     def configure(self, **kwargs):
         self.background = kwargs.get("bg", self.background)
@@ -28,6 +30,9 @@ class FakeFrame:
     def columnconfigure(self, *args, **kwargs):
         pass
 
+    def grid(self, *args, **kwargs):
+        pass
+
 
 class FakeLabel:
     def __init__(self, *args, **kwargs):
@@ -36,32 +41,38 @@ class FakeLabel:
     def grid(self, *args, **kwargs):
         pass
 
+    def configure(self, **kwargs):
+        self.options.update(kwargs)
+
 
 class MdbFrameTests(unittest.TestCase):
-    def test_waiting_frame_uses_tk_platform_background(self):
-        with patch.object(tkMdbFrame.tk, "Frame", FakeFrame), patch.object(
-            tkMdbFrame.tk,
+    def test_waiting_frame_uses_neutral_theme_background(self):
+        with patch.object(ui_components.tk, "Frame", FakeFrame), patch.object(
+            ui_components.tk,
             "Label",
             FakeLabel,
         ):
             frame = tkMdbFrame.createWaitingFrame(object())
 
-        self.assertEqual(frame.background, "platform-default")
+        self.assertEqual(frame.background, COLORS["background"])
         self.assertEqual(
             frame.mdb_status_label.options["bg"],
-            "platform-default",
+            COLORS["background"],
         )
 
     def test_status_frames_keep_explicit_colors(self):
-        with patch.object(tkMdbFrame.tk, "Frame", FakeFrame), patch.object(
-            tkMdbFrame.tk,
+        with patch.object(ui_components.tk, "Frame", FakeFrame), patch.object(
+            ui_components.tk,
             "Label",
             FakeLabel,
         ):
             frame = tkMdbFrame.createFailureFrame(object())
 
-        self.assertEqual(frame.background, "#871313")
-        self.assertEqual(frame.mdb_status_label.options["bg"], "#871313")
+        self.assertEqual(frame.background, COLORS["danger"])
+        self.assertEqual(
+            frame.mdb_status_label.options["bg"],
+            COLORS["danger"],
+        )
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 import tkinter as tk
 
 import navigation
+from tkinter_frames.ui_components import create_screen, create_touch_button
+from tkinter_frames.ui_theme import COLORS
 
 
 ## Ação de clique em botão
@@ -13,35 +15,30 @@ def button_clicked(index_button):
 ## Função de criação do Frame de início
 
 def createHelloFrame(mainContainer):
-
-
-    helloFrame = tk.Frame(mainContainer, height=480, width=320)
-
-
-    ## Configurando o Grid
+    helloFrame = create_screen(mainContainer)
 
     helloFrame.rowconfigure(0, weight=1)
     helloFrame.columnconfigure(0, weight=1)
 
-
-    # ## Adiciono o label principal
-    #
-    # label = tk.Label(
-    #    helloFrame,
-    #    text="Toque na tela para iniciar",
-    #    font=('SegoeUI', 26))
-    # label.grid(column=0, row=0, sticky=tk.S, pady=0, padx=20)
-
-    ## Adiciono um botão que ocupa toda a tela
-
-    helloButton = tk.Button(
+    helloButton = create_touch_button(
         helloFrame,
-        text="Toque na tela para iniciar a compra",
-        font=('SegoeUI', 20),
+        "Toque na tela\npara iniciar a compra",
+        lambda: navigation.navigate_priceFrame(helloFrame),
+        font=("SegoeUI", 22, "bold"),
         wraplength=300,
-        command= lambda: navigation.navigate_priceFrame(helloFrame))
+    )
 
-    helloButton.grid(row=0, column=0, ipadx=10, ipady=180)
+    helloButton.grid(
+        row=0,
+        column=0,
+        sticky=tk.NSEW,
+        padx=16,
+        pady=24,
+    )
+    helloButton.configure(
+        activebackground=COLORS["surface_alt"],
+        highlightbackground=COLORS["divider"],
+    )
 
     return helloFrame
 
