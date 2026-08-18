@@ -33,6 +33,7 @@ with patch.dict(sys.modules, mock_modules):
 class ConnectionCheckProcessTests(unittest.TestCase):
     def setUp(self):
         shared_resource.customer_interaction_active.clear()
+        shared_resource.set_moderninha_connection_status("not_checked")
         connCheckProcess.rwConnCheckFile.reset_mock()
         connCheckProcess.rwPaymentMethodsList.reset_mock()
 
@@ -63,6 +64,10 @@ class ConnectionCheckProcessTests(unittest.TestCase):
         self.assertEqual(result, (reported_settings, "check", "pending"))
         self.assertEqual(frame_module.status_conn_moderninha, "check")
         self.assertEqual(frame_module.status_conn_servidor_pix, "pending")
+        self.assertEqual(
+            shared_resource.get_moderninha_connection_status(),
+            "connected",
+        )
         connCheckProcess.rwConnCheckFile.writeConnCheckStatus.assert_called_once_with(
             {
                 "Moderninha": "check",
@@ -101,6 +106,10 @@ class ConnectionCheckProcessTests(unittest.TestCase):
 
         self.assertIsNone(result)
         server.assert_not_called()
+        self.assertEqual(
+            shared_resource.get_moderninha_connection_status(),
+            "connected",
+        )
         connCheckProcess.rwConnCheckFile.writeConnCheckStatus.assert_not_called()
 
 

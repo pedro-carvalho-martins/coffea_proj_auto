@@ -211,6 +211,13 @@ def _run_connection_checks(stop_if_customer_active=False):
 
     settings = rwPaymentMethodsList.readListSettings()
     moderninha_status = checkConnModerninha(settings)
+    shared_resource.set_moderninha_connection_status(
+        {
+            "check": "connected",
+            "error": "error",
+            "disabled": "disabled",
+        }.get(moderninha_status, "error")
+    )
 
     # Do not start a server request when the customer selected a price while
     # the Moderninha check was running.

@@ -80,6 +80,9 @@ def _sync_cycle(transmit_records, accept_commands=True):
             "sistema_pag_nome": rwSystemName.readSystemName(),
             "versao_sistema_pag": rwSystemVersion.readVersion(),
             "pairing_code": rwServerPairingSettings.get_pairing_code(),
+            "moderninha_connection_status": (
+                shared_resource.get_moderninha_connection_status()
+            ),
             "settings": {
                 "prices": rwPricesList.readList(),
                 "payment_methods": {},
