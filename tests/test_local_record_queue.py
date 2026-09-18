@@ -205,6 +205,26 @@ class LocalRecordQueueTests(unittest.TestCase):
             )
         )
 
+    def test_remote_payment_error_includes_context_within_limit(self):
+        message = localRecordQueue.format_event_message(
+            "Moderninha\nsem resposta " + "x" * 600,
+            "1.49",
+            "Credito",
+            "mdb",
+        )
+
+        self.assertTrue(message.startswith("valor=1.49; metodo=Credito; modo=mdb; detalhe=Moderninha sem resposta"))
+        self.assertEqual(len(message), localRecordQueue.EVENT_MESSAGE_MAX_LENGTH)
+        localRecordQueue.record_event("payment", "TimeoutExpired", message, "1.7.0", self.events_file)
+        stored = localRecordQueue.read_batch(self.events_file, localRecordQueue.EVENT_FIELDS)[0]
+        self.assertEqual(stored["short_message"], message)
+
+    def test_non_payment_event_message_needs_no_context(self):
+        self.assertEqual(
+            localRecordQueue.format_event_message("conexao restaurada"),
+            "conexao restaurada",
+        )
+
     def test_connection_outage_emits_only_one_start_and_one_summary(self):
         self.assertTrue(localRecordQueue.note_connection_failure(now=100))
         self.assertFalse(localRecordQueue.note_connection_failure(now=200))

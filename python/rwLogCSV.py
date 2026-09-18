@@ -16,6 +16,7 @@ from app_paths import (
 
 import rwSystemName
 import rwSystemVersion
+import rwCommunicationType
 import localRecordQueue
 
 
@@ -136,10 +137,18 @@ def writeCSV(tipo_registro, valor_venda_str, metodo_pag, etapa_erro, classe_erro
 
     if is_transmitted_event:
         try:
+            remote_message = event_message
+            if tipo_registro == "venda_erro":
+                remote_message = localRecordQueue.format_event_message(
+                    event_message,
+                    valor_venda_str,
+                    metodo_pag,
+                    rwCommunicationType.readCommunicationType(),
+                )
             localRecordQueue.record_event(
                 event_component,
                 event_code,
-                event_message,
+                remote_message,
                 versao_sistema,
             )
         except (OSError, ValueError) as exc:

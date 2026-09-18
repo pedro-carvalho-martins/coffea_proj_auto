@@ -48,6 +48,7 @@ EVENT_FIELDS = (
     "version",
 )
 ERROR_COOLDOWN_SECONDS = 900
+EVENT_MESSAGE_MAX_LENGTH = 500
 
 _error_state_lock = threading.Lock()
 _last_error_times = {}
@@ -215,6 +216,21 @@ def should_record_error(component, error_code, message, now=None):
     return True
 
 
+def format_event_message(message, value="", payment_method="", communication_mode=""):
+    details = " ".join(str(message).split())
+    context = []
+    if value not in ("", None):
+        context.append("valor=" + str(value)[:20])
+    if payment_method:
+        context.append("metodo=" + str(payment_method)[:40])
+    if communication_mode:
+        context.append("modo=" + str(communication_mode)[:10])
+    if not context:
+        return details[:EVENT_MESSAGE_MAX_LENGTH]
+    prefix = "; ".join(context) + "; detalhe="
+    return (prefix + details)[:EVENT_MESSAGE_MAX_LENGTH]
+
+
 def record_event(component, error_code, message, version, file_path=None):
     event_id = str(uuid.uuid4())
     _append_row(
@@ -225,7 +241,7 @@ def record_event(component, error_code, message, version, file_path=None):
             "datetime": _now_iso(),
             "component": str(component)[:100],
             "error_code": str(error_code)[:100],
-            "short_message": str(message)[:500],
+            "short_message": str(message)[:EVENT_MESSAGE_MAX_LENGTH],
             "version": str(version)[:100],
         },
     )
