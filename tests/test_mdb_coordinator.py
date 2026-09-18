@@ -156,6 +156,87 @@ class MdbCoordinatorTests(unittest.TestCase):
             VEND_SUCCESS_PENDING_FINALIZATION,
         )
 
+    def test_paid_vend_failure_resumes_only_after_exact_sale_is_resolved(self):
+        self._open_vend()
+        self.coordinator.payment_result(True, {"provider": "pix", "txid": "txid"})
+        failure = "MDB VEND_FAILURE boot=abcd1234 session=1 vend=9"
+        self.coordinator.handle(parse_line(failure))
+        self.coordinator.handle(parse_line(failure))
+        self.coordinator.handle(
+            parse_line("MDB SESSION_COMPLETE boot=abcd1234 session=1 vend=9")
+        )
+
+        self.assertEqual(self.store.load()["state"], "vend_failed")
+        self.assertTrue(self.store.load()["session_complete_seen"])
+        self.assertEqual(
+            sum(event == "vend_failure" for event, _ in self.events), 1
+        )
+        self.assertFalse(self.coordinator.resolve_vend_failure("wrong", 9))
+        self.assertFalse(self.coordinator.resolve_vend_failure("abcd1234", 10))
+        self.assertTrue(self.coordinator.resolve_vend_failure("abcd1234", 9))
+        self.assertIsNone(self.store.load())
+        self.assertEqual(self.commands[-2:], ["CANCEL", "SESSION 9900"])
+
+    def test_unpaid_vend_failure_remains_manual_recovery(self):
+        self._open_vend()
+        self.coordinator.handle(
+            parse_line("MDB VEND_FAILURE boot=abcd1234 session=1 vend=9")
+        )
+
+        self.assertEqual(self.store.load()["state"], "recovery")
+        self.assertFalse(self.coordinator.resolve_vend_failure("abcd1234", 9))
+        self.assertEqual(self.events[-1][0], "recovery")
+
+    def test_reset_after_paid_vend_failure_prevents_auto_resolution(self):
+        self._open_vend()
+        self.coordinator.payment_result(True, {"provider": "moderninha"})
+        self.coordinator.handle(
+            parse_line("MDB VEND_FAILURE boot=abcd1234 session=1 vend=9")
+        )
+        self.coordinator.handle(parse_line("MDB RESET boot=abcd1234"))
+        self.coordinator.handle(
+            parse_line("MDB VEND_FAILURE boot=abcd1234 session=1 vend=9")
+        )
+
+        self.assertEqual(self.store.load()["state"], "recovery")
+        self.assertFalse(self.coordinator.resolve_vend_failure("abcd1234", 9))
+
+    def test_restart_replays_paid_vend_failure(self):
+        self._open_vend()
+        self.coordinator.payment_result(True, {"provider": "pix", "txid": "txid"})
+        self.coordinator.handle(
+            parse_line("MDB VEND_FAILURE boot=abcd1234 session=1 vend=9")
+        )
+        events = []
+        restarted = MdbSessionCoordinator(
+            self.commands.append,
+            lambda event, data: events.append((event, data)),
+            self.store,
+        )
+
+        restarted.start()
+
+        self.assertEqual(events[-1][0], "vend_failure")
+
+    def test_restart_keeps_legacy_vend_failure_in_manual_recovery(self):
+        self.store.save({
+            "state": "vend_failed",
+            "boot": "abcd1234",
+            "vend": 9,
+            "payment_approved": True,
+            "payment": None,
+        })
+        events = []
+        restarted = MdbSessionCoordinator(
+            self.commands.append,
+            lambda event, data: events.append((event, data)),
+            self.store,
+        )
+
+        restarted.start()
+
+        self.assertEqual(events[-1][0], "recovery")
+
     def test_timeout_denies_before_cancelling_session(self):
         self._open_vend()
         self.assertTrue(self.coordinator.cancel_active("payment_timeout"))

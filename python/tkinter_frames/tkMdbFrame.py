@@ -55,6 +55,15 @@ def createFailureFrame(main_container, message="Venda cancelada."):
     return _message_frame(main_container, message, "#871313", "white")
 
 
+def createVendFailureFrame(main_container, provider):
+    message = (
+        "Falha na venda\nReembolso em andamento"
+        if provider == "pix"
+        else "Falha na venda\nEntre em contato com o suporte"
+    )
+    return _message_frame(main_container, message, "#871313", "white")
+
+
 def createRecoveryFrame(main_container, resolve_command):
     frame = _message_frame(
         main_container,

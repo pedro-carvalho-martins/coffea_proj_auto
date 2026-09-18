@@ -48,6 +48,13 @@ class MdbSessionCoordinator:
             return
         if self.active.get("state") == VEND_SUCCESS_PENDING_FINALIZATION:
             self.notify("vend_success", dict(self.active))
+        elif (
+            self.active.get("state") == "vend_failed"
+            and self.active.get("payment_approved")
+            and (self.active.get("payment") or {}).get("provider")
+            in ("pix", "moderninha")
+        ):
+            self.notify("vend_failure", dict(self.active))
         else:
             self.notify("recovery", dict(self.active))
 
@@ -190,6 +197,19 @@ class MdbSessionCoordinator:
                 self._request_session()
             self.notify("recovery_cleared", {})
             return True
+
+    def resolve_vend_failure(self, boot_id, vend_id):
+        """Resume only the paid vend failure that was just recorded."""
+        with self._lock:
+            if (
+                not self.active
+                or self.active.get("state") != "vend_failed"
+                or not self.active.get("payment_approved")
+                or self.active.get("boot") != str(boot_id)
+                or self.active.get("vend") != int(vend_id)
+            ):
+                return False
+            return self.resolve_recovery()
 
     def transport_state(self, state, detail):
         self.notify("transport", {"state": state, "detail": detail})
@@ -379,7 +399,18 @@ class MdbSessionCoordinator:
     def _vend_failure(self, message):
         if not self._matches_active(message):
             return
-        if self.active.get("state") == VEND_SUCCESS_PENDING_FINALIZATION:
+        if self.active.get("state") in (
+            VEND_SUCCESS_PENDING_FINALIZATION,
+            "vend_failed",
+        ):
+            return
+        if (
+            self.active.get("state") != "waiting_vend_result"
+            or not self.active.get("payment_approved")
+            or (self.active.get("payment") or {}).get("provider")
+            not in ("pix", "moderninha")
+        ):
+            self._mark_recovery("vend_failure_without_confirmed_payment")
             return
         self.active["state"] = "vend_failed"
         self.active["reason"] = "vend_failure"
@@ -393,7 +424,7 @@ class MdbSessionCoordinator:
             if (
                 self.active.get("payment_in_progress")
                 or self.active.get("state")
-                == VEND_SUCCESS_PENDING_FINALIZATION
+                in (VEND_SUCCESS_PENDING_FINALIZATION, "vend_failed")
             ):
                 self.active["session_complete_seen"] = True
                 self.store.save(self.active)

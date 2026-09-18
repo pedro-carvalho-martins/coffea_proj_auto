@@ -478,7 +478,7 @@ def finishMdbVendFinalization(data, key, error):
 def markMdbDeliveryUncertain(data):
     payment = data.get("payment", {})
     if not data.get("payment_approved") or not payment:
-        return
+        return False
     try:
         marked = mdb_payment_delivery.mark_delivery_uncertain(
             payment,
@@ -491,6 +491,7 @@ def markMdbDeliveryUncertain(data):
             allow_during_customer_interaction=True,
             include_pix=False,
         )
+        return True
     except Exception as exc:
         _write_payment_error(
             data.get("price_units", 0) / 100.0,
@@ -498,6 +499,28 @@ def markMdbDeliveryUncertain(data):
             "payment.mdb_delivery_uncertain",
             exc,
         )
+        return False
+
+
+def markMdbVendFailure(data, frame):
+    recorded = markMdbDeliveryUncertain(data)
+    enqueue_ui_update(finishMdbVendFailure, data, frame, recorded)
+
+
+def finishMdbVendFailure(data, frame, recorded):
+    if mdbCurrentFrame is not frame:
+        return
+    if not recorded:
+        replaceMdbFrame(
+            tkMdbFrame.createRecoveryFrame(mainContainer, resolveMdbRecovery)
+        )
+        return
+
+    def resume():
+        if mdbCurrentFrame is frame and mdbCoordinator is not None:
+            mdbCoordinator.resolve_vend_failure(*_mdb_vend_key(data))
+
+    frame.after(5000, resume)
 
 
 def _write_mdb_recovery_event(data):
@@ -585,7 +608,20 @@ def handleMdbEvent(event, data):
         )
         startMdbVendFinalization(data)
         return
-    if event in ("recovery", "vend_failure"):
+    if event == "vend_failure":
+        _write_mdb_recovery_event(data)
+        frame = tkMdbFrame.createVendFailureFrame(
+            mainContainer,
+            data["payment"]["provider"],
+        )
+        replaceMdbFrame(frame)
+        Thread(
+            target=markMdbVendFailure,
+            args=(dict(data), frame),
+            name="mdb-vend-failure",
+        ).start()
+        return
+    if event == "recovery":
         _write_mdb_recovery_event(data)
         worker = Thread(
             target=markMdbDeliveryUncertain,

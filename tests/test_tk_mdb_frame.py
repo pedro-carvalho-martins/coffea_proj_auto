@@ -63,6 +63,17 @@ class MdbFrameTests(unittest.TestCase):
         self.assertEqual(frame.background, "#871313")
         self.assertEqual(frame.mdb_status_label.options["bg"], "#871313")
 
+    def test_paid_vend_failure_messages_have_no_button(self):
+        with patch.object(tkMdbFrame.tk, "Frame", FakeFrame), patch.object(
+            tkMdbFrame.tk, "Label", FakeLabel
+        ), patch.object(tkMdbFrame.tk, "Button") as button:
+            pix = tkMdbFrame.createVendFailureFrame(object(), "pix")
+            card = tkMdbFrame.createVendFailureFrame(object(), "moderninha")
+
+        self.assertIn("Reembolso em andamento", pix.mdb_status_label.options["text"])
+        self.assertIn("Entre em contato com o suporte", card.mdb_status_label.options["text"])
+        button.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

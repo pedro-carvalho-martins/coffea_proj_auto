@@ -73,6 +73,27 @@ class MdbPaymentDeliveryTests(unittest.TestCase):
         self.assertTrue(marked)
         self.assertEqual(report.call_args.args[:2], ("txid", "incerta"))
 
+    def test_failed_moderninha_vend_records_unconfirmed_delivery(self):
+        payment = {
+            "provider": "moderninha",
+            "record_id": "record-id",
+            "payment_method": "Crédito",
+        }
+        with patch.object(
+            mdb_payment_delivery.paymentProcessing,
+            "finish_delivery_record",
+            return_value=True,
+        ) as finish:
+            marked = mdb_payment_delivery.mark_delivery_uncertain(
+                payment, 4.5, "vend_failure"
+            )
+
+        self.assertTrue(marked)
+        self.assertEqual(
+            finish.call_args.args,
+            ("record-id", 4.5, "Crédito", "pago_entrega_nao_confirmada"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
